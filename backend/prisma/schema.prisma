@@ -12,3 +12,49 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  phone        String?
+  // providerProfile ProviderProfile?
+  isActive     Boolean  @default(true)
+  // bookingsAsCustomer Booking[]
+  // reviewGiven Review[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ServiceCategory {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+
+  services Service[]
+
+  createdAt DateTime @default(now())
+}
+
+model Service {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  basePrice   Float
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categoryId String
+  category   ServiceCategory @relation(fields: [categoryId], references: [id])
+}
