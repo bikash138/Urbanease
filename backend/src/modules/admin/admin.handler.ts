@@ -1,5 +1,6 @@
+import { asyncHandler } from "../../common/utils/asyncHandler";
 import { AdminService } from "./admin.service";
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response } from "express";
 
 export class AdminHandler {
   private adminService: AdminService;
@@ -8,32 +9,23 @@ export class AdminHandler {
     this.adminService = new AdminService();
   }
 
-  createServiceCategory = async (req: Request, res: Response) => {
-    try {
-      const serviceCategory = await this.adminService.addServiceCategory(
-        req.body,
-      );
+  createServiceCategory = asyncHandler(async (req: Request, res: Response) => {
+    const serviceCategory = await this.adminService.addServiceCategory(
+      req.body,
+    );
+    res.status(201).json({
+      success: true,
+      data: serviceCategory,
+      message: "Category created successfully",
+    });
+  });
 
-      res.status(201).json({
-        success: true,
-        data: serviceCategory,
-        message: "Category created successfully",
-      });
-    } catch (error) {
-      console.log("Internal server error", error);
-    }
-  };
-
-  createService = async (req: Request, res: Response) => {
-    try {
-      const service = await this.adminService.addService(req.body);
-      res.status(201).json({
-        success: true,
-        data: service,
-        message: "Service created successfully",
-      });
-    } catch (error) {
-      console.log("Something went wrong", error);
-    }
-  };
+  createService = asyncHandler(async (req: Request, res: Response) => {
+    const service = await this.adminService.addService(req.body);
+    res.status(201).json({
+      success: true,
+      data: service,
+      message: "Service created successfully",
+    });
+  });
 }

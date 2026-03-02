@@ -1,18 +1,17 @@
 import type { Request, Response, NextFunction } from "express";
-import { ZodSchema, ZodError } from "zod";
+import { ZodType, ZodError } from "zod";
 import { AppError } from "../errors/app.error";
 import { ErrorCode } from "../errors/error.types";
 
 export const validateRequest =
-  <T>(schema: ZodSchema<T>) =>
+  <T>(schema: ZodType<T>) =>
   (req: Request, res: Response, next: NextFunction) => {
     try {
       req.body = schema.parse(req.body);
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        // Format Zod errors into a clean, user-friendly array
-        const issues = error.errors.map((e) => ({
+        const issues = error.issues.map((e) => ({
           field: e.path.join("."),
           message: e.message,
         }));

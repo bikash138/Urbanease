@@ -1,3 +1,5 @@
+import { AppError } from "../../common/errors/app.error";
+import { ErrorCode } from "../../common/errors/error.types";
 import { AdminRepository } from "./admin.repository";
 import type {
   CreateServiceSchemaDTO,
@@ -15,7 +17,11 @@ export class AdminService {
     try {
       return await this.adminRepository.createServiceCategory(data);
     } catch (error) {
-      console.log("Create Service Category Error", error);
+      throw new AppError(
+        "Service Category creation failed",
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -23,7 +29,11 @@ export class AdminService {
     try {
       return await this.adminRepository.createService(data);
     } catch (error) {
-      console.log("Create Service Error", error);
+      throw new AppError(
+        "Service creation failed",
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
