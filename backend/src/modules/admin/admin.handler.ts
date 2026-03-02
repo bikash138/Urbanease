@@ -8,7 +8,7 @@ export class AdminHandler {
     this.adminService = new AdminService();
   }
 
-  createCategory = async (req: Request, res: Response) => {
+  createServiceCategory = async (req: Request, res: Response) => {
     try {
       const serviceCategory = await this.adminService.addServiceCategory(
         req.body,

@@ -1,12 +1,44 @@
-import express from "express";
+import { env, connectDB } from "./config";
+import app from "./app";
+import http from "http";
+import { prisma } from "../db";
 
-const app = express();
+async function start() {
+  await connectDB();
+  const server = http.createServer(app);
 
-const port = 4000;
-app.get("/", (req, res) => {
-  res.send("Hello in the Server");
-});
+  server.listen(env.PORT, () => {
+    console.log(`Urbanease backend is up and running at PORT:${env.PORT}`);
+    console.log(`Environment: ${env.NODE_ENV}`);
+  });
 
-app.listen(port, () => {
-  console.log(`Urbanease backend is up and running at PORT:${port}`);
+  async function shutdown(signal: string) {
+    console.log(`Received ${signal}. Starting graceful shutdown...`);
+    setTimeout(() => {
+      console.error("Timeout reached, some request may drop");
+      process.exit(1);
+    }, 10_000);
+    server.close((error) => {
+      if (error) {
+        console.error("Error while closing server");
+        process.exit(1);
+      }
+      console.log("Server closed");
+    });
+    try {
+      await prisma.$disconnect();
+      console.log("Database disconnected");
+    } catch (error) {
+      console.error("Error while disconnecting database", error);
+    }
+    console.log("Shutdown Complete");
+    process.exit(0);
+  }
+
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
+}
+start().catch((error) => {
+  console.error("App Startup Failed: ", error);
+  process.exit(1);
 });

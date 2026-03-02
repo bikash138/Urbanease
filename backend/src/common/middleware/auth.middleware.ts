@@ -1,0 +1,45 @@
+import type { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { AppError } from "../errors/app.error";
+import { ErrorCode } from "../errors/error.types";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        role: "CUSTOMER" | "PROVIDER" | "ADMIN";
+      };
+    }
+  }
+}
+
+export const authMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next(new AppError("Token not found", 401, ErrorCode.UNAUTHORIZED));
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    return next(new AppError("Token not found", 401, ErrorCode.UNAUTHORIZED));
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: string;
+      email: string;
+      role: "CUSTOMER" | "PROVIDER" | "ADMIN";
+    };
+    req.user = decoded;
+  } catch (error) {
+    return next(new AppError("Invalid token", 401, ErrorCode.TOKEN_EXPIRED));
+  }
+};
