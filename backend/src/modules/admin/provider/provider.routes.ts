@@ -16,7 +16,6 @@ providerRouter.get(
   providerHandler.getAllProviders,
 );
 
-// GET /admin/provider/:id
 providerRouter.get(
   "/:id",
   authMiddleware,
@@ -24,7 +23,6 @@ providerRouter.get(
   providerHandler.getProviderByID,
 );
 
-// PATCH /admin/provider/:id/approve
 providerRouter.patch(
   "/:id/approve",
   authMiddleware,
@@ -32,7 +30,6 @@ providerRouter.patch(
   providerHandler.approveProvider,
 );
 
-// PATCH /admin/provider/:id/reject
 providerRouter.patch(
   "/:id/reject",
   authMiddleware,
