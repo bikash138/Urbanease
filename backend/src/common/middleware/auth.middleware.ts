@@ -39,6 +39,7 @@ export const authMiddleware = (
       role: "CUSTOMER" | "PROVIDER" | "ADMIN";
     };
     req.user = decoded;
+    next();
   } catch (error) {
     return next(new AppError("Invalid token", 401, ErrorCode.TOKEN_EXPIRED));
   }
