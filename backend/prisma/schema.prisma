@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -19,6 +13,18 @@ enum Role {
   ADMIN
 }
 
+enum ProviderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ReviewStatus {
+  VISIBLE
+  FLAGGED
+  HIDDEN
+}
+
 model User {
   id           String   @id @default(uuid())
   name         String
@@ -26,12 +32,47 @@ model User {
   passwordHash String
   role         Role
   phone        String?
-  // providerProfile ProviderProfile?
   isActive     Boolean  @default(true)
-  // bookingsAsCustomer Booking[]
-  // reviewGiven Review[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  reviewGiven  Review[]
+
+  providerProfile ProviderProfile?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProviderProfile {
+  id         String  @id @default(uuid())
+  bio        String?
+  experience Int?
+
+  status          ProviderStatus @default(PENDING)
+  rejectionReason String?
+  reviewsGained   Review[]
+
+  userId          String            @unique
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  servicesOffered ProviderService[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProviderService {
+  id          String  @id @default(uuid())
+  customPrice Float?
+  isAvailable Boolean @default(true)
+
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([providerId, serviceId])
 }
 
 model ServiceCategory {
@@ -52,9 +93,27 @@ model Service {
   basePrice   Float
   isActive    Boolean @default(true)
 
+  categoryId String
+  category   ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  providers ProviderService[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
-  categoryId String
-  category   ServiceCategory @relation(fields: [categoryId], references: [id])
+model Review {
+  id      String       @id @default(uuid())
+  rating  Int
+  comment String?
+  status  ReviewStatus @default(VISIBLE)
+
+  customerId String
+  customer   User   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

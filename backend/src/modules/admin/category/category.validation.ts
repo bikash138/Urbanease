@@ -5,14 +5,20 @@ export const createServiceCategorySchema = z.object({
   description: z.string().optional(),
 });
 
-export const createServiceSchema = z.object({
-  title: z.string().min(1, "Service title is required"),
+export const updateServiceCategorySchema = z.object({
+  name: z.string().min(1, "Category name is required").optional(),
   description: z.string().optional(),
-  basePrice: z.number().positive("Base price must be positive"),
-  categoryId: z.uuid("Invalid catefory ID"),
+  isActive: z.boolean().optional(),
 });
 
 export type CreateServiceCategorySchemaDTO = z.infer<
   typeof createServiceCategorySchema
 >;
-export type CreateServiceSchemaDTO = z.infer<typeof createServiceSchema>;
+
+export type ServiceCategoryIdParamDTO = {
+  id: string;
+};
+
+export type UpdateServiceCategoryDTO = z.infer<
+  typeof updateServiceCategorySchema
+>;
