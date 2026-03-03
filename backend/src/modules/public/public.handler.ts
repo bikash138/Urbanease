@@ -1,3 +1,5 @@
+import { AppError } from "../../common/errors/app.error";
+import { ErrorCode } from "../../common/errors/error.types";
 import { asyncHandler } from "../../common/utils/asyncHandler";
 import { PublicService } from "./public.service";
 import type { Request, Response } from "express";
@@ -50,5 +52,34 @@ export class PublicHandler {
       req.params.id as string,
     );
     res.status(200).json({ success: true, data: provider });
+  });
+
+  getAvailableSlots = asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const { date, serviceId } = req.query as {
+      date: string;
+      serviceId: string;
+    };
+
+    if (!date || !serviceId) {
+      throw new AppError(
+        "date and serviceId query params are required",
+        400,
+        ErrorCode.VALIDATION_ERROR,
+      );
+    }
+
+    const result = await this.publicService.getAvailableSlots(
+      id as string,
+      serviceId,
+      date,
+    );
+    res.status(200).json({ success: true, data: result });
+  });
+
+  getPublicReviews = asyncHandler(async (req: Request, res: Response) => {
+    const providerId = req.query.providerId as string | undefined;
+    const reviews = await this.publicService.getPublicReviews(providerId);
+    res.status(200).json({ success: true, data: reviews });
   });
 }

@@ -15,5 +15,9 @@ publicRouter.get("/services/:id", publicHandler.getServiceByID);
 // ─── Providers ────
 publicRouter.get("/providers", publicHandler.getAllProviders);
 publicRouter.get("/providers/:id", publicHandler.getProviderByID);
+publicRouter.get("/providers/:id/slots", publicHandler.getAvailableSlots);
+
+// ─── Reviews ────
+publicRouter.get("/reviews", publicHandler.getPublicReviews);
 
 export default publicRouter;

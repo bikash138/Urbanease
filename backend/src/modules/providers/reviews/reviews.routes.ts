@@ -9,5 +9,6 @@ const reviewsHandler = new ReviewsHandler();
 reviewsRouter.use(authMiddleware, roleMiddleware("PROVIDER"));
 
 reviewsRouter.get("/", reviewsHandler.getReviews);
+reviewsRouter.patch("/:id/flag", reviewsHandler.flagReview);
 
 export default reviewsRouter;

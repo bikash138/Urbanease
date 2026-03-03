@@ -153,4 +153,85 @@ export class PublicRepository {
       },
     });
   }
+
+  async getAvailableSlots(providerId: string, serviceId: string, date: Date) {
+    const allSlots = await prisma.slot.findMany({
+      where: {
+        serviceId,
+        isActive: true,
+      },
+      orderBy: {
+        startTime: "asc",
+      },
+    });
+
+    const unavailabilities = await prisma.providerUnavailability.findMany({
+      where: {
+        providerId,
+        date,
+      },
+      select: {
+        slotId: true,
+      },
+    });
+
+    const unavailableSlotIds = new Set(unavailabilities.map((u) => u.slotId));
+
+    const booked = await prisma.booking.findMany({
+      where: {
+        providerService: {
+          providerId,
+        },
+        date,
+        status: {
+          notIn: ["CANCELLED"],
+        },
+      },
+      select: {
+        slotId: true,
+      },
+    });
+
+    const bookedSlotIds = new Set(booked.map((b) => b.slotId));
+
+    return allSlots.filter(
+      (slot) => !unavailableSlotIds.has(slot.id) && !bookedSlotIds.has(slot.id),
+    );
+  }
+
+  async getPublicReviews(providerId?: string) {
+    return await prisma.review.findMany({
+      where: {
+        status: { in: ["VISIBLE", "FLAGGED"] },
+        ...(providerId && { providerId }),
+      },
+      select: {
+        id: true,
+        rating: true,
+        comment: true,
+        status: true,
+        customer: {
+          select: { name: true },
+        },
+        provider: {
+          select: {
+            id: true,
+            user: { select: { name: true } },
+          },
+        },
+        booking: {
+          select: {
+            date: true,
+            providerService: {
+              select: {
+                service: { select: { id: true, title: true } },
+              },
+            },
+          },
+        },
+        createdAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
 }

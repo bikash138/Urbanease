@@ -25,6 +25,31 @@ enum ReviewStatus {
   HIDDEN
 }
 
+enum AddressLabel {
+  HOME
+  WORK
+  OTHER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ImageType {
+  BEFORE
+  AFTER
+}
+
+enum SlotLabel {
+  MORNING
+  AFTERNOON
+  NIGHT
+}
+
 model User {
   id           String   @id @default(uuid())
   name         String
@@ -35,10 +60,21 @@ model User {
   isActive     Boolean  @default(true)
   reviewGiven  Review[]
 
+  customerProfile CustomerProfile?
   providerProfile ProviderProfile?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CustomerProfile {
+  id        String    @id @default(uuid())
+  addresses Address[]
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model ProviderProfile {
@@ -54,8 +90,9 @@ model ProviderProfile {
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   servicesOffered ProviderService[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
+  providerUnavailabilities ProviderUnavailability[]
 }
 
 model ProviderService {
@@ -69,10 +106,101 @@ model ProviderService {
   serviceId String
   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+
+  @@unique([providerId, serviceId])
+}
+
+model Address {
+  id        String       @id @default(uuid())
+  label     AddressLabel
+  street    String
+  city      String
+  state     String
+  pincode   String
+  isDefault Boolean      @default(false)
+
+  customerId String
+  customer   CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+}
+
+model Booking {
+  id           String        @id @default(uuid())
+  status       BookingStatus @default(PENDING)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  totalAmount  Float
+  customerNote String?
+  providerNote String?
+  date         DateTime      @db.Date
+
+  customerId String
+  customer   CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  providerServiceId String
+  providerService   ProviderService @relation(fields: [providerServiceId], references: [id], onDelete: Restrict)
+
+  addressId String
+  address   Address @relation(fields: [addressId], references: [id], onDelete: Restrict)
+
+  slotId String?
+  slot   Slot?   @relation(fields: [slotId], references: [id])
+
+  images BookingImage[]
+  review Review?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([providerId, serviceId])
+  @@unique([providerServiceId, slotId, date])
+}
+
+model BookingImage {
+  id        String    @id @default(uuid())
+  url       String
+  type      ImageType
+  bookingId String
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model Slot {
+  id        String    @id @default(uuid())
+  label     SlotLabel
+  startTime String
+  endTime   String
+  isActive  Boolean   @default(true)
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  providerUnavailability ProviderUnavailability[]
+  bookings               Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProviderUnavailability {
+  id   String   @id @default(uuid())
+  date DateTime @db.Date
+
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  slotId String
+  slot   Slot   @relation(fields: [slotId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([providerId, slotId, date])
 }
 
 model ServiceCategory {
@@ -91,7 +219,7 @@ model Service {
   title       String
   description String?
   basePrice   Float
-  isActive    Boolean @default(true)
+  isActive    Boolean @default(false)
 
   categoryId String
   category   ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
@@ -100,6 +228,7 @@ model Service {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  slots     Slot[]
 }
 
 model Review {
@@ -113,6 +242,9 @@ model Review {
 
   providerId String
   provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

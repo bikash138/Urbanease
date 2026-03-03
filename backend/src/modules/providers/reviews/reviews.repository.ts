@@ -14,4 +14,18 @@ export class ReviewsRepository {
       orderBy: { createdAt: "desc" },
     });
   }
+
+  async flagReview(reviewId: string, providerId: string) {
+    return await prisma.review.update({
+      where: { id: reviewId, providerId },
+      data: { status: "FLAGGED" },
+      select: {
+        id: true,
+        status: true,
+        rating: true,
+        comment: true,
+        updatedAt: true,
+      },
+    });
+  }
 }

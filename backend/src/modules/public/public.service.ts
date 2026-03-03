@@ -111,4 +111,66 @@ export class PublicService {
       );
     }
   }
+
+  async getAvailableSlots(
+    providerId: string,
+    serviceId: string,
+    dateString: string,
+  ) {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      const maxDate = new Date(today);
+      maxDate.setDate(today.getDate() + 3);
+
+      const requestedDate = new Date(dateString);
+      requestedDate.setHours(0, 0, 0, 0);
+
+      if (requestedDate < tomorrow) {
+        throw new AppError(
+          "Same-day bookings are not allowed. Minimum 1 day advance",
+          400,
+          ErrorCode.FORBIDDEN,
+        );
+      }
+
+      if (requestedDate > tomorrow) {
+        throw new AppError(
+          "You can only view slots up to 3 days in advance",
+          400,
+          ErrorCode.FORBIDDEN,
+        );
+      }
+
+      const slots = await this.publicRepository.getAvailableSlots(
+        providerId,
+        serviceId,
+        requestedDate,
+      );
+      return slots;
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        "Failed to fetch slots",
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getPublicReviews(providerId?: string) {
+    try {
+      return await this.publicRepository.getPublicReviews(providerId);
+    } catch (error) {
+      throw new AppError(
+        "Failed to fetch reviews",
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

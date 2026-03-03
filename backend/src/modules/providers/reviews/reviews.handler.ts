@@ -15,4 +15,16 @@ export class ReviewsHandler {
     });
     res.status(200).json({ success: true, data: reviews });
   });
+
+  flagReview = asyncHandler(async (req: Request, res: Response) => {
+    const review = await this.reviewsService.flagReview(
+      req.user!.id,
+      req.params.id as string,
+    );
+    res.status(200).json({
+      success: true,
+      data: review,
+      message: "Review flagged successfully",
+    });
+  });
 }
