@@ -5,6 +5,12 @@ export interface SigninPayload {
   password: string;
 }
 
+export interface AdminSigninPayload {
+  email: string;
+  password: string;
+  adminKey: string;
+}
+
 export interface SignupPayload {
   name: string;
   email: string;
@@ -14,7 +20,7 @@ export interface SignupPayload {
 
 //----Responses----
 
-export interface AuthUser {
+export interface AuthorizedUser {
   id: string;
   name: string;
   email: string;
@@ -23,7 +29,7 @@ export interface AuthUser {
 
 export interface SigninResponse {
   token: string;
-  user: AuthUser;
+  user: AuthorizedUser;
 }
 
 export interface SignupResponse {
@@ -31,5 +37,4 @@ export interface SignupResponse {
   name: string;
   email: string;
   role: UserRole;
-  createdAt: string;
 }

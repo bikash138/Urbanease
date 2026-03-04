@@ -5,6 +5,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   JWT_SECRET: z.string().min(4, "JWT_SECRET is required"),
   JWT_EXPIRES_IN: z.string().default("7d"),
+  ADMIN_KEY: z.string().min(1, "ADMIN_KEY is required"),
 });
 
 const parsed = envSchema.safeParse(process.env);

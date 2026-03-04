@@ -20,6 +20,12 @@ export class AuthRepository {
         passwordHash: data.password,
         role: data.role,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
     });
   }
 

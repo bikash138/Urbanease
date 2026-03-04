@@ -1,5 +1,6 @@
 import apiClient from "@/lib/api-client";
 import {
+  AdminSigninPayload,
   SigninPayload,
   SigninResponse,
   SignupPayload,
@@ -10,6 +11,12 @@ export async function signinAPI(
   payload: SigninPayload,
 ): Promise<SigninResponse> {
   return apiClient.post("/auth/signin", payload);
+}
+
+export async function adminSigninAPI(
+  payload: AdminSigninPayload,
+): Promise<SigninResponse> {
+  return apiClient.post("/auth/admin-signin", payload);
 }
 
 export async function signupAPI(

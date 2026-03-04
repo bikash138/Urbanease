@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import {
   type CreateSigninSchema,
   type CreateSignupSchema,
+  type CreateAdminSigninSchema,
 } from "./auth.validation";
 import { env } from "../../config";
 
@@ -35,11 +36,74 @@ export class AuthService {
 
   async signinService(data: CreateSigninSchema) {
     const user = await this.authRepository.findUserByEmail(data.email);
+    if (user?.role === "ADMIN") {
+      throw new AppError(
+        "Admins must use the admin signin route",
+        401,
+        ErrorCode.FORBIDDEN,
+      );
+    }
     if (!user) {
       throw new AppError(
         "Invalid Credentials",
         401,
         ErrorCode.INVALID_CREDENTIALS,
+      );
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      data.password,
+      user.passwordHash,
+    );
+    if (!isPasswordValid) {
+      throw new AppError(
+        "Invalid Credentials",
+        401,
+        ErrorCode.INVALID_CREDENTIALS,
+      );
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      env.JWT_SECRET,
+      { expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"] },
+    );
+
+    return {
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
+
+  async adminSigninService(data: CreateAdminSigninSchema) {
+    // Verify the adminKey
+    if (data.adminKey !== env.ADMIN_KEY) {
+      throw new AppError(
+        "Access denied: invalid admin key",
+        403,
+        ErrorCode.FORBIDDEN,
+      );
+    }
+
+    const user = await this.authRepository.findUserByEmail(data.email);
+    if (!user) {
+      throw new AppError(
+        "Invalid Credentials",
+        401,
+        ErrorCode.INVALID_CREDENTIALS,
+      );
+    }
+
+    if (user.role !== "ADMIN") {
+      throw new AppError(
+        "Access denied: not an admin account",
+        403,
+        ErrorCode.FORBIDDEN,
       );
     }
 

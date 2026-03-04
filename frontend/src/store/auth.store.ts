@@ -1,14 +1,14 @@
 import { tokenStorage } from "@/lib/token";
-import { AuthUser } from "@/types/auth.types";
+import { AuthorizedUser } from "@/types/auth.types";
 import { create } from "zustand";
 
 interface AuthState {
-  user: AuthUser | null;
+  user: AuthorizedUser | null;
   token: string | null;
   isAuthenticated: boolean;
 }
 interface AuthActions {
-  setAuth: (user: AuthUser, token: string) => void;
+  setAuth: (user: AuthorizedUser, token: string) => void;
   clearAuth: () => void;
 }
 

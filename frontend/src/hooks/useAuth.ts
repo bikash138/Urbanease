@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signinAPI, signupAPI } from "@/api/auth.api";
+import { adminSigninAPI, signinAPI, signupAPI } from "@/api/auth.api";
 import { useAuthStore } from "@/store/auth.store";
-import type { SigninFormValues } from "@/schemas/auth.schema";
+import type {
+  AdminSigninFormValues,
+  SigninFormValues,
+} from "@/schemas/auth.schema";
 import type { SignupFormValues } from "@/schemas/auth.schema";
 import type { UserRole } from "@/types/auth.types";
 
@@ -47,8 +50,21 @@ export function useAuth() {
     setError(null);
     try {
       await signupAPI(data);
-      // Don't auto-login after signup — send to signin with a success flag
       router.push("/auth/signin?registered=true");
+    } catch (err: unknown) {
+      setError(extractErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function adminSignin(data: AdminSigninFormValues) {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await adminSigninAPI(data);
+      setAuth(response.user, response.token);
+      redirectByRole(response.user.role);
     } catch (err: unknown) {
       setError(extractErrorMessage(err));
     } finally {
@@ -70,5 +86,6 @@ export function useAuth() {
     signin,
     signup,
     logout,
+    adminSignin,
   };
 }
