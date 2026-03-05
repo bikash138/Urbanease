@@ -16,6 +16,11 @@ export class ServiceRepository {
         basePrice: true,
         isActive: true,
         categoryId: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
         createdAt: true,
       },
     });

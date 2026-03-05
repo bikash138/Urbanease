@@ -2,10 +2,16 @@ import axios from "axios";
 import { config } from "./config";
 import { tokenStorage } from "./token";
 
+export interface ApiResponse<T = any> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
 const apiClient = axios.create({
   baseURL: config.apiBaseUrl,
   headers: {
-    "Content-Type:": "application/json",
+    "Content-Type": "application/json",
   },
 });
 
@@ -20,6 +26,7 @@ apiClient.interceptors.request.use((requestConfig) => {
 apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    console.log(error);
     const message = error?.response?.data?.message ?? "Something went wrong";
     const statusCode = error?.response?.status ?? 500;
     return Promise.reject({ message, statusCode });

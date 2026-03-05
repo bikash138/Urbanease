@@ -2,9 +2,11 @@ import express from "express";
 import { requestIdMiddleware } from "./common/middleware/requestId.middleware";
 import router from "./route";
 import { errorMiddleware } from "./common/middleware/error.middleware";
+import cors from "cors";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(requestIdMiddleware);
 

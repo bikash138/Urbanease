@@ -1,3 +1,5 @@
+import { ApiResponse } from "@/lib/api-client";
+
 export type UserRole = "CUSTOMER" | "PROVIDER" | "ADMIN";
 
 export interface SigninPayload {
@@ -27,14 +29,18 @@ export interface AuthorizedUser {
   role: UserRole;
 }
 
-export interface SigninResponse {
+export interface SigninData {
   token: string;
   user: AuthorizedUser;
 }
 
-export interface SignupResponse {
+export type SigninResponse = ApiResponse<SigninData>;
+
+export interface SignupData {
   id: string;
   name: string;
   email: string;
   role: UserRole;
 }
+
+export type SignupResponse = ApiResponse<SignupData>;
