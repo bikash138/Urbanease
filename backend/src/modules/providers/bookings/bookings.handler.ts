@@ -56,6 +56,16 @@ export class ProviderBookingHandler {
       .json({ success: true, data: result, message: "Booking completed" });
   });
 
+  cancelBooking = asyncHandler(async (req: Request, res: Response) => {
+    const result = await this.bookingService.cancelBooking(
+      req.user!.id,
+      req.params.id as string,
+    );
+    res
+      .status(200)
+      .json({ success: true, data: result, message: "Booking cancelled" });
+  });
+
   addNote = asyncHandler(async (req: Request, res: Response) => {
     const result = await this.bookingService.addNote(
       req.user!.id,

@@ -9,4 +9,10 @@ export const createBookingSchema = z.object({
   customerNote: z.string().optional(),
 });
 
+export const rescheduleBookingSchema = z.object({
+  slotId: z.uuid("Invalid slot ID"),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+});
+
 export type CreateBookingDTO = z.infer<typeof createBookingSchema>;
+export type RescheduleBookingDTO = z.infer<typeof rescheduleBookingSchema>;

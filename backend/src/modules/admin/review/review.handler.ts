@@ -9,6 +9,11 @@ export class AdminReviewHandler {
     this.reviewService = new AdminReviewService();
   }
 
+  getAllFlaggedReviews = asyncHandler(async (req: Request, res: Response) => {
+    const reviews = await this.reviewService.getAllFlaggedReviews();
+    res.status(200).json({ success: true, data: reviews });
+  });
+
   getFlaggedReviews = asyncHandler(async (req: Request, res: Response) => {
     const providerServiceId = req.query.providerServiceId as string;
     const reviews =
@@ -27,5 +32,11 @@ export class AdminReviewHandler {
       data: review,
       message: `Review status updated to ${review.status}`,
     });
+  });
+
+  // DELETE /admin/review/:id
+  deleteReview = asyncHandler(async (req: Request, res: Response) => {
+    await this.reviewService.deleteReview(req.params.id as string);
+    res.status(200).json({ success: true, message: "Review deleted" });
   });
 }

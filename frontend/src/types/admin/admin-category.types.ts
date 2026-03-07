@@ -4,6 +4,7 @@ export interface ServiceCategory {
   id: string;
   name: string;
   description: string | null;
+  imageUrl: string | null;
   isActive: boolean;
   createdAt: string;
 }
@@ -13,11 +14,13 @@ export interface ServiceCategory {
 export interface CreateCategoryPayload {
   name: string;
   description?: string;
+  image: string;
 }
 
 export interface UpdateCategoryPayload {
   name?: string;
   description?: string;
+  image?: string;
   isActive?: boolean;
 }
 

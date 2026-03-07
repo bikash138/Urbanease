@@ -12,8 +12,10 @@ const reviewHandler = new AdminReviewHandler();
 
 reviewRouter.use(authMiddleware, roleMiddleware("ADMIN"));
 
+reviewRouter.get("/", reviewHandler.getAllFlaggedReviews);
+
 reviewRouter.get(
-  "/",
+  "/by-service",
   (req, res, next) => {
     if (!req.query.providerServiceId) {
       return next(
@@ -34,5 +36,7 @@ reviewRouter.patch(
   validateRequest(updateReviewStatusSchema),
   reviewHandler.updateReviewStatus,
 );
+
+reviewRouter.delete("/:id", reviewHandler.deleteReview);
 
 export default reviewRouter;

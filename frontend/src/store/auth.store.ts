@@ -1,29 +1,33 @@
-import { tokenStorage } from "@/lib/token";
+import { roleStorage, userStorage } from "@/lib/token";
 import { AuthorizedUser } from "@/types/auth.types";
 import { create } from "zustand";
 
+export type UserRole = "CUSTOMER" | "PROVIDER" | "ADMIN";
+
 interface AuthState {
   user: AuthorizedUser | null;
-  token: string | null;
   isAuthenticated: boolean;
+  role: UserRole | null;
 }
 interface AuthActions {
-  setAuth: (user: AuthorizedUser, token: string) => void;
+  setAuth: (user: AuthorizedUser, role: UserRole) => void;
   clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>((set) => ({
-  user: null,
-  token: tokenStorage.get(),
-  isAuthenticated: !!tokenStorage.get(),
+  user: userStorage.get(),
+  isAuthenticated: !!userStorage.get(),
+  role: roleStorage.get() as UserRole | null,
 
-  setAuth(user, token) {
-    tokenStorage.set(token);
-    set({ user, token, isAuthenticated: true });
+  setAuth(user, role) {
+    userStorage.set(user);
+    roleStorage.set(role);
+    set({ user, isAuthenticated: true, role });
   },
 
   clearAuth() {
-    tokenStorage.clear();
-    set({ user: null, token: null, isAuthenticated: false });
+    userStorage.clear();
+    roleStorage.clear();
+    set({ user: null, isAuthenticated: false, role: null });
   },
 }));

@@ -14,6 +14,7 @@ export const roleMiddleware =
     }
 
     if (!allowedRoles.includes(req.user.role)) {
+      console.log("ROLE:", req.user.role);
       return next(
         new AppError(
           "You do not have permission to perform this action",

@@ -20,13 +20,7 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return next(new AppError("Token not found", 401, ErrorCode.UNAUTHORIZED));
-  }
-
-  const token = authHeader.split(" ")[1];
+  const token = req.cookies?.token;
 
   if (!token) {
     return next(new AppError("Token not found", 401, ErrorCode.UNAUTHORIZED));

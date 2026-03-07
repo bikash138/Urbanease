@@ -164,6 +164,35 @@ export class ProviderBookingService {
     }
   }
 
+  async cancelBooking(userId: string, bookingId: string) {
+    try {
+      const providerId = await this.getProviderId(userId);
+      const booking = await this.guardBooking(providerId, bookingId);
+
+      if (booking.status !== "PENDING" && booking.status !== "CONFIRMED") {
+        throw new AppError(
+          `Cannot cancel a booking that is ${booking.status}`,
+          400,
+          ErrorCode.FORBIDDEN,
+        );
+      }
+
+      await this.bookingRepository.updateBookingStatus(
+        providerId,
+        bookingId,
+        "CANCELLED",
+      );
+      return { id: bookingId, status: "CANCELLED" };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        "Failed to cancel booking",
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   // ─── Note & Images ─────
 
   async addNote(userId: string, bookingId: string, data: AddNoteDTO) {

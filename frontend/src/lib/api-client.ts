@@ -1,8 +1,7 @@
 import axios from "axios";
 import { config } from "./config";
-import { tokenStorage } from "./token";
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
@@ -13,14 +12,7 @@ const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-});
-
-apiClient.interceptors.request.use((requestConfig) => {
-  const token = tokenStorage.get();
-  if (token) {
-    requestConfig.headers.Authorization = `Bearer ${token}`;
-  }
-  return requestConfig;
+  withCredentials: true,
 });
 
 apiClient.interceptors.response.use(

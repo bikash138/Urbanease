@@ -28,6 +28,7 @@ export class CustomerReviewService {
 
   async createReview(userId: string, data: CreateReviewDTO) {
     try {
+      
       const customerId = await this.getCustomerProfileId(userId);
 
       // Booking must exist, belong to this customer, and be COMPLETED
@@ -50,8 +51,21 @@ export class CustomerReviewService {
         );
       }
 
+      // Block re-review if one was previously deleted for this booking
+      const existingReview = await prisma.review.findUnique({
+        where: { bookingId: data.bookingId },
+        select: { status: true },
+      });
+      if (existingReview) {
+        throw new AppError(
+          "You have already reviewed this booking",
+          409,
+          ErrorCode.CONFLICT,
+        );
+      }
+
       return await this.reviewRepository.createReview(
-        customerId,
+        userId,
         booking.providerService.providerId,
         data,
       );

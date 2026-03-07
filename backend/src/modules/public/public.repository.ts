@@ -1,4 +1,6 @@
 import { prisma } from "../../../db";
+import type { SlotLabel } from "../../../generated/prisma/enums";
+import { AppError } from "../../common/errors/app.error";
 
 export class PublicRepository {
   async getAllCategories() {
@@ -8,29 +10,36 @@ export class PublicRepository {
       },
       select: {
         id: true,
+        slug: true,
         name: true,
         description: true,
+        image: true,
       },
       orderBy: { name: "asc" },
     });
   }
-  async getCategoryByID(id: string) {
-    return await prisma.serviceCategory.findMany({
+
+  async getCategoryBySlug(slug: string) {
+    return await prisma.serviceCategory.findUnique({
       where: {
-        id,
+        slug,
         isActive: true,
       },
       select: {
         id: true,
+        slug: true,
         name: true,
         description: true,
+        image: true,
         services: {
           where: { isActive: true },
           select: {
             id: true,
+            slug: true,
             title: true,
             description: true,
             basePrice: true,
+            image: true,
           },
         },
       },
@@ -45,29 +54,34 @@ export class PublicRepository {
       },
       select: {
         id: true,
+        slug: true,
         title: true,
         description: true,
         basePrice: true,
+        image: true,
         category: {
-          select: { id: true, name: true },
+          select: { id: true, slug: true, name: true },
         },
       },
       orderBy: { title: "asc" },
     });
   }
-  async getServiceByID(id: string) {
+
+  async getServiceBySlug(slug: string) {
     return await prisma.service.findUnique({
       where: {
-        id,
+        slug,
         isActive: true,
       },
       select: {
         id: true,
+        slug: true,
         title: true,
         description: true,
         basePrice: true,
+        image: true,
         category: {
-          select: { id: true, name: true },
+          select: { id: true, slug: true, name: true },
         },
         providers: {
           where: {
@@ -80,6 +94,7 @@ export class PublicRepository {
             provider: {
               select: {
                 id: true,
+                slug: true,
                 bio: true,
                 experience: true,
                 user: {
@@ -98,6 +113,7 @@ export class PublicRepository {
       where: { status: "APPROVED" },
       select: {
         id: true,
+        slug: true,
         bio: true,
         experience: true,
         user: {
@@ -109,7 +125,13 @@ export class PublicRepository {
             id: true,
             customPrice: true,
             service: {
-              select: { id: true, title: true, basePrice: true },
+              select: {
+                id: true,
+                slug: true,
+                title: true,
+                basePrice: true,
+                image: true,
+              },
             },
           },
         },
@@ -117,11 +139,12 @@ export class PublicRepository {
     });
   }
 
-  async getProviderByID(id: string) {
+  async getProviderBySlug(slug: string) {
     return await prisma.providerProfile.findUnique({
-      where: { id, status: "APPROVED" },
+      where: { slug, status: "APPROVED" },
       select: {
         id: true,
+        slug: true,
         bio: true,
         experience: true,
         user: {
@@ -133,7 +156,13 @@ export class PublicRepository {
             id: true,
             customPrice: true,
             service: {
-              select: { id: true, title: true, basePrice: true },
+              select: {
+                id: true,
+                slug: true,
+                title: true,
+                basePrice: true,
+                image: true,
+              },
             },
           },
         },
@@ -154,49 +183,78 @@ export class PublicRepository {
     });
   }
 
-  async getAvailableSlots(providerId: string, serviceId: string, date: Date) {
-    const allSlots = await prisma.slot.findMany({
+  async getAvailableSlots(providerSlug: string, date: Date) {
+    const slots = await prisma.providerSlot.findMany({
       where: {
-        serviceId,
-        isActive: true,
-      },
-      orderBy: {
-        startTime: "asc",
-      },
-    });
-
-    const unavailabilities = await prisma.providerUnavailability.findMany({
-      where: {
-        providerId,
+        providerSlug,
         date,
       },
-      select: {
-        slotId: true,
-      },
     });
+    return slots.filter((s) => s.bookedSlots < s.totalSlots);
+    // await prisma.$transaction(async (tx) => {
 
-    const unavailableSlotIds = new Set(unavailabilities.map((u) => u.slotId));
+    //   if(timing?.bookedSlots! >= timing?.totalSlots!){
+    //     throw new Error("Slots Full for the selected timing")
+    //   }
 
-    const booked = await prisma.booking.findMany({
-      where: {
-        providerService: {
-          providerId,
-        },
-        date,
-        status: {
-          notIn: ["CANCELLED"],
-        },
-      },
-      select: {
-        slotId: true,
-      },
-    });
+    //   await tx.providerSlot.update({
+    //     where: {
+    //       id: timing?.id
+    //     },
+    //     data: {
+    //       bookedSlots: {increment: 1}
+    //     }
+    //   })
+    // })
 
-    const bookedSlotIds = new Set(booked.map((b) => b.slotId));
+    // Get the specific ProviderService and only the slots that
+    // this provider has configured for this service
+    // const providerService = await prisma.providerService.findFirst({
+    //   where: {
+    //     provider: { slug: providerSlug },
+    //     serviceId: service.id,
+    //     isAvailable: true,
+    //   },
+    //   select: {
+    //     id: true,
+    //     provider: { select: { id: true } },
+    //     slots: {
+    //       where: { isActive: true },
+    //       select: {
+    //         id: true,
+    //         label: true,
+    //         startTime: true,
+    //         endTime: true,
+    //         isActive: true,
+    //         serviceId: true,
+    //       },
+    //       orderBy: { startTime: "asc" },
+    //     },
+    //   },
+    // });
 
-    return allSlots.filter(
-      (slot) => !unavailableSlotIds.has(slot.id) && !bookedSlotIds.has(slot.id),
-    );
+    // if (!providerService) return [];
+
+    // const [unavailabilities, booked] = await Promise.all([
+    //   prisma.providerUnavailability.findMany({
+    //     where: { providerId: providerService.provider.id, date },
+    //     select: { slotId: true },
+    //   }),
+    //   // Only check bookings for this exact ProviderService (not all services)
+    //   prisma.booking.findMany({
+    //     where: {
+    //       providerServiceId: providerService.id,
+    //       date,
+    //       status: { notIn: ["CANCELLED"] },
+    //     },
+    //     select: { slotId: true },
+    //   }),
+    // ]);
+
+    // const blocked = new Set([
+    //   ...unavailabilities.map((u) => u.slotId),
+    //   ...booked.map((b) => b.slotId),
+    // ]);
   }
 
   async getPublicReviews(providerId?: string) {

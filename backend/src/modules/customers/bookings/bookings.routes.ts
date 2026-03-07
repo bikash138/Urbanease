@@ -3,7 +3,10 @@ import { BookingHandler } from "./bookings.handler";
 import { authMiddleware } from "../../../common/middleware/auth.middleware";
 import { roleMiddleware } from "../../../common/middleware/role.middleware";
 import { validateRequest } from "../../../common/middleware/validate.middleware";
-import { createBookingSchema } from "./bookings.validation";
+import {
+  createBookingSchema,
+  rescheduleBookingSchema,
+} from "./bookings.validation";
 
 const bookingsRouter = Router();
 const bookingHandler = new BookingHandler();
@@ -18,5 +21,10 @@ bookingsRouter.post(
 bookingsRouter.get("/", bookingHandler.getAllBookings);
 bookingsRouter.get("/:id", bookingHandler.getBookingByID);
 bookingsRouter.patch("/:id/cancel", bookingHandler.cancelBooking);
+bookingsRouter.patch(
+  "/:id/reschedule",
+  validateRequest(rescheduleBookingSchema),
+  bookingHandler.rescheduleBooking,
+);
 
 export default bookingsRouter;

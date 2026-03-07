@@ -3,13 +3,13 @@ import type { CreateReviewDTO, UpdateReviewDTO } from "./reviews.validation";
 
 export class CustomerReviewRepository {
   async createReview(
-    customerId: string,
+    userId: string,
     providerId: string,
     data: CreateReviewDTO,
   ) {
-    return await prisma.review.create({
+    const data1 = await prisma.review.create({
       data: {
-        customerId,
+        customerId: userId,
         providerId,
         bookingId: data.bookingId,
         rating: data.rating,
@@ -24,6 +24,7 @@ export class CustomerReviewRepository {
         createdAt: true,
       },
     });
+    return data1;
   }
 
   async getAllReviews(customerId: string) {
@@ -48,7 +49,7 @@ export class CustomerReviewRepository {
     data: UpdateReviewDTO,
   ) {
     return await prisma.review.update({
-      where: { id: reviewId, customerId },
+      where: { id: reviewId, customerId, NOT: { status: "HIDDEN" } },
       data: {
         rating: data.rating,
         comment: data.comment,
@@ -58,8 +59,9 @@ export class CustomerReviewRepository {
   }
 
   async deleteReview(customerId: string, reviewId: string) {
-    return await prisma.review.delete({
-      where: { id: reviewId, customerId },
+    return await prisma.review.update({
+      where: { id: reviewId, customerId, NOT: { status: "HIDDEN" } },
+      data: { status: "HIDDEN" },
       select: { id: true },
     });
   }

@@ -1,14 +1,15 @@
 import { ApiResponse } from "@/lib/api-client";
-import { ServiceCategory } from "./admin-category.types";
 
 export interface Service {
   id: string;
   title: string;
   description: string | null;
   basePrice: number;
+  image: string;
   isActive: boolean;
   categoryId: string;
   category: {
+    id: string;
     name: string;
   };
   createdAt: string;
@@ -21,6 +22,7 @@ export interface CreateServicePayload {
   description?: string;
   basePrice: number;
   categoryId: string;
+  image: string;
 }
 
 export interface UpdateServicePayload {
@@ -29,6 +31,7 @@ export interface UpdateServicePayload {
   basePrice?: number;
   categoryId?: string;
   isActive?: boolean;
+  image?: string;
 }
 
 // --Response--

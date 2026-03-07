@@ -4,7 +4,6 @@ import { authMiddleware } from "../../../common/middleware/auth.middleware";
 import { roleMiddleware } from "../../../common/middleware/role.middleware";
 import { validateRequest } from "../../../common/middleware/validate.middleware";
 import { createServiceSchema, updateServiceSchema } from "./service.validation";
-import slotRouter from "./slot/slot.routes";
 
 const serviceRouter = Router({ mergeParams: true });
 const serviceHandler = new ServiceHandler();
@@ -19,8 +18,8 @@ serviceRouter.post(
 
 serviceRouter.get(
   "/",
-  authMiddleware,
-  roleMiddleware("ADMIN"),
+  // authMiddleware,
+  // roleMiddleware("ADMIN"),
   serviceHandler.getAllServices,
 );
 
@@ -45,8 +44,5 @@ serviceRouter.delete(
   roleMiddleware("ADMIN"),
   serviceHandler.deleteServiceByID,
 );
-
-// Slot management — /admin/service/:serviceId/slots
-serviceRouter.use("/:serviceId/slots", slotRouter);
 
 export default serviceRouter;

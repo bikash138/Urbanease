@@ -15,3 +15,8 @@ export const providerKeys = {
   list: (status?: string) => [...providerKeys.all, "list", { status }] as const,
   detail: (id: string) => [...providerKeys.all, "detail", id] as const,
 };
+
+export const adminReviewKeys = {
+  all: ["admin", "reviews"] as const,
+  flagged: () => [...adminReviewKeys.all, "flagged"] as const,
+};

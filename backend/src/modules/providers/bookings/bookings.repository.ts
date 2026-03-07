@@ -4,7 +4,7 @@ import type { AddImageDTO, AddNoteDTO } from "./bookings.validation";
 const bookingListSelect = {
   id: true,
   status: true,
-  scheduledAt: true,
+  date: true,
   startedAt: true,
   completedAt: true,
   totalAmount: true,
@@ -32,9 +32,9 @@ export class ProviderBookingRepository {
       },
       select: {
         ...bookingListSelect,
-        review: { select: { id: true, rating: true } },
+        review: { select: { id: true, rating: true, comment: true, status: true } },
       },
-      orderBy: { scheduledAt: "desc" },
+      orderBy: { date: "desc" },
     });
   }
 
@@ -63,7 +63,7 @@ export class ProviderBookingRepository {
   async updateBookingStatus(
     providerId: string,
     bookingId: string,
-    status: "CONFIRMED" | "IN_PROGRESS" | "COMPLETED",
+    status: "CONFIRMED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED",
     extraData?: { startedAt?: Date; completedAt?: Date },
   ) {
     return await prisma.booking.updateMany({

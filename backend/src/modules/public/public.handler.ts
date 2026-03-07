@@ -11,21 +11,21 @@ export class PublicHandler {
     this.publicService = new PublicService();
   }
 
-  // ─── Categories ────
+  //  Categories 
 
   getAllCategories = asyncHandler(async (req: Request, res: Response) => {
     const categories = await this.publicService.getAllCategories();
     res.status(200).json({ success: true, data: categories });
   });
 
-  getCategoryByID = asyncHandler(async (req: Request, res: Response) => {
-    const category = await this.publicService.getCategoryByID(
-      req.params.id as string,
+  getCategoryBySlug = asyncHandler(async (req: Request, res: Response) => {
+    const category = await this.publicService.getCategoryBySlug(
+      req.params.slug as string,
     );
     res.status(200).json({ success: true, data: category });
   });
 
-  // ─── Services ────
+  //  Services 
 
   getAllServices = asyncHandler(async (req: Request, res: Response) => {
     const categoryId = req.query.categoryId as string | undefined;
@@ -33,45 +33,43 @@ export class PublicHandler {
     res.status(200).json({ success: true, data: services });
   });
 
-  getServiceByID = asyncHandler(async (req: Request, res: Response) => {
-    const service = await this.publicService.getServiceByID(
-      req.params.id as string,
+  getServiceBySlug = asyncHandler(async (req: Request, res: Response) => {
+    const service = await this.publicService.getServiceBySlug(
+      req.params.slug as string,
     );
     res.status(200).json({ success: true, data: service });
   });
 
-  // ─── Providers ────
+  //Providers
 
   getAllProviders = asyncHandler(async (req: Request, res: Response) => {
     const providers = await this.publicService.getAllProviders();
     res.status(200).json({ success: true, data: providers });
   });
 
-  getProviderByID = asyncHandler(async (req: Request, res: Response) => {
-    const provider = await this.publicService.getProviderByID(
-      req.params.id as string,
+  getProviderBySlug = asyncHandler(async (req: Request, res: Response) => {
+    const provider = await this.publicService.getProviderBySlug(
+      req.params.slug as string,
     );
     res.status(200).json({ success: true, data: provider });
   });
 
   getAvailableSlots = asyncHandler(async (req: Request, res: Response) => {
-    const id = req.params.id;
-    const { date, serviceId } = req.query as {
+    const providerSlug = req.params.slug;
+    const { date } = req.query as {
       date: string;
-      serviceId: string;
     };
 
-    if (!date || !serviceId) {
+    if (!date) {
       throw new AppError(
-        "date and serviceId query params are required",
+        "Date as query params is needed",
         400,
         ErrorCode.VALIDATION_ERROR,
       );
     }
 
     const result = await this.publicService.getAvailableSlots(
-      id as string,
-      serviceId,
+      providerSlug as string,
       date,
     );
     res.status(200).json({ success: true, data: result });

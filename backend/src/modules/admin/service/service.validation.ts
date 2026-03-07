@@ -4,7 +4,8 @@ export const createServiceSchema = z.object({
   title: z.string().min(1, "Service title is required"),
   description: z.string().optional(),
   basePrice: z.number().positive("Base price must be positive"),
-  categoryId: z.uuid("Invalid category ID"),
+  categoryId: z.string().uuid("Invalid category ID"),
+  image: z.string().url("Valid image URL is required"),
 });
 
 export const updateServiceSchema = z.object({
@@ -12,6 +13,7 @@ export const updateServiceSchema = z.object({
   description: z.string().optional(),
   basePrice: z.number().positive("Base price must be positive").optional(),
   categoryId: z.string().uuid("Invalid category ID").optional(),
+  image: z.string().url("Valid image URL is required").optional(),
   isActive: z.boolean().optional(),
 });
 

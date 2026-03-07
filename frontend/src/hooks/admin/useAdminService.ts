@@ -14,9 +14,7 @@ import type {
 } from "@/types/admin/admin-service.types";
 import { serviceKeys } from "./query-keys";
 
-// ── Queries (READ) ─────────────────────────────────────────────────
 
-/** Fetches all services. Automatically caches and refetches. */
 export function useServices() {
   return useQuery({
     queryKey: serviceKeys.list(),
@@ -27,7 +25,6 @@ export function useServices() {
   });
 }
 
-/** Fetches a single service by ID. Only runs when `id` is provided. */
 export function useService(id: string | null) {
   return useQuery({
     queryKey: serviceKeys.detail(id!),
@@ -38,8 +35,6 @@ export function useService(id: string | null) {
     enabled: !!id,
   });
 }
-
-// ── Mutations (WRITE) ──────────────────────────────────────────────
 
 export function useCreateService() {
   const queryClient = useQueryClient();

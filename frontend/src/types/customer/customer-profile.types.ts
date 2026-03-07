@@ -1,7 +1,20 @@
 import { ApiResponse } from "@/lib/api-client";
 
-export interface CustomerProfilePayload {
-  userId: string
+export interface CustomerAddress {
+  id: string;
+  label: "HOME" | "WORK" | "OTHER";
+  street: string;
+  city: string;
+  state: string;
+  pincode: string;
+  isDefault: boolean;
+  customerId: string;
 }
 
-export type CustomerProfileResponse = ApiResponse;
+export interface CustomerProfileData {
+  id: string;
+  userId: string;
+  addresses: CustomerAddress[];
+}
+
+export type CustomerProfileResponse = ApiResponse<CustomerProfileData>;

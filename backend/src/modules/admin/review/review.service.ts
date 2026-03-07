@@ -11,6 +11,19 @@ export class AdminReviewService {
     this.reviewRepository = new AdminReviewRepository();
   }
 
+  async getAllFlaggedReviews() {
+    try {
+      return await this.reviewRepository.getAllFlaggedReviews();
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        "Failed to fetch flagged reviews",
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async getFlaggedReviews(providerServiceId: string) {
     try {
       const providerService = await prisma.providerService.findUnique({
@@ -53,6 +66,28 @@ export class AdminReviewService {
       if (error instanceof AppError) throw error;
       throw new AppError(
         "Failed to update review status",
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async deleteReview(reviewId: string) {
+    try {
+      const review = await prisma.review.findUnique({
+        where: { id: reviewId },
+        select: { id: true },
+      });
+
+      if (!review) {
+        throw new AppError("Review not found", 404, ErrorCode.NOT_FOUND);
+      }
+
+      return await this.reviewRepository.deleteReview(reviewId);
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(
+        "Failed to delete review",
         500,
         ErrorCode.INTERNAL_SERVER_ERROR,
       );

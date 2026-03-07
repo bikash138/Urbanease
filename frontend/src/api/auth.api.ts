@@ -24,3 +24,7 @@ export async function signupAPI(
 ): Promise<SignupResponse> {
   return apiClient.post("/auth/signup", payload);
 }
+
+export async function signoutAPI(): Promise<void> {
+  return apiClient.post("/auth/signout");
+}

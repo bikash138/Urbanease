@@ -1,4 +1,5 @@
 import { prisma } from "../../../../db";
+import { createSlug } from "../../../common/utils/slug-generator";
 import type {
   CreateServiceCategorySchemaDTO,
   ServiceCategoryIdParamDTO,
@@ -7,7 +8,12 @@ import type {
 
 export class CategoryRepository {
   async createServiceCategory(data: CreateServiceCategorySchemaDTO) {
-    return await prisma.serviceCategory.create({ data });
+    return await prisma.serviceCategory.create({
+      data: {
+        ...data,
+        slug: createSlug(data.name),
+      },
+    });
   }
 
   async getAllServiceCategory() {
@@ -27,12 +33,14 @@ export class CategoryRepository {
         name: data.name,
         description: data.description,
         isActive: data.isActive,
+        image: data.image,
       },
       select: {
         id: true,
         name: true,
         description: true,
         isActive: true,
+        image: true,
       },
     });
   }

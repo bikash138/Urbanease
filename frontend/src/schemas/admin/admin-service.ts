@@ -5,6 +5,7 @@ export const createServiceSchema = z.object({
   description: z.string().optional(),
   basePrice: z.coerce.number().positive("Base price must be positive"),
   categoryId: z.string().min(1, "Invalid category ID"),
+  image: z.any().optional(),
 });
 
 export const updateServiceSchema = z.object({
@@ -15,6 +16,7 @@ export const updateServiceSchema = z.object({
     .positive("Base price must be positive")
     .optional(),
   categoryId: z.string().min(1, "Invalid category ID").optional(),
+  image: z.any().optional(),
   isActive: z.boolean().optional(),
 });
 

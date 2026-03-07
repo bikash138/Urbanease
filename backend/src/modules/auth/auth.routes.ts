@@ -28,4 +28,6 @@ authRoute.post(
   authHandler.createAdminSignin,
 );
 
+authRoute.post("/signout", authHandler.createSignout);
+
 export default authRoute;

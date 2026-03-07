@@ -4,20 +4,21 @@ import { PublicHandler } from "./public.handler";
 const publicRouter = Router();
 const publicHandler = new PublicHandler();
 
-// ─── Categories ────
+// Categories
 publicRouter.get("/categories", publicHandler.getAllCategories);
-publicRouter.get("/categories/:id", publicHandler.getCategoryByID);
+publicRouter.get("/categories/:slug", publicHandler.getCategoryBySlug);
 
-// ─── Services ────
+// Services
 publicRouter.get("/services", publicHandler.getAllServices);
-publicRouter.get("/services/:id", publicHandler.getServiceByID);
+publicRouter.get("/services/:slug", publicHandler.getServiceBySlug);
 
-// ─── Providers ────
+// Providers
 publicRouter.get("/providers", publicHandler.getAllProviders);
-publicRouter.get("/providers/:id", publicHandler.getProviderByID);
-publicRouter.get("/providers/:id/slots", publicHandler.getAvailableSlots);
+publicRouter.get("/providers/:slug", publicHandler.getProviderBySlug);
 
-// ─── Reviews ────
+publicRouter.get("/providers/:slug/slots", publicHandler.getAvailableSlots);
+
+// Reviews
 publicRouter.get("/reviews", publicHandler.getPublicReviews);
 
 export default publicRouter;

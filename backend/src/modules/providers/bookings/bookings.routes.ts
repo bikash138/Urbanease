@@ -16,6 +16,7 @@ bookingsRouter.get("/:id", bookingHandler.getBookingByID);
 bookingsRouter.patch("/:id/confirm", bookingHandler.confirmBooking);
 bookingsRouter.patch("/:id/start", bookingHandler.startBooking);
 bookingsRouter.patch("/:id/complete", bookingHandler.completeBooking);
+bookingsRouter.patch("/:id/cancel", bookingHandler.cancelBooking);
 
 bookingsRouter.patch(
   "/:id/note",

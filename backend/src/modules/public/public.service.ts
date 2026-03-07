@@ -22,16 +22,16 @@ export class PublicService {
     }
   }
 
-  async getCategoryByID(id: string) {
+  async getCategoryBySlug(slug: string) {
     try {
-      return await this.publicRepository.getCategoryByID(id);
+      return await this.publicRepository.getCategoryBySlug(slug);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
         throw new AppError(
-          `Category with id: ${id} not found`,
+          `Category with slug: ${slug} not found`,
           404,
           ErrorCode.NOT_FOUND,
         );
@@ -56,16 +56,16 @@ export class PublicService {
     }
   }
 
-  async getServiceByID(id: string) {
+  async getServiceBySlug(slug: string) {
     try {
-      return await this.publicRepository.getServiceByID(id);
+      return await this.publicRepository.getServiceBySlug(slug);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
         throw new AppError(
-          `Service with id: ${id} not found`,
+          `Service with slug: ${slug} not found`,
           404,
           ErrorCode.NOT_FOUND,
         );
@@ -90,16 +90,16 @@ export class PublicService {
     }
   }
 
-  async getProviderByID(id: string) {
+  async getProviderBySlug(slug: string) {
     try {
-      return await this.publicRepository.getProviderByID(id);
+      return await this.publicRepository.getProviderBySlug(slug);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
         throw new AppError(
-          `Provider with id: ${id} not found`,
+          `Provider with slug: ${slug} not found`,
           404,
           ErrorCode.NOT_FOUND,
         );
@@ -113,22 +113,23 @@ export class PublicService {
   }
 
   async getAvailableSlots(
-    providerId: string,
-    serviceId: string,
+    providerSlug: string,
+    // serviceSlug: string,
     dateString: string,
   ) {
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const now = new Date();
+      const todayUTC = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+      );
 
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
+      const tomorrow = new Date(todayUTC);
+      tomorrow.setUTCDate(todayUTC.getUTCDate() + 1);
 
-      const maxDate = new Date(today);
-      maxDate.setDate(today.getDate() + 3);
+      const maxDate = new Date(todayUTC);
+      maxDate.setUTCDate(todayUTC.getUTCDate() + 4);
 
-      const requestedDate = new Date(dateString);
-      requestedDate.setHours(0, 0, 0, 0);
+      const requestedDate = new Date(dateString + "T00:00:00.000Z");
 
       if (requestedDate < tomorrow) {
         throw new AppError(
@@ -138,17 +139,15 @@ export class PublicService {
         );
       }
 
-      if (requestedDate > tomorrow) {
+      if (requestedDate > maxDate) {
         throw new AppError(
           "You can only view slots up to 3 days in advance",
           400,
           ErrorCode.FORBIDDEN,
         );
       }
-
       const slots = await this.publicRepository.getAvailableSlots(
-        providerId,
-        serviceId,
+        providerSlug,
         requestedDate,
       );
       return slots;

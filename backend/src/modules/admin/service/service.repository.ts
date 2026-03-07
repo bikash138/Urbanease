@@ -1,4 +1,5 @@
 import { prisma } from "../../../../db";
+import { createSlug } from "../../../common/utils/slug-generator";
 import type {
   CreateServiceSchemaDTO,
   ServiceIdParamDTO,
@@ -7,22 +8,29 @@ import type {
 
 export class ServiceRepository {
   async createService(data: CreateServiceSchemaDTO) {
-    return await prisma.service.create({
-      data,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        basePrice: true,
-        isActive: true,
-        categoryId: true,
-        category: {
-          select: {
-            name: true,
-          },
+    return await prisma.$transaction(async (tx) => {
+      return await tx.service.create({
+        data: {
+          title: data.title,
+          slug: createSlug(data.title),
+          description: data.description,
+          basePrice: data.basePrice,
+          categoryId: data.categoryId,
+          image: data.image,
+          isActive: true,
         },
-        createdAt: true,
-      },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          basePrice: true,
+          isActive: true,
+          image: true,
+          categoryId: true,
+          category: { select: { name: true } },
+          createdAt: true,
+        },
+      });
     });
   }
 
@@ -34,6 +42,7 @@ export class ServiceRepository {
         description: true,
         basePrice: true,
         isActive: true,
+        image: true,
         category: {
           select: { id: true, name: true },
         },
@@ -50,6 +59,7 @@ export class ServiceRepository {
         description: true,
         basePrice: true,
         isActive: true,
+        image: true,
         category: {
           select: { id: true, name: true },
         },
@@ -71,23 +81,33 @@ export class ServiceRepository {
   }
 
   async updateServiceByID(id: string, data: UpdateServiceSchemaDTO) {
-    return await prisma.service.update({
-      where: { id },
-      data: {
-        title: data.title,
-        description: data.description,
-        basePrice: data.basePrice,
-        categoryId: data.categoryId,
-        isActive: data.isActive,
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        basePrice: true,
-        isActive: true,
-        categoryId: true,
-      },
+    return await prisma.$transaction(async (tx) => {
+      return await tx.service.update({
+        where: { id },
+        data: {
+          ...(data.title !== undefined && { title: data.title }),
+          ...(data.description !== undefined && {
+            description: data.description,
+          }),
+          ...(data.basePrice !== undefined && { basePrice: data.basePrice }),
+          ...(data.categoryId !== undefined && {
+            categoryId: data.categoryId,
+          }),
+          ...(data.image !== undefined && { image: data.image }),
+          ...(data.isActive !== undefined && {
+            isActive: data.isActive,
+          }),
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          basePrice: true,
+          isActive: true,
+          image: true,
+          categoryId: true,
+        },
+      });
     });
   }
 

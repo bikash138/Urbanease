@@ -3,6 +3,7 @@ import { ErrorCode } from "../../../common/errors/error.types";
 import { ProfileRepository } from "./profile.repository";
 import type { CreateProfileDTO, UpdateProfileDTO } from "./profile.validation";
 import { Prisma } from "../../../../generated/prisma/client";
+import {createUserSlug} from "../../../common/utils/slug-generator"
 
 export class ProfileService {
   private profileRepository: ProfileRepository;

@@ -1,11 +1,20 @@
 import { prisma } from "../../../../db";
+import { createUserSlug } from "../../../common/utils/slug-generator";
 import type { CreateProfileDTO, UpdateProfileDTO } from "./profile.validation";
 
 export class ProfileRepository {
   async createProfile(userId: string, data: CreateProfileDTO) {
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { name: true },
+    });
+
+    const slug = createUserSlug(user.name, userId);
+
     return await prisma.providerProfile.create({
       data: {
         userId,
+        slug,
         bio: data.bio,
         experience: data.experience,
       },
