@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,13 +54,23 @@ function ProviderCard({ provider }: { provider: PublicProvider }) {
     : null;
 
   return (
-    <Card className="group border-zinc-200 hover:border-zinc-300 hover:shadow-md transition-all duration-200 bg-white overflow-hidden">
-      <div className="h-1 bg-linear-to-r from-zinc-800 via-zinc-700 to-zinc-600" />
-      <CardContent className="p-5 space-y-4">
+    <Link href={`/providers/${provider.slug}`}>
+      <Card className="group border-zinc-200 hover:border-zinc-300 hover:shadow-md transition-all duration-200 bg-white overflow-hidden h-full">
+        <div className="h-1 bg-linear-to-r from-zinc-800 via-zinc-700 to-zinc-600" />
+        <CardContent className="p-5 space-y-4">
         {/* Header */}
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center text-white font-bold text-sm shrink-0">
-            {initials}
+          <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-zinc-100">
+            <Image
+              src={
+                provider.profileImage ??
+                `https://api.dicebear.com/7.x/initials/svg?seed=${provider.user.name}`
+              }
+              alt={provider.user.name}
+              fill
+              className="object-cover"
+              unoptimized={!provider.profileImage}
+            />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
@@ -134,17 +145,20 @@ function ProviderCard({ provider }: { provider: PublicProvider }) {
             </div>
             <span className="text-xs text-zinc-500">Verified</span>
           </div>
-          <Link href="/auth/signup">
-            <Button
-              size="sm"
-              className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg"
-            >
-              Book Now
-            </Button>
-          </Link>
+          <Button
+            size="sm"
+            className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg"
+            asChild
+          >
+            <span className="flex items-center gap-1">
+              View Profile
+              <ArrowRight className="w-3 h-3" />
+            </span>
+          </Button>
         </div>
       </CardContent>
     </Card>
+    </Link>
   );
 }
 
@@ -227,13 +241,6 @@ export default function ProvidersPage() {
       <div className="pt-16 bg-white border-b border-zinc-100">
         <div className="max-w-7xl mx-auto px-6 py-10 space-y-6">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-zinc-500">
-              <Link href="/" className="hover:text-zinc-900 transition-colors">
-                Home
-              </Link>
-              <span>/</span>
-              <span className="text-zinc-900">Providers</span>
-            </div>
             <h1 className="text-3xl font-bold text-zinc-900">
               Our Service Providers
             </h1>

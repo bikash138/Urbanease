@@ -9,10 +9,10 @@ interface CategoryGridProps {
 
 export function CategoryGrid({ categories, isLoading }: CategoryGridProps) {
   return (
-    <div className="flex-1 bg-white rounded-2xl border border-zinc-200 p-2">
-      <div className="grid grid-cols-3 gap-3">
+    <div className="flex-1 bg-white rounded-2xl border border-zinc-200 p-1.5">
+      <div className="grid grid-cols-4 gap-1.5">
         {isLoading
-          ? Array.from({ length: 6 }).map((_, i) => (
+          ? Array.from({ length: 8 }).map((_, i) => (
               <CategoryGridSkeleton key={i} />
             ))
           : categories.map((category) => (

@@ -10,7 +10,6 @@ import {
   Building2,
   Calendar,
   CheckCircle2,
-  ChevronRight,
   Clock,
   Home,
   IndianRupee,
@@ -372,29 +371,6 @@ export default function BookingPage({
       )}
 
       <div className="pt-24 pb-16 max-w-5xl mx-auto px-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-sm text-zinc-500 mb-6">
-          <Link href="/" className="hover:text-zinc-900 transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <Link
-            href="/providers"
-            className="hover:text-zinc-900 transition-colors"
-          >
-            Providers
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <Link
-            href={`/providers/${providerSlug}`}
-            className="hover:text-zinc-900 transition-colors"
-          >
-            {provider.user.name}
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-zinc-900 font-medium">Book</span>
-        </div>
-
         {/* Title */}
         <div className="flex items-center gap-4 mb-8">
           <Link href={`/providers/${providerSlug}`}>

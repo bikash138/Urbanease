@@ -62,6 +62,7 @@ export type PublicServiceDetail = {
       slug: string;
       bio: string | null;
       experience: number | null;
+      profileImage: string | null;
       user: {
         name: string;
         phone: string | null;
@@ -77,6 +78,7 @@ export type PublicProvider = {
   slug: string;
   bio: string | null;
   experience: number | null;
+  profileImage: string | null;
   user: {
     name: string;
     phone: string | null;
@@ -99,6 +101,7 @@ export type PublicProviderDetail = {
   slug: string;
   bio: string | null;
   experience: number | null;
+  profileImage: string | null;
   user: {
     name: string;
     phone: string | null;

@@ -17,7 +17,7 @@ export function CategoryBanner({
     <div className=" rounded-2xl p-6 flex flex-col gap-5">
       {/* Heading */}
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">All Categories</h1>
+        <h1 className="text-4xl font-bold text-zinc-900">All Categories</h1>
         <p className="mt-1.5 text-sm text-zinc-500 leading-relaxed">
           Browse our full range of home and urban service categories. Click any
           category to explore available services.

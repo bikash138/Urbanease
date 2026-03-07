@@ -8,6 +8,7 @@ export const createProfileSchema = z.object({
 export const updateProfileSchema = z.object({
   bio: z.string().optional(),
   experience: z.number().int().min(0).optional(),
+  profileImage: z.string().url().optional().nullable(),
 });
 
 export type CreateProfileDTO = z.infer<typeof createProfileSchema>;

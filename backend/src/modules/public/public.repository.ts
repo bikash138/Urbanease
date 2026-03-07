@@ -97,6 +97,7 @@ export class PublicRepository {
                 slug: true,
                 bio: true,
                 experience: true,
+                profileImage: true,
                 user: {
                   select: { name: true, phone: true },
                 },
@@ -116,6 +117,7 @@ export class PublicRepository {
         slug: true,
         bio: true,
         experience: true,
+        profileImage: true,
         user: {
           select: { name: true, phone: true },
         },
@@ -147,6 +149,7 @@ export class PublicRepository {
         slug: true,
         bio: true,
         experience: true,
+        profileImage: true,
         user: {
           select: { name: true, phone: true },
         },

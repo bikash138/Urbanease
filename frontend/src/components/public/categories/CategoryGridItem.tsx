@@ -10,7 +10,7 @@ export function CategoryGridItem({ category }: CategoryGridItemProps) {
   return (
     <Link
       href={`/categories/${category.slug}`}
-      className="group flex flex-col items-center gap-3 rounded-xl border-zinc-200 bg-white transition-all duration-200 p-4"
+      className="group flex flex-col items-center gap-1.5 rounded-xl border-zinc-200 bg-white transition-all duration-200 p-2"
     >
       <div className="relative w-16 h-16 rounded-xl bg-zinc-100 overflow-hidden shrink-0">
         <Image

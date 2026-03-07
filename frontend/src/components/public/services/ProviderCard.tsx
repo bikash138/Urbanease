@@ -105,10 +105,14 @@ export default function ProviderCard({
       {/* Image */}
       <div className="relative w-full sm:w-28 aspect-video sm:aspect-auto sm:h-24 rounded-xl overflow-hidden shrink-0 bg-zinc-100 order-1 sm:order-2">
         <Image
-          src={`https://api.dicebear.com/7.x/initials/svg?seed=${provider.user.name}`}
+          src={
+            provider.profileImage ??
+            `https://api.dicebear.com/7.x/initials/svg?seed=${provider.user.name}`
+          }
           alt={provider.user.name}
           fill
           className="object-cover"
+          unoptimized={!provider.profileImage}
         />
       </div>
     </div>

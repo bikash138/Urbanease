@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import Image from "next/image";
 import { useAuthStore } from "@/store/auth.store";
 import {
   getProviderProfileAPI,
@@ -9,6 +10,10 @@ import {
 } from "@/api/provider/provider-profile.api";
 import { ProviderProfileData, ProviderProfilePayload } from "@/types/provider/provider-profile.types";
 import { asyncHandler } from "@/lib/utils";
+import {
+  useGenerateProviderPresignedUrl,
+  useUploadFileToS3,
+} from "@/hooks/provider/useProviderUpload";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { ImageUpload } from "@/components/common/image-upload";
 
 const STATUS_CONFIG = {
   PENDING: {
@@ -46,7 +52,32 @@ export default function ProviderProfilePage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const generateUrlMutation = useGenerateProviderPresignedUrl();
+  const uploadS3Mutation = useUploadFileToS3();
+  const isUploadingImage =
+    generateUrlMutation.isPending || uploadS3Mutation.isPending;
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProviderProfilePayload>();
+
+  async function handleProfileImageUpload(file: File | null) {
+    if (!file) return;
+    await asyncHandler(
+      async () => {
+        const presignedRes = await generateUrlMutation.mutateAsync({
+          filename: file.name,
+          contentType: file.type,
+          folder: "profiles",
+        });
+        const { uploadUrl, publicUrl } = presignedRes.data;
+        await uploadS3Mutation.mutateAsync({ uploadUrl, file });
+        const res = await updateProviderProfileAPI({ profileImage: publicUrl });
+        setProfile(res.data);
+      },
+      setSaveError,
+      () => {},
+      false,
+    );
+  }
 
   useEffect(() => {
     asyncHandler(
@@ -113,9 +144,20 @@ export default function ProviderProfilePage() {
         <Card className="border-0 shadow-sm">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl select-none shrink-0">
-                {user?.name?.charAt(0).toUpperCase() ?? "P"}
-              </div>
+              {profile?.profileImage ? (
+                <div className="relative h-16 w-16 rounded-full overflow-hidden shrink-0">
+                  <Image
+                    src={profile.profileImage}
+                    alt={user?.name ?? "Profile"}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-16 w-16 rounded-full bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl select-none shrink-0">
+                  {user?.name?.charAt(0).toUpperCase() ?? "P"}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-xl font-semibold text-slate-900 truncate">
@@ -131,6 +173,30 @@ export default function ProviderProfilePage() {
                 </div>
                 <p className="text-slate-500 text-sm truncate">{user?.email}</p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Profile Photo Card */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg text-slate-900">Profile Photo</CardTitle>
+            <CardDescription className="text-sm mt-0.5">
+              Your photo is shown to customers on service pages and your profile
+            </CardDescription>
+          </CardHeader>
+          <Separator />
+          <CardContent className="pt-5">
+            <div className="max-w-xs">
+              <ImageUpload
+                value={profile?.profileImage ?? null}
+                onChange={(file) => handleProfileImageUpload(file)}
+                disabled={isUploadingImage}
+                className="aspect-square max-h-48"
+              />
+              {isUploadingImage && (
+                <p className="text-xs text-slate-500 mt-2">Uploading...</p>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   ArrowRight,
   Building2,
-  ChevronRight,
   Star,
   BadgeCheck,
   IndianRupee,
@@ -170,29 +169,22 @@ export default function ProviderProfilePage({
       {/* ── HERO / PROFILE HEADER ───────────────────────────────────────────── */}
       <div className="pt-16 bg-white border-b border-zinc-100">
         <div className="max-w-5xl mx-auto px-6 py-10">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-sm text-zinc-500 mb-6">
-            <Link href="/" className="hover:text-zinc-900 transition-colors">
-              Home
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5" />
-            <Link
-              href="/providers"
-              className="hover:text-zinc-900 transition-colors"
-            >
-              Providers
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-zinc-900 font-medium">
-              {provider.user.name}
-            </span>
-          </div>
-
           <div className="flex flex-col sm:flex-row gap-6 items-start">
             {/* Avatar */}
-            <div className="w-20 h-20 rounded-2xl bg-zinc-900 flex items-center justify-center text-white font-bold text-2xl shrink-0 shadow-lg">
-              {initials}
-            </div>
+            {provider.profileImage ? (
+              <div className="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 shadow-lg">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={provider.profileImage}
+                  alt={provider.user.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-20 h-20 rounded-2xl bg-zinc-900 flex items-center justify-center text-white font-bold text-2xl shrink-0 shadow-lg">
+                {initials}
+              </div>
+            )}
 
             {/* Info */}
             <div className="flex-1 min-w-0 space-y-2">

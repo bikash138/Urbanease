@@ -82,6 +82,7 @@ model ProviderProfile {
   slug       String  @unique
   bio        String?
   experience Int?
+  profileImage      String?
 
   status          ProviderStatus @default(PENDING)
   rejectionReason String?
@@ -91,11 +92,10 @@ model ProviderProfile {
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   servicesOffered ProviderService[]
 
-  providerSlots   ProviderSlot[]
+  providerSlots ProviderSlot[]
 
-  createdAt                DateTime                 @default(now())
-  updatedAt                DateTime                 @updatedAt
-  // providerUnavailabilities ProviderUnavailability[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ProviderService {
@@ -108,8 +108,6 @@ model ProviderService {
 
   serviceId String
   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-
-  // slots     Slot[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -155,7 +153,7 @@ model Booking {
   address   Address @relation(fields: [addressId], references: [id], onDelete: Restrict)
 
   slotId String
-  slot   ProviderSlot   @relation(fields: [slotId], references: [id])
+  slot   ProviderSlot @relation(fields: [slotId], references: [id])
 
   images BookingImage[]
   review Review?
@@ -175,39 +173,6 @@ model BookingImage {
 
   createdAt DateTime @default(now())
 }
-
-// model Slot {
-//   id        String    @id @default(uuid())
-//   label     SlotLabel
-//   startTime String
-//   endTime   String
-//   isActive  Boolean   @default(true)
-
-//   serviceId String
-//   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-
-//   providerUnavailability ProviderUnavailability[]
-//   bookings               Booking[]
-//   providerServices       ProviderService[]
-
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model ProviderUnavailability {
-//   id   String   @id @default(uuid())
-//   date DateTime @db.Date
-
-//   providerId String
-//   provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
-
-//   slotId String
-//   slot   Slot   @relation(fields: [slotId], references: [id], onDelete: Cascade)
-
-//   createdAt DateTime @default(now())
-
-//   @@unique([providerId, slotId, date])
-// }
 
 model ServiceCategory {
   id          String  @id @default(uuid())
@@ -263,10 +228,10 @@ model ProviderSlot {
   id String @id @default(uuid())
 
   providerSlug String
-  date DateTime
-  slot  SlotLabel
+  date         DateTime
+  slot         SlotLabel
 
-  totalSlots Int
+  totalSlots  Int
   bookedSlots Int @default(0)
 
   provider ProviderProfile @relation(fields: [providerSlug], references: [slug])
