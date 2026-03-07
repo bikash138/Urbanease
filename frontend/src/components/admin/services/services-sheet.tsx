@@ -81,7 +81,7 @@ export function ServicesSheet({
     defaultValues: {
       title: "",
       description: "",
-      basePrice: 0,
+      basePrice: 100,
       categoryId: "",
       isActive: true,
       image: undefined,

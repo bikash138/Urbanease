@@ -24,11 +24,21 @@ import {
   useStartBooking,
   useCompleteBooking,
   useCancelBooking,
+  useAddBookingImage,
 } from "@/hooks/provider/useProviderBooking";
 import { useFlagReview } from "@/hooks/provider/useProviderReview";
-import type { BookingListItem, BookingStatus } from "@/types/provider/provider-booking.types";
+import {
+  useGenerateProviderPresignedUrl,
+  useUploadFileToS3,
+} from "@/hooks/provider/useProviderUpload";
+import type {
+  BookingListItem,
+  BookingStatus,
+  ImageType,
+} from "@/types/provider/provider-booking.types";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ImageUpload } from "@/components/common/image-upload";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -242,6 +252,49 @@ function EmptyState({ label }: { label: string }) {
   );
 }
 
+// ── Image upload section (before/after) ─────────────────────────────
+
+interface BookingImageUploadSectionProps {
+  label: string;
+  hasImage: boolean;
+  bookingId: string;
+  imageType: ImageType;
+  onUpload: (bookingId: string, file: File, type: ImageType) => void;
+  isUploading: boolean;
+}
+
+function BookingImageUploadSection({
+  label,
+  hasImage,
+  bookingId,
+  imageType,
+  onUpload,
+  isUploading,
+}: BookingImageUploadSectionProps) {
+  if (hasImage) {
+    return (
+      <div className="flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2">
+        <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+        <span className="text-sm font-medium text-emerald-800">{label} uploaded</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+        {label}
+      </p>
+      <ImageUpload
+        value={null}
+        onChange={(file) => file && onUpload(bookingId, file, imageType)}
+        disabled={isUploading}
+        className="aspect-video max-h-32"
+      />
+    </div>
+  );
+}
+
 // ── Booking card ───────────────────────────────────────────────────
 
 interface BookingCardProps {
@@ -251,9 +304,11 @@ interface BookingCardProps {
   onComplete?: (id: string) => void;
   onCancel?: (id: string) => void;
   onFlag?: (reviewId: string) => void;
+  onUploadImage?: (bookingId: string, file: File, type: ImageType) => void;
   isActionPending?: boolean;
   activeActionId?: string | null;
   isFlaggingId?: string | null;
+  isUploadingId?: string | null;
   showReview?: boolean;
 }
 
@@ -264,14 +319,21 @@ function BookingCard({
   onComplete,
   onCancel,
   onFlag,
+  onUploadImage,
   isActionPending,
   activeActionId,
   isFlaggingId,
+  isUploadingId,
   showReview = false,
 }: BookingCardProps) {
   const s = STATUS_CONFIG[booking.status];
   const isPending = isActionPending && activeActionId === booking.id;
   const isFlagging = !!isFlaggingId && booking.review?.id === isFlaggingId;
+  const isUploading = !!isUploadingId && isUploadingId === booking.id;
+
+  const images = booking.images ?? [];
+  const hasBeforeImage = images.some((img) => img.type === "BEFORE");
+  const hasAfterImage = images.some((img) => img.type === "AFTER");
 
   return (
     <Card className="border shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -348,6 +410,36 @@ function BookingCard({
           />
         )}
 
+        {/* Before image (CONFIRMED): required before Start */}
+        {onStart && onUploadImage && (
+          <>
+            <Separator />
+            <BookingImageUploadSection
+              label="Before image (required to start)"
+              hasImage={hasBeforeImage}
+              bookingId={booking.id}
+              imageType="BEFORE"
+              onUpload={onUploadImage}
+              isUploading={isUploading}
+            />
+          </>
+        )}
+
+        {/* After image (IN_PROGRESS): required before Complete */}
+        {onComplete && onUploadImage && (
+          <>
+            <Separator />
+            <BookingImageUploadSection
+              label="After image (required to complete)"
+              hasImage={hasAfterImage}
+              bookingId={booking.id}
+              imageType="AFTER"
+              onUpload={onUploadImage}
+              isUploading={isUploading}
+            />
+          </>
+        )}
+
         {/* Action buttons */}
         {(onConfirm || onStart || onComplete || onCancel) && (
           <>
@@ -392,7 +484,7 @@ function BookingCard({
                     size="sm"
                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                     onClick={() => onStart(booking.id)}
-                    disabled={isPending}
+                    disabled={isPending || !hasBeforeImage}
                   >
                     {isPending ? (
                       <Loader2 className="mr-1.5 size-3.5 animate-spin" />
@@ -422,7 +514,7 @@ function BookingCard({
                   size="sm"
                   className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
                   onClick={() => onComplete(booking.id)}
-                  disabled={isPending}
+                  disabled={isPending || !hasAfterImage}
                 >
                   {isPending ? (
                     <Loader2 className="mr-1.5 size-3.5 animate-spin" />
@@ -451,9 +543,11 @@ interface TabPanelProps {
   onComplete?: (id: string) => void;
   onCancel?: (id: string) => void;
   onFlag?: (reviewId: string) => void;
+  onUploadImage?: (bookingId: string, file: File, type: ImageType) => void;
   isActionPending?: boolean;
   activeActionId?: string | null;
   isFlaggingId?: string | null;
+  isUploadingId?: string | null;
   showReview?: boolean;
 }
 
@@ -466,9 +560,11 @@ function TabPanel({
   onComplete,
   onCancel,
   onFlag,
+  onUploadImage,
   isActionPending,
   activeActionId,
   isFlaggingId,
+  isUploadingId,
   showReview,
 }: TabPanelProps) {
   if (isLoading) {
@@ -496,9 +592,11 @@ function TabPanel({
           onComplete={onComplete}
           onCancel={onCancel}
           onFlag={onFlag}
+          onUploadImage={onUploadImage}
           isActionPending={isActionPending}
           activeActionId={activeActionId}
           isFlaggingId={isFlaggingId}
+          isUploadingId={isUploadingId}
           showReview={showReview}
         />
       ))}
@@ -527,8 +625,12 @@ export default function ProviderBookingsPage() {
   const completeMutation = useCompleteBooking();
   const cancelMutation = useCancelBooking();
   const flagMutation = useFlagReview();
+  const addImageMutation = useAddBookingImage();
+  const generateUrlMutation = useGenerateProviderPresignedUrl();
+  const uploadS3Mutation = useUploadFileToS3();
 
   const [activeActionId, setActiveActionId] = useState<string | null>(null);
+  const [uploadingBookingId, setUploadingBookingId] = useState<string | null>(null);
   const [flaggingReviewId, setFlaggingReviewId] = useState<string | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
     bookingId: string;
@@ -554,6 +656,29 @@ export default function ProviderBookingsPage() {
 
   function openFlagDialog(reviewId: string) {
     setFlagDialog({ reviewId });
+  }
+
+  async function handleUploadImage(
+    bookingId: string,
+    file: File,
+    type: ImageType,
+  ) {
+    setUploadingBookingId(bookingId);
+    try {
+      const presignedRes = await generateUrlMutation.mutateAsync({
+        filename: file.name,
+        contentType: file.type,
+        folder: "bookings",
+      });
+      const { uploadUrl, publicUrl } = presignedRes.data;
+      await uploadS3Mutation.mutateAsync({ uploadUrl, file });
+      await addImageMutation.mutateAsync({
+        id: bookingId,
+        payload: { url: publicUrl, type },
+      });
+    } finally {
+      setUploadingBookingId(null);
+    }
   }
 
   async function handleDialogConfirm() {
@@ -691,8 +816,10 @@ export default function ProviderBookingsPage() {
               emptyLabel="confirmed"
               onStart={(id) => openDialog(id, "start")}
               onCancel={(id) => openDialog(id, "cancel")}
+              onUploadImage={handleUploadImage}
               isActionPending={isActionPending}
               activeActionId={activeActionId}
+              isUploadingId={uploadingBookingId}
             />
           </TabsContent>
 
@@ -702,8 +829,10 @@ export default function ProviderBookingsPage() {
               isLoading={isLoading}
               emptyLabel="in-progress"
               onComplete={(id) => openDialog(id, "complete")}
+              onUploadImage={handleUploadImage}
               isActionPending={isActionPending}
               activeActionId={activeActionId}
+              isUploadingId={uploadingBookingId}
             />
           </TabsContent>
 

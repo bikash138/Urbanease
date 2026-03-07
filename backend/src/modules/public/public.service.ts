@@ -114,8 +114,8 @@ export class PublicService {
 
   async getAvailableSlots(
     providerSlug: string,
-    // serviceSlug: string,
     dateString: string,
+    providerServiceId?: string,
   ) {
     try {
       const now = new Date();
@@ -150,7 +150,27 @@ export class PublicService {
         providerSlug,
         requestedDate,
       );
-      return slots;
+      // Map ProviderSlot to PublicSlot shape (label, startTime, endTime for frontend)
+      const SLOT_TIMES: Record<string, { startTime: string; endTime: string }> =
+        {
+          MORNING: { startTime: "09:00", endTime: "12:00" },
+          AFTERNOON: { startTime: "12:00", endTime: "17:00" },
+          NIGHT: { startTime: "17:00", endTime: "21:00" },
+        };
+      return slots.map((s) => {
+        const times = SLOT_TIMES[s.slot] ?? {
+          startTime: "09:00",
+          endTime: "12:00",
+        };
+        return {
+          id: s.id,
+          label: s.slot,
+          startTime: times.startTime,
+          endTime: times.endTime,
+          isActive: true,
+          serviceId: providerServiceId ?? "",
+        };
+      });
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(

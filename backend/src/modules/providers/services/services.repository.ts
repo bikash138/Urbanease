@@ -1,4 +1,5 @@
 import { prisma } from "../../../../db";
+import type { SlotLabel } from "../../../../generated/prisma/enums";
 import type { AddServiceDTO, UpdateServiceDTO } from "./services.validation";
 
 const providerServiceSelect = {
@@ -10,17 +11,11 @@ const providerServiceSelect = {
   createdAt: true,
   updatedAt: true,
   service: true,
-  slots: {
-    select: {
-      id: true,
-      label: true,
-      startTime: true,
-      endTime: true,
-      isActive: true,
-    },
-    orderBy: { startTime: "asc" as const },
-  },
 } as const;
+
+const SLOT_LABELS: SlotLabel[] = ["MORNING", "AFTERNOON", "NIGHT"];
+const TOTAL_SLOTS_PER_LABEL = 2;
+const DAYS_AHEAD = 10;
 
 export class ServicesRepository {
   async addService(providerId: string, data: AddServiceDTO) {
@@ -30,11 +25,35 @@ export class ServicesRepository {
         serviceId: data.serviceId,
         customPrice: data.customPrice,
         isAvailable: data.isAvailable ?? true,
-        slots: {
-          connect: data.slotIds.map((id) => ({ id })),
-        },
       },
       select: providerServiceSelect,
+    });
+  }
+
+  async createSlotsForProvider(providerSlug: string): Promise<void> {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    const slotData: { providerSlug: string; date: Date; slot: SlotLabel; totalSlots: number }[] = [];
+
+    for (let d = 0; d <= DAYS_AHEAD; d++) {
+      const date = new Date(today);
+      date.setUTCDate(today.getUTCDate() + d);
+      date.setUTCHours(0, 0, 0, 0);
+
+      for (const label of SLOT_LABELS) {
+        slotData.push({
+          providerSlug,
+          date,
+          slot: label,
+          totalSlots: TOTAL_SLOTS_PER_LABEL,
+        });
+      }
+    }
+
+    await prisma.providerSlot.createMany({
+      data: slotData,
+      skipDuplicates: true,
     });
   }
 
@@ -58,9 +77,6 @@ export class ServicesRepository {
       data: {
         ...(data.customPrice !== undefined && { customPrice: data.customPrice }),
         ...(data.isAvailable !== undefined && { isAvailable: data.isAvailable }),
-        ...(data.slotIds !== undefined && {
-          slots: { set: data.slotIds.map((id) => ({ id })) },
-        }),
       },
       select: providerServiceSelect,
     });

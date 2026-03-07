@@ -14,11 +14,6 @@ export class BookingRepository {
         where: {
           id: data.slotId,
         },
-        include: {
-          provider: {
-            select: {},
-          },
-        },
       });
 
       if (!slot) {
@@ -78,6 +73,7 @@ export class BookingRepository {
           },
         },
         address: true,
+        images: { select: { id: true, url: true, type: true } },
         review: {
           select: { id: true, rating: true, comment: true, status: true },
         },

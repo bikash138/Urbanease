@@ -186,7 +186,11 @@ export class BookingService {
         );
       }
 
-      return await this.bookingRepository.cancelBooking(customerId, bookingId, booking.slotId);
+      return await this.bookingRepository.cancelBooking(
+        customerId,
+        bookingId,
+        booking.slotId,
+      );
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(
@@ -284,7 +288,11 @@ export class BookingService {
       const slotDate = new Date(slot.date);
       slotDate.setHours(0, 0, 0, 0);
       if (slotDate.getTime() !== requestedDate.getTime()) {
-        throw new AppError("Date slected not allowed", 401, ErrorCode.FORBIDDEN);
+        throw new AppError(
+          "Date slected not allowed",
+          401,
+          ErrorCode.FORBIDDEN,
+        );
       }
 
       if (data.slotId === booking.slotId) {

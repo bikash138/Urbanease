@@ -130,6 +130,7 @@ export function useAddBookingImage() {
       queryClient.invalidateQueries({
         queryKey: providerBookingKeys.images(variables.id),
       });
+      queryClient.invalidateQueries({ queryKey: providerBookingKeys.all });
     },
   });
 }

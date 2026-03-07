@@ -111,8 +111,7 @@ export function CategoriesSheet({
       }
 
       if (!finalImageUrl) {
-        // Handle error: require image for categories based on our updated schemas
-        return; // Add a toast/alert ideally
+        return; 
       }
 
       const payload = {

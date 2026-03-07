@@ -94,20 +94,26 @@ export function usePublicReviews(providerId?: string) {
 
 export function usePublicProviderSlots(
   providerSlug: string | null,
-  serviceSlug: string | null,
   date: string | null,
+  providerServiceId?: string | null,
 ) {
   return useQuery({
-    queryKey: publicSlotKeys.list(providerSlug!, serviceSlug!, date!),
+    queryKey: publicSlotKeys.list(
+      providerSlug!,
+      date!,
+      providerServiceId ?? undefined,
+    ),
     queryFn: async () => {
       const response = await getPublicProviderSlotsAPI(
         providerSlug!,
-        serviceSlug!,
         date!,
+        providerServiceId ?? undefined,
       );
       return response.data;
     },
-    enabled: !!providerSlug && !!serviceSlug && !!date,
+    enabled: !!providerSlug && !!date,
     retry: false,
+    staleTime: 0,
+    gcTime: 0,
   });
 }

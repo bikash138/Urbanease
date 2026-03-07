@@ -52,10 +52,12 @@ export async function getPublicReviewsAPI(
 
 export async function getPublicProviderSlotsAPI(
   providerSlug: string,
-  serviceSlug: string,
   date: string,
+  providerServiceId?: string,
 ): Promise<PublicProviderSlotsResponse> {
+  const params = new URLSearchParams({ date });
+  if (providerServiceId) params.set("providerServiceId", providerServiceId);
   return apiClient.get(
-    `/public/providers/${providerSlug}/slots?serviceSlug=${serviceSlug}&date=${date}`,
+    `/public/providers/${providerSlug}/slots?${params.toString()}`,
   );
 }

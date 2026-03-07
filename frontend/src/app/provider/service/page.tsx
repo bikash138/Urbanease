@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   XCircle,
   Loader2,
-  Clock,
 } from "lucide-react";
 
 import {
@@ -20,7 +19,6 @@ import {
   useRemoveProviderService,
 } from "@/hooks/provider/useProviderService";
 import { useServices } from "@/hooks/admin/useAdminService";
-import { useServiceSlots } from "@/hooks/admin/useAdminServiceSlot";
 
 import {
   addServiceSchema,
@@ -28,18 +26,12 @@ import {
   type AddServiceFormValues,
   type UpdateServiceFormValues,
 } from "@/schemas/provider/provider-service.schema";
-import type {
-  ProviderServiceWithService,
-  SlotSummary,
-} from "@/types/provider/provider-service.types";
-import type { SlotLabel } from "@/types/admin/admin-service.types";
+import type { ProviderServiceWithService } from "@/types/provider/provider-service.types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -85,148 +77,6 @@ import {
 import { SheetFormActions } from "@/components/admin/sheet-form-actions";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Slot selector component
-// ─────────────────────────────────────────────────────────────────────────────
-
-const LABEL_ORDER: SlotLabel[] = ["MORNING", "AFTERNOON", "NIGHT"];
-const LABEL_DISPLAY: Record<SlotLabel, string> = {
-  MORNING: "Morning",
-  AFTERNOON: "Afternoon",
-  NIGHT: "Night",
-};
-
-function SlotBox({
-  slot,
-  selected,
-  onToggle,
-}: {
-  slot: SlotSummary;
-  selected: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className={cn(
-        "flex items-center gap-1.5 px-3 py-2 rounded-md border text-xs font-medium transition-colors w-full text-left",
-        selected
-          ? "bg-primary text-primary-foreground border-primary"
-          : "bg-muted/40 text-foreground border-border hover:bg-muted",
-      )}
-    >
-      <Clock className="h-3 w-3 shrink-0" />
-      {slot.startTime} – {slot.endTime}
-    </button>
-  );
-}
-
-function SlotSelectorTable({
-  slots,
-  selectedIds,
-  onChange,
-  error,
-}: {
-  slots: SlotSummary[];
-  selectedIds: string[];
-  onChange: (ids: string[]) => void;
-  error?: string;
-}) {
-  const activeSlots = slots.filter((s) => s.isActive);
-
-  const grouped = LABEL_ORDER.reduce<Record<SlotLabel, SlotSummary[]>>(
-    (acc, label) => {
-      acc[label] = activeSlots.filter((s) => s.label === label);
-      return acc;
-    },
-    { MORNING: [], AFTERNOON: [], NIGHT: [] },
-  );
-
-  const hasAnySlot = activeSlots.length > 0;
-
-  const toggle = (id: string) => {
-    onChange(
-      selectedIds.includes(id)
-        ? selectedIds.filter((s) => s !== id)
-        : [...selectedIds, id],
-    );
-  };
-
-  // Count selected per tab for the badge
-  const selectedCount = (label: SlotLabel) =>
-    grouped[label].filter((s) => selectedIds.includes(s.id)).length;
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <FormLabel>
-          Available Slots <span className="text-destructive">*</span>
-        </FormLabel>
-        {selectedIds.length > 0 && (
-          <span className="text-xs text-muted-foreground">
-            {selectedIds.length} selected
-          </span>
-        )}
-      </div>
-
-      {!hasAnySlot ? (
-        <p className="text-sm text-muted-foreground border rounded-md p-4 text-center">
-          This service has no active slots defined yet.
-        </p>
-      ) : (
-        <Tabs defaultValue="MORNING" className="w-full">
-          <TabsList className="w-full">
-            {LABEL_ORDER.map((label) => (
-              <TabsTrigger
-                key={label}
-                value={label}
-                className="flex-1 gap-1.5"
-              >
-                {LABEL_DISPLAY[label]}
-                {selectedCount(label) > 0 && (
-                  <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold">
-                    {selectedCount(label)}
-                  </span>
-                )}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {LABEL_ORDER.map((label) => (
-            <TabsContent key={label} value={label} className="mt-3">
-              {grouped[label].length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6 border rounded-md">
-                  No {LABEL_DISPLAY[label].toLowerCase()} slots available.
-                </p>
-              ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  {grouped[label].map((slot) => (
-                    <SlotBox
-                      key={slot.id}
-                      slot={slot}
-                      selected={selectedIds.includes(slot.id)}
-                      onToggle={() => toggle(slot.id)}
-                    />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          ))}
-        </Tabs>
-      )}
-
-      {error && <p className="text-sm text-destructive">{error}</p>}
-
-      {!error && selectedIds.length === 0 && hasAnySlot && (
-        <p className="text-sm text-destructive">
-          Select at least one slot.
-        </p>
-      )}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Main page
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -245,15 +95,6 @@ export default function ProviderServicesPage() {
   const [deleteTarget, setDeleteTarget] =
     useState<ProviderServiceWithService | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
-
-  // The serviceId whose slots we need to fetch (add=form value, edit=selected service)
-  const [addFormServiceId, setAddFormServiceId] = useState<string>("");
-  const editServiceId = selectedService?.serviceId ?? null;
-
-  const { data: addSlots = [], isLoading: isAddSlotsLoading } =
-    useServiceSlots(addFormServiceId || null);
-  const { data: editSlots = [], isLoading: isEditSlotsLoading } =
-    useServiceSlots(editServiceId);
 
   const isEditing = sheetMode === "edit";
 
@@ -290,7 +131,6 @@ export default function ProviderServicesPage() {
       serviceId: "",
       customPrice: undefined,
       isAvailable: true,
-      slotIds: [],
     },
   });
 
@@ -300,7 +140,6 @@ export default function ProviderServicesPage() {
     defaultValues: {
       customPrice: undefined,
       isAvailable: true,
-      slotIds: [],
     },
   });
 
@@ -308,12 +147,10 @@ export default function ProviderServicesPage() {
   function handleOpenAdd() {
     setSheetMode("add");
     setSelectedCategoryId("");
-    setAddFormServiceId("");
     addForm.reset({
       serviceId: "",
       customPrice: undefined,
       isAvailable: true,
-      slotIds: [],
     });
     setIsSheetOpen(true);
   }
@@ -324,7 +161,6 @@ export default function ProviderServicesPage() {
     editForm.reset({
       customPrice: item.customPrice ?? undefined,
       isAvailable: item.isAvailable,
-      slotIds: item.slots.map((s) => s.id),
     });
     setIsSheetOpen(true);
   }
@@ -334,7 +170,6 @@ export default function ProviderServicesPage() {
       serviceId: data.serviceId,
       customPrice: data.customPrice || undefined,
       isAvailable: data.isAvailable,
-      slotIds: data.slotIds,
     });
     setIsSheetOpen(false);
   }
@@ -346,7 +181,6 @@ export default function ProviderServicesPage() {
       payload: {
         customPrice: data.customPrice || undefined,
         isAvailable: data.isAvailable,
-        slotIds: data.slotIds,
       },
     });
     setIsSheetOpen(false);
@@ -422,22 +256,9 @@ export default function ProviderServicesPage() {
                   )}
                 </TableCell>
                 <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {item.slots.length === 0 ? (
-                      <span className="text-muted-foreground text-xs">—</span>
-                    ) : (
-                      item.slots.map((slot) => (
-                        <span
-                          key={slot.id}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                        >
-                          <Clock className="h-2.5 w-2.5" />
-                          {LABEL_DISPLAY[slot.label]} {slot.startTime}–
-                          {slot.endTime}
-                        </span>
-                      ))
-                    )}
-                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    Morning, Afternoon, Night (auto-generated)
+                  </span>
                 </TableCell>
                 <TableCell>
                   {item.isAvailable ? (
@@ -499,8 +320,8 @@ export default function ProviderServicesPage() {
         title={isEditing ? "Edit Service" : "Add Service"}
         description={
           isEditing
-            ? "Update pricing, availability or time slots for this service."
-            : "Select a platform service and choose the slots you want to offer."
+            ? "Update pricing or availability for this service."
+            : "Select a platform service to offer. Slots (Morning, Afternoon, Night) are auto-generated for the next 10 days."
         }
       >
         {isEditing ? (
@@ -524,28 +345,6 @@ export default function ProviderServicesPage() {
                   </p>
                 </div>
               )}
-
-              {/* Slot selector */}
-              <FormField
-                control={editForm.control}
-                name="slotIds"
-                render={({ field, fieldState }) => (
-                  <FormItem>
-                    {isEditSlotsLoading ? (
-                      <p className="text-sm text-muted-foreground">
-                        Loading slots...
-                      </p>
-                    ) : (
-                      <SlotSelectorTable
-                        slots={editSlots}
-                        selectedIds={field.value ?? []}
-                        onChange={field.onChange}
-                        error={fieldState.error?.message}
-                      />
-                    )}
-                  </FormItem>
-                )}
-              />
 
               <FormField
                 control={editForm.control}
@@ -618,9 +417,7 @@ export default function ProviderServicesPage() {
                   value={selectedCategoryId}
                   onValueChange={(val) => {
                     setSelectedCategoryId(val);
-                    setAddFormServiceId("");
                     addForm.setValue("serviceId", "");
-                    addForm.setValue("slotIds", []);
                   }}
                 >
                   <SelectTrigger>
@@ -650,11 +447,7 @@ export default function ProviderServicesPage() {
                   <FormItem>
                     <FormLabel>Service</FormLabel>
                     <Select
-                      onValueChange={(val) => {
-                        field.onChange(val);
-                        setAddFormServiceId(val);
-                        addForm.setValue("slotIds", []);
-                      }}
+                      onValueChange={field.onChange}
                       value={field.value}
                       disabled={!selectedCategoryId}
                     >
@@ -689,30 +482,6 @@ export default function ProviderServicesPage() {
                   </FormItem>
                 )}
               />
-
-              {/* Step 3 — Slot selector (appears once service is chosen) */}
-              {addFormServiceId && (
-                <FormField
-                  control={addForm.control}
-                  name="slotIds"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      {isAddSlotsLoading ? (
-                        <p className="text-sm text-muted-foreground">
-                          Loading slots...
-                        </p>
-                      ) : (
-                        <SlotSelectorTable
-                          slots={addSlots}
-                          selectedIds={field.value}
-                          onChange={field.onChange}
-                          error={fieldState.error?.message}
-                        />
-                      )}
-                    </FormItem>
-                  )}
-                />
-              )}
 
               <FormField
                 control={addForm.control}

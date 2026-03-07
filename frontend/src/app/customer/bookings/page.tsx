@@ -17,6 +17,7 @@ import {
   Trash2,
   Send,
   X,
+  ImageIcon,
 } from "lucide-react";
 
 import {
@@ -30,7 +31,10 @@ import {
   useDeleteReview,
 } from "@/hooks/customer/useCustomerReview";
 import { usePublicProviderSlots } from "@/hooks/public/usePublic";
-import type { CustomerBookingListItem, BookingStatus } from "@/types/customer/customer-booking.types";
+import type {
+  CustomerBookingListItem,
+  BookingStatus,
+} from "@/types/customer/customer-booking.types";
 import type { SlotLabel, PublicSlot } from "@/types/public/public.types";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -86,10 +90,14 @@ function getMaxDate() {
   return d.toISOString().split("T")[0];
 }
 
-const STATUS_CONFIG: Record<BookingStatus, { label: string; className: string }> = {
+const STATUS_CONFIG: Record<
+  BookingStatus,
+  { label: string; className: string }
+> = {
   PENDING: {
     label: "Pending",
-    className: "bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100",
+    className:
+      "bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100",
   },
   CONFIRMED: {
     label: "Confirmed",
@@ -97,11 +105,13 @@ const STATUS_CONFIG: Record<BookingStatus, { label: string; className: string }>
   },
   IN_PROGRESS: {
     label: "In Progress",
-    className: "bg-violet-100 text-violet-800 border-violet-200 hover:bg-violet-100",
+    className:
+      "bg-violet-100 text-violet-800 border-violet-200 hover:bg-violet-100",
   },
   COMPLETED: {
     label: "Completed",
-    className: "bg-green-100 text-green-800 border-green-200 hover:bg-green-100",
+    className:
+      "bg-green-100 text-green-800 border-green-200 hover:bg-green-100",
   },
   CANCELLED: {
     label: "Cancelled",
@@ -235,7 +245,9 @@ function StarPicker({
             <Star
               className={cn(
                 sizeClass,
-                filled ? "fill-amber-400 text-amber-400" : "text-muted-foreground/40",
+                filled
+                  ? "fill-amber-400 text-amber-400"
+                  : "text-muted-foreground/40",
               )}
             />
           </button>
@@ -243,6 +255,74 @@ function StarPicker({
       })}
     </div>
   );
+}
+
+// ── Before/After Images Section (history only) ──────────────────────────────
+
+interface BeforeAfterImagesSectionProps {
+  images?: { id: string; url: string; type: "BEFORE" | "AFTER" }[];
+}
+
+function BeforeAfterImagesSection({ images = [] }: BeforeAfterImagesSectionProps) {
+  const beforeImage = images.find((img) => img.type === "BEFORE");
+  const afterImage = images.find((img) => img.type === "AFTER");
+
+  if (beforeImage || afterImage) {
+    return (
+      <>
+        <Separator />
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Service Photos
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {beforeImage && (
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Before
+                </p>
+                <a
+                  href={beforeImage.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-lg overflow-hidden border border-border aspect-video bg-muted/50 hover:opacity-90 transition-opacity"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={beforeImage.url}
+                    alt="Before service"
+                    className="object-cover w-full h-full"
+                  />
+                </a>
+              </div>
+            )}
+            {afterImage && (
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground">
+                  After
+                </p>
+                <a
+                  href={afterImage.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-lg overflow-hidden border border-border aspect-video bg-muted/50 hover:opacity-90 transition-opacity"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={afterImage.url}
+                    alt="After service"
+                    className="object-cover w-full h-full"
+                  />
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return null;
 }
 
 // ── Review Section (inside booking card for completed bookings) ─────────────
@@ -270,8 +350,14 @@ function ReviewSection({ booking }: ReviewSectionProps) {
   useEffect(() => {
     if (existingReview) {
       setMode("view");
-      setRating(existingReview.status !== "DELETED" ? existingReview.rating : 0);
-      setComment(existingReview.status !== "DELETED" ? (existingReview.comment ?? "") : "");
+      setRating(
+        existingReview.status !== "DELETED" ? existingReview.rating : 0,
+      );
+      setComment(
+        existingReview.status !== "DELETED"
+          ? (existingReview.comment ?? "")
+          : "",
+      );
     } else {
       setMode("write");
       setRating(0);
@@ -333,34 +419,40 @@ function ReviewSection({ booking }: ReviewSectionProps) {
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Your Review
           </p>
-          {existingReview && mode === "view" && !isFlagged && !isHidden && !isDeleted && (
-            <div className="flex items-center gap-1">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-7 px-2 text-muted-foreground hover:text-foreground"
-                onClick={handleStartEdit}
-                disabled={isPending}
-              >
-                <Pencil className="size-3.5" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-7 px-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={() => setDeleteConfirmOpen(true)}
-                disabled={isPending}
-              >
-                <Trash2 className="size-3.5" />
-              </Button>
-            </div>
-          )}
+          {existingReview &&
+            mode === "view" &&
+            !isFlagged &&
+            !isHidden &&
+            !isDeleted && (
+              <div className="flex items-center gap-1">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 px-2 text-muted-foreground hover:text-foreground"
+                  onClick={handleStartEdit}
+                  disabled={isPending}
+                >
+                  <Pencil className="size-3.5" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 px-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => setDeleteConfirmOpen(true)}
+                  disabled={isPending}
+                >
+                  <Trash2 className="size-3.5" />
+                </Button>
+              </div>
+            )}
         </div>
 
         {/* Deleted notice — review was removed, no re-review allowed */}
         {isDeleted && (
           <div className="rounded-lg bg-muted/50 border border-border/60 px-3 py-2.5 text-xs text-muted-foreground">
-            <p className="font-semibold text-foreground mb-0.5">Review removed</p>
+            <p className="font-semibold text-foreground mb-0.5">
+              Review removed
+            </p>
             <p>
               You deleted your review for this booking. Reviews can only be
               submitted once per booking.
@@ -390,27 +482,35 @@ function ReviewSection({ booking }: ReviewSectionProps) {
         )}
 
         {/* View mode */}
-        {mode === "view" && existingReview && !isFlagged && !isHidden && !isDeleted && (
-          <div className="rounded-lg bg-amber-50/60 border border-amber-100 px-3 py-2.5 space-y-1.5">
-            <StarPicker value={existingReview.rating} readonly size="sm" />
-            {existingReview.comment && (
-              <p className="text-sm text-foreground leading-relaxed">
-                {existingReview.comment}
-              </p>
-            )}
-          </div>
-        )}
+        {mode === "view" &&
+          existingReview &&
+          !isFlagged &&
+          !isHidden &&
+          !isDeleted && (
+            <div className="rounded-lg bg-amber-50/60 border border-amber-100 px-3 py-2.5 space-y-1.5">
+              <StarPicker value={existingReview.rating} readonly size="sm" />
+              {existingReview.comment && (
+                <p className="text-sm text-foreground leading-relaxed">
+                  {existingReview.comment}
+                </p>
+              )}
+            </div>
+          )}
 
         {/* Write / Edit form — never shown for deleted or admin-hidden reviews */}
         {(mode === "write" || mode === "edit") && !isDeleted && !isHidden && (
           <div className="rounded-lg bg-muted/30 border border-border/60 px-3 py-3 space-y-3">
             <div className="space-y-1.5">
               <p className="text-xs text-muted-foreground font-medium">
-                {mode === "write" ? "How was your experience?" : "Update your rating"}
+                {mode === "write"
+                  ? "How was your experience?"
+                  : "Update your rating"}
               </p>
               <StarPicker value={rating} onChange={setRating} />
               {rating === 0 && (
-                <p className="text-xs text-muted-foreground">Tap a star to rate</p>
+                <p className="text-xs text-muted-foreground">
+                  Tap a star to rate
+                </p>
               )}
             </div>
 
@@ -437,8 +537,8 @@ function ReviewSection({ booking }: ReviewSectionProps) {
                 {isPending
                   ? "Submitting…"
                   : mode === "write"
-                  ? "Submit Review"
-                  : "Save Changes"}
+                    ? "Submit Review"
+                    : "Save Changes"}
               </Button>
               {mode === "edit" && (
                 <Button
@@ -522,10 +622,11 @@ function RescheduleSheet({
   const [slotId, setSlotId] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
 
+  const providerServiceId = booking?.providerService.id ?? null;
   const { data: slots = [], isLoading: slotsLoading } = usePublicProviderSlots(
-    open ? providerSlug : null,
-    open ? serviceSlug : null,
+    open && date ? providerSlug : null,
     open && date ? date : null,
+    open && date ? providerServiceId : null,
   );
 
   useEffect(() => {
@@ -628,7 +729,11 @@ function RescheduleSheet({
               Cancel
             </Button>
           </SheetClose>
-          <Button size="sm" onClick={handleSubmit} disabled={isPending || slotsLoading}>
+          <Button
+            size="sm"
+            onClick={handleSubmit}
+            disabled={isPending || slotsLoading}
+          >
             {isPending ? (
               <>
                 <Loader2 className="mr-1.5 size-3.5 animate-spin" />
@@ -724,7 +829,9 @@ function BookingCard({
               {formatDate(booking.date)}
             </p>
           </div>
-          <Badge className={`text-xs font-medium border shrink-0 ${s.className}`}>
+          <Badge
+            className={`text-xs font-medium border shrink-0 ${s.className}`}
+          >
             {s.label}
           </Badge>
         </div>
@@ -774,8 +881,12 @@ function BookingCard({
           <div className="flex items-start gap-2 text-sm bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
             <MessageSquare className="size-3.5 shrink-0 mt-0.5 text-blue-500" />
             <div>
-              <p className="text-xs font-semibold text-blue-600 mb-0.5">Provider note</p>
-              <span className="text-blue-700 leading-relaxed">{booking.providerNote}</span>
+              <p className="text-xs font-semibold text-blue-600 mb-0.5">
+                Provider note
+              </p>
+              <span className="text-blue-700 leading-relaxed">
+                {booking.providerNote}
+              </span>
             </div>
           </div>
         )}
@@ -816,7 +927,12 @@ function BookingCard({
           </>
         )}
 
-        {showReview && <ReviewSection booking={booking} />}
+        {showReview && (
+          <>
+            <BeforeAfterImagesSection images={booking.images ?? []} />
+            <ReviewSection booking={booking} />
+          </>
+        )}
       </CardContent>
     </Card>
   );
@@ -893,13 +1009,18 @@ export default function CustomerBookingsPage() {
   const rescheduleMutation = useRescheduleBooking();
 
   const [activeActionId, setActiveActionId] = useState<string | null>(null);
-  const [cancelDialog, setCancelDialog] = useState<CustomerBookingListItem | null>(null);
-  const [rescheduleBooking, setRescheduleBooking] = useState<CustomerBookingListItem | null>(null);
+  const [cancelDialog, setCancelDialog] =
+    useState<CustomerBookingListItem | null>(null);
+  const [rescheduleBooking, setRescheduleBooking] =
+    useState<CustomerBookingListItem | null>(null);
   const [rescheduleSheetOpen, setRescheduleSheetOpen] = useState(false);
   const [rescheduleError, setRescheduleError] = useState<string | null>(null);
 
   const live = allBookings.filter(
-    (b) => b.status === "PENDING" || b.status === "CONFIRMED" || b.status === "IN_PROGRESS",
+    (b) =>
+      b.status === "PENDING" ||
+      b.status === "CONFIRMED" ||
+      b.status === "IN_PROGRESS",
   );
   const history = allBookings.filter((b) => b.status === "COMPLETED");
   const cancelled = allBookings.filter((b) => b.status === "CANCELLED");
@@ -930,7 +1051,10 @@ export default function CustomerBookingsPage() {
     setRescheduleError(null);
     setActiveActionId(bookingId);
     try {
-      await rescheduleMutation.mutateAsync({ id: bookingId, payload: { slotId, date } });
+      await rescheduleMutation.mutateAsync({
+        id: bookingId,
+        payload: { slotId, date },
+      });
       setRescheduleSheetOpen(false);
       setRescheduleBooking(null);
     } catch (err: unknown) {
@@ -941,7 +1065,8 @@ export default function CustomerBookingsPage() {
     }
   }
 
-  const isActionPending = cancelMutation.isPending || rescheduleMutation.isPending;
+  const isActionPending =
+    cancelMutation.isPending || rescheduleMutation.isPending;
 
   return (
     <div className="p-6 md:p-8 space-y-6">
@@ -958,7 +1083,9 @@ export default function CustomerBookingsPage() {
             <div className="flex items-center gap-2 text-sm bg-muted/60 px-4 py-2 rounded-lg">
               <CalendarDays className="size-4 text-muted-foreground" />
               <span>
-                <span className="font-semibold text-foreground">{live.length}</span>{" "}
+                <span className="font-semibold text-foreground">
+                  {live.length}
+                </span>{" "}
                 <span className="text-muted-foreground">active</span>
               </span>
             </div>
@@ -1038,7 +1165,9 @@ export default function CustomerBookingsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2 sm:gap-2">
-            <AlertDialogCancel className="flex-1">Keep Booking</AlertDialogCancel>
+            <AlertDialogCancel className="flex-1">
+              Keep Booking
+            </AlertDialogCancel>
             <AlertDialogAction
               className="flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleCancelConfirm}

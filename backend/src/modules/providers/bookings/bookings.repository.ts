@@ -11,6 +11,7 @@ const bookingListSelect = {
   customerNote: true,
   providerNote: true,
   address: true,
+  images: { select: { type: true } },
   customer: {
     select: {
       user: { select: { name: true, phone: true } },
@@ -124,5 +125,16 @@ export class ProviderBookingRepository {
       },
       select: { id: true, status: true },
     });
+  }
+
+  async hasImageOfType(providerId: string, bookingId: string, type: "BEFORE" | "AFTER") {
+    const count = await prisma.bookingImage.count({
+      where: {
+        bookingId,
+        type,
+        booking: { providerService: { providerId } },
+      },
+    });
+    return count > 0;
   }
 }

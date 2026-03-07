@@ -56,8 +56,9 @@ export class PublicHandler {
 
   getAvailableSlots = asyncHandler(async (req: Request, res: Response) => {
     const providerSlug = req.params.slug;
-    const { date } = req.query as {
+    const { date, providerServiceId } = req.query as {
       date: string;
+      providerServiceId?: string;
     };
 
     if (!date) {
@@ -71,6 +72,7 @@ export class PublicHandler {
     const result = await this.publicService.getAvailableSlots(
       providerSlug as string,
       date,
+      providerServiceId,
     );
     res.status(200).json({ success: true, data: result });
   });

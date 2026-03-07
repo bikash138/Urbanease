@@ -43,10 +43,12 @@ export interface CustomerBookingListItem {
   providerNote: string | null;
   address: CustomerBookingAddress;
   providerService: {
+    id: string;
     service: { id: string; title: string; slug: string };
     provider: CustomerBookingProviderInfo;
   };
   review: CustomerBookingReviewSummary | null;
+  images?: CustomerBookingImage[];
 }
 
 export interface CreateBookingPayload {

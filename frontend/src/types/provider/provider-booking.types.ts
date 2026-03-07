@@ -85,6 +85,11 @@ export interface BookingServiceDetail {
 // Core booking shapes
 // ──────────────────────────────────────────────
 
+/** Minimal image type for list view */
+export interface BookingImageSummary {
+  type: ImageType;
+}
+
 /** Returned by GET /provider/bookings (list) */
 export interface BookingListItem {
   id: string;
@@ -99,6 +104,7 @@ export interface BookingListItem {
   customer: BookingCustomerInfo;
   providerService: BookingServiceSummary;
   review: BookingReviewSummary | null;
+  images?: BookingImageSummary[];
 }
 
 /** Returned by GET /provider/bookings/:id (full detail) */

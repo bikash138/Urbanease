@@ -117,6 +117,19 @@ export class ProviderBookingService {
         );
       }
 
+      const hasBeforeImage = await this.bookingRepository.hasImageOfType(
+        providerId,
+        bookingId,
+        "BEFORE",
+      );
+      if (!hasBeforeImage) {
+        throw new AppError(
+          "Upload a before image before starting the service",
+          400,
+          ErrorCode.VALIDATION_ERROR,
+        );
+      }
+
       await this.bookingRepository.updateBookingStatus(
         providerId,
         bookingId,
@@ -144,6 +157,19 @@ export class ProviderBookingService {
           `Cannot complete a booking that is ${booking.status}`,
           400,
           ErrorCode.FORBIDDEN,
+        );
+      }
+
+      const hasAfterImage = await this.bookingRepository.hasImageOfType(
+        providerId,
+        bookingId,
+        "AFTER",
+      );
+      if (!hasAfterImage) {
+        throw new AppError(
+          "Upload an after image before marking the service as complete",
+          400,
+          ErrorCode.VALIDATION_ERROR,
         );
       }
 

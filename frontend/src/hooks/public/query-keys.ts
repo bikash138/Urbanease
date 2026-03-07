@@ -25,6 +25,10 @@ export const publicReviewKeys = {
 
 export const publicSlotKeys = {
   all: ["public", "slots"] as const,
-  list: (providerSlug: string, serviceSlug: string, date: string) =>
-    [...publicSlotKeys.all, "list", { providerSlug, serviceSlug, date }] as const,
+  list: (providerSlug: string, date: string, providerServiceId?: string) =>
+    [
+      ...publicSlotKeys.all,
+      "list",
+      { providerSlug, date, providerServiceId },
+    ] as const,
 };

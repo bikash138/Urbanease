@@ -12,7 +12,7 @@ export class ServicesService {
     this.servicesRepository = new ServicesRepository();
   }
 
-  private async getProviderId(userId: string) {
+  private async getProvider(userId: string) {
     const profile = await prisma.providerProfile.findUnique({
       where: { userId },
     });
@@ -22,13 +22,18 @@ export class ServicesService {
         404,
         ErrorCode.NOT_FOUND,
       );
-    return profile.id;
+    return profile;
   }
 
   async addService(userId: string, data: AddServiceDTO) {
     try {
-      const providerId = await this.getProviderId(userId);
-      return await this.servicesRepository.addService(providerId, data);
+      const provider = await this.getProvider(userId);
+      const service = await this.servicesRepository.addService(
+        provider.id,
+        data,
+      );
+      await this.servicesRepository.createSlotsForProvider(provider.slug);
+      return service;
     } catch (error) {
       if (error instanceof AppError) throw error;
       if (
@@ -51,8 +56,8 @@ export class ServicesService {
 
   async getAllServices(userId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
-      return await this.servicesRepository.getAllServices(providerId);
+      const provider = await this.getProvider(userId);
+      return await this.servicesRepository.getAllServices(provider.id);
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(
@@ -69,9 +74,9 @@ export class ServicesService {
     data: UpdateServiceDTO,
   ) {
     try {
-      const providerId = await this.getProviderId(userId);
+      const provider = await this.getProvider(userId);
       return await this.servicesRepository.updateService(
-        providerId,
+        provider.id,
         providerServiceId,
         data,
       );
@@ -96,9 +101,9 @@ export class ServicesService {
 
   async removeService(userId: string, providerServiceId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
+      const provider = await this.getProvider(userId);
       return await this.servicesRepository.removeService(
-        providerId,
+        provider.id,
         providerServiceId,
       );
     } catch (error) {

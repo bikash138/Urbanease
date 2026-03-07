@@ -7,9 +7,6 @@ export const addServiceSchema = z.object({
     .positive("Custom price must be positive")
     .optional(),
   isAvailable: z.boolean().optional(),
-  slotIds: z
-    .array(z.string())
-    .min(1, "Select at least one slot"),
 });
 
 export const updateServiceSchema = z.object({
@@ -18,10 +15,6 @@ export const updateServiceSchema = z.object({
     .positive("Custom price must be positive")
     .optional(),
   isAvailable: z.boolean().optional(),
-  slotIds: z
-    .array(z.string())
-    .min(1, "Select at least one slot")
-    .optional(),
 });
 
 export type AddServiceFormValues = z.infer<typeof addServiceSchema>;

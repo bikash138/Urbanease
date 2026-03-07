@@ -246,11 +246,7 @@ export default function BookingPage({
     data: slots,
     isLoading: isLoadingSlots,
     error: slotsError,
-  } = usePublicProviderSlots(
-    providerSlug,
-    selectedService?.slug ?? null,
-    selectedDate,
-  );
+  } = usePublicProviderSlots(providerSlug, selectedDate, selectedService?.id);
 
   const slotsByLabel = useMemo(() => {
     const map = new Map<SlotLabel, typeof slots>([
@@ -411,9 +407,7 @@ export default function BookingPage({
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900">
-              Book a Service
-            </h1>
+            <h1 className="text-2xl font-bold text-zinc-900">Book a Service</h1>
             <p className="text-sm text-zinc-500 mt-0.5">
               with {provider.user.name}
             </p>
@@ -438,8 +432,7 @@ export default function BookingPage({
               ) : (
                 <div className="grid sm:grid-cols-2 gap-2.5">
                   {provider.servicesOffered.map((entry) => {
-                    const price =
-                      entry.customPrice ?? entry.service.basePrice;
+                    const price = entry.customPrice ?? entry.service.basePrice;
                     const isSelected = selectedService?.id === entry.id;
                     return (
                       <button
@@ -533,30 +526,35 @@ export default function BookingPage({
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-5">
+                  <div className="grid grid-cols-3 gap-4">
                     {(["MORNING", "AFTERNOON", "NIGHT"] as SlotLabel[]).map(
                       (label) => {
                         const labelSlots = slotsByLabel.get(label) ?? [];
                         if (labelSlots.length === 0) return null;
-                        const { label: labelText, icon: Icon, color } =
-                          SLOT_META[label];
+                        const {
+                          label: labelText,
+                          icon: Icon,
+                          color,
+                        } = SLOT_META[label];
                         return (
-                          <div key={label} className="space-y-2.5">
+                          <div
+                            key={label}
+                            className="flex-1 min-w-0 flex flex-col gap-2.5"
+                          >
                             <div
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${color}`}
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border w-fit ${color}`}
                             >
                               <Icon className="w-3.5 h-3.5" />
                               {labelText}
                             </div>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                            <div className="flex flex-wrap gap-2">
                               {labelSlots.map((slot) => {
-                                const isSelected =
-                                  selectedSlot?.id === slot.id;
+                                const isSelected = selectedSlot?.id === slot.id;
                                 return (
                                   <button
                                     key={slot.id}
                                     onClick={() => setSelectedSlot(slot)}
-                                    className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl border transition-all duration-150 ${
+                                    className={`flex flex-col items-center justify-center py-3 px-4 rounded-xl border transition-all duration-150 min-w-[80px] ${
                                       isSelected
                                         ? "border-zinc-900 bg-zinc-900"
                                         : "border-zinc-200 bg-zinc-50 hover:border-zinc-400 hover:bg-white"
@@ -688,8 +686,8 @@ export default function BookingPage({
                   <span className="text-zinc-500 shrink-0">Date</span>
                   <span className="font-medium text-zinc-900">
                     {selectedDate ? (
-                      dateOptions.find((d) => d.value === selectedDate)
-                        ?.label ?? selectedDate
+                      (dateOptions.find((d) => d.value === selectedDate)
+                        ?.label ?? selectedDate)
                     ) : (
                       <span className="text-zinc-300">—</span>
                     )}

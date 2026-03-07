@@ -1,5 +1,4 @@
 import { ApiResponse } from "@/lib/api-client";
-import type { SlotLabel } from "@/types/admin/admin-service.types";
 
 // ──────────────────────────────────────────────
 // Nested types (from Prisma includes)
@@ -16,21 +15,12 @@ export interface ServiceData {
   updatedAt: string;
 }
 
-export interface SlotSummary {
-  id: string;
-  label: SlotLabel;
-  startTime: string;
-  endTime: string;
-  isActive: boolean;
-}
-
 export interface ProviderServiceData {
   id: string;
   customPrice: number | null;
   isAvailable: boolean;
   providerId: string;
   serviceId: string;
-  slots: SlotSummary[];
   createdAt: string;
   updatedAt: string;
 }
@@ -49,14 +39,12 @@ export interface AddServicePayload {
   serviceId: string;
   customPrice?: number;
   isAvailable?: boolean;
-  slotIds: string[];
 }
 
 /** PATCH /provider/services/:id */
 export interface UpdateServicePayload {
   customPrice?: number;
   isAvailable?: boolean;
-  slotIds?: string[];
 }
 
 // ──────────────────────────────────────────────
