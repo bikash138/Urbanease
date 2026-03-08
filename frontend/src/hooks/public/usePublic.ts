@@ -10,6 +10,7 @@ import {
   getPublicProviderBySlugAPI,
   getPublicReviewsAPI,
   getPublicProviderSlotsAPI,
+  searchPublicProvidersAPI,
 } from "@/api/public/public.api";
 import {
   publicCategoryKeys,
@@ -17,6 +18,7 @@ import {
   publicProviderKeys,
   publicReviewKeys,
   publicSlotKeys,
+  publicSearchKeys,
 } from "./query-keys";
 
 export function usePublicCategories() {
@@ -40,13 +42,23 @@ export function usePublicCategoryDetail(slug: string | null) {
   });
 }
 
-export function usePublicServices(categoryId?: string) {
+export function usePublicServices(
+  categorySlugOrId?: string,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
-    queryKey: publicServiceKeys.list(categoryId),
+    queryKey: publicServiceKeys.list(categorySlugOrId),
     queryFn: async () => {
-      const response = await getPublicServicesAPI(categoryId);
-      return response.data;
+      const response = await getPublicServicesAPI(categorySlugOrId);
+      // apiClient returns response.data from axios = full body { success, data: [...] }
+      const data = response && typeof response === "object" && "data" in response
+        ? (response as { data: unknown }).data
+        : response;
+      return Array.isArray(data) ? data : [];
     },
+    enabled: options?.enabled ?? true,
+    staleTime: 0,
+    gcTime: 0,
   });
 }
 
@@ -115,5 +127,25 @@ export function usePublicProviderSlots(
     retry: false,
     staleTime: 0,
     gcTime: 0,
+  });
+}
+
+export function usePublicSearch(params: {
+  category?: string;
+  service?: string;
+  city?: string;
+}) {
+  const hasFilters =
+    !!params.category?.trim() ||
+    !!params.service?.trim() ||
+    !!params.city?.trim();
+
+  return useQuery({
+    queryKey: publicSearchKeys.list(params),
+    queryFn: async () => {
+      const response = await searchPublicProvidersAPI(params);
+      return response.data;
+    },
+    enabled: hasFilters,
   });
 }

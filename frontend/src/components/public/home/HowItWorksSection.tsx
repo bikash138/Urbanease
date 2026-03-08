@@ -27,12 +27,12 @@ const steps = [
 
 export default function HowItWorksSection() {
   return (
-    <section className="py-20 bg-zinc-50">
+    <section className="py-20 bg-white border-y border-zinc-200">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center space-y-3 mb-16">
           <Badge
             variant="outline"
-            className="text-zinc-500 border-zinc-300 bg-white"
+            className="text-zinc-600 border-zinc-200 bg-white"
           >
             How It Works
           </Badge>
@@ -49,8 +49,8 @@ export default function HowItWorksSection() {
           {steps.map(({ step, title, description, icon: Icon }) => (
             <div key={step} className="relative text-center space-y-5">
               <div className="relative inline-flex">
-                <div className="w-16 h-16 rounded-2xl bg-zinc-900 flex items-center justify-center mx-auto">
-                  <Icon className="w-7 h-7 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-zinc-100 flex items-center justify-center mx-auto border border-zinc-200">
+                  <Icon className="w-7 h-7 text-zinc-700" />
                 </div>
                 <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-amber-400 text-zinc-900 text-xs font-bold flex items-center justify-center">
                   {step}

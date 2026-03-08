@@ -32,3 +32,9 @@ export const publicSlotKeys = {
       { providerSlug, date, providerServiceId },
     ] as const,
 };
+
+export const publicSearchKeys = {
+  all: ["public", "search"] as const,
+  list: (params: { category?: string; service?: string; city?: string }) =>
+    [...publicSearchKeys.all, "list", params] as const,
+};

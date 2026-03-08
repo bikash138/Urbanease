@@ -11,6 +11,14 @@ const providerServiceSelect = {
   createdAt: true,
   updatedAt: true,
   service: true,
+  serviceArea: {
+    select: {
+      areaId: true,
+      area: {
+        select: { id: true, name: true, slug: true, city: true, state: true },
+      },
+    },
+  },
 } as const;
 
 const SLOT_LABELS: SlotLabel[] = ["MORNING", "AFTERNOON", "NIGHT"];
@@ -25,6 +33,12 @@ export class ServicesRepository {
         serviceId: data.serviceId,
         customPrice: data.customPrice,
         isAvailable: data.isAvailable ?? true,
+        ...(data.areaIds &&
+          data.areaIds.length > 0 && {
+            serviceArea: {
+              create: data.areaIds.map((areaId) => ({ areaId })),
+            },
+          }),
       },
       select: providerServiceSelect,
     });

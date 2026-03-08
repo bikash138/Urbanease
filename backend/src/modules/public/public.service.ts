@@ -44,9 +44,9 @@ export class PublicService {
     }
   }
 
-  async getAllServices(categoryId?: string) {
+  async getAllServices(categorySlugOrId?: string) {
     try {
-      return await this.publicRepository.getAllServices(categoryId);
+      return await this.publicRepository.getAllServices(categorySlugOrId);
     } catch (error) {
       throw new AppError(
         "Failed to fetch services",
@@ -175,6 +175,22 @@ export class PublicService {
       if (error instanceof AppError) throw error;
       throw new AppError(
         "Failed to fetch slots",
+        500,
+        ErrorCode.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async searchProviders(filters: {
+    category?: string;
+    service?: string;
+    city?: string;
+  }) {
+    try {
+      return await this.publicRepository.searchProviders(filters);
+    } catch (error) {
+      throw new AppError(
+        "Failed to search providers",
         500,
         ErrorCode.INTERNAL_SERVER_ERROR,
       );

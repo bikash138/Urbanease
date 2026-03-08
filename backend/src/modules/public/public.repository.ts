@@ -46,7 +46,24 @@ export class PublicRepository {
     });
   }
 
-  async getAllServices(categoryId?: string) {
+  async getAllServices(categorySlugOrId?: string) {
+    let categoryId: string | undefined;
+    if (categorySlugOrId) {
+      // Check if it's a UUID (categoryId) or slug
+      const isUuid =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          categorySlugOrId,
+        );
+      if (isUuid) {
+        categoryId = categorySlugOrId;
+      } else {
+        const category = await prisma.serviceCategory.findUnique({
+          where: { slug: categorySlugOrId, isActive: true },
+          select: { id: true },
+        });
+        categoryId = category?.id;
+      }
+    }
     return await prisma.service.findMany({
       where: {
         isActive: true,
@@ -194,6 +211,99 @@ export class PublicRepository {
       },
     });
     return slots.filter((s) => s.bookedSlots < s.totalSlots);
+  }
+
+  async searchProviders(filters: {
+    category?: string;
+    service?: string;
+    city?: string;
+  }) {
+    const { category, service, city } = filters;
+
+    const isUuid = (s: string) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+
+    const andConditions: object[] = [
+      { isAvailable: true },
+      { provider: { status: "APPROVED" } },
+    ];
+
+    if (category?.trim()) {
+      const term = category.trim();
+      andConditions.push({
+        service: {
+          isActive: true,
+          category: isUuid(term)
+            ? { id: term }
+            : {
+                isActive: true,
+                OR: [
+                  { slug: { contains: term, mode: "insensitive" } },
+                  { name: { contains: term, mode: "insensitive" } },
+                ],
+              },
+        },
+      });
+    }
+
+    if (service?.trim()) {
+      const term = service.trim();
+      andConditions.push({
+        service: isUuid(term)
+          ? { id: term, isActive: true }
+          : {
+              isActive: true,
+              OR: [
+                { slug: { contains: term, mode: "insensitive" } },
+                { title: { contains: term, mode: "insensitive" } },
+              ],
+            },
+      });
+    }
+
+    if (city?.trim()) {
+      const term = city.trim();
+      andConditions.push({
+        serviceArea: {
+          some: {
+            area: {
+              isActive: true,
+              OR: [
+                { city: { contains: term, mode: "insensitive" } },
+                { name: { contains: term, mode: "insensitive" } },
+              ],
+            },
+          },
+        },
+      });
+    }
+
+    return await prisma.providerService.findMany({
+      where: { AND: andConditions },
+      select: {
+        id: true,
+        customPrice: true,
+        service: {
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            basePrice: true,
+            image: true,
+          },
+        },
+        provider: {
+          select: {
+            slug: true,
+            profileImage: true,
+            user: {
+              select: { name: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
   }
 
   async getPublicReviews(providerId?: string) {

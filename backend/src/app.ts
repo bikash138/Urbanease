@@ -5,6 +5,8 @@ import { errorMiddleware } from "./common/middleware/error.middleware";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { env } from "./config";
+import geoip from "geoip-lite";
+import type { Request, Response } from "express";
 
 const app = express();
 

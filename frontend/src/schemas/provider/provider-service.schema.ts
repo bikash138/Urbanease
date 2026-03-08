@@ -7,6 +7,7 @@ export const addServiceSchema = z.object({
     .positive("Custom price must be positive")
     .optional(),
   isAvailable: z.boolean().optional(),
+  areaIds: z.array(z.uuid("Invalid area ID")).optional(),
 });
 
 export const updateServiceSchema = z.object({

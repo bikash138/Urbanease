@@ -18,7 +18,9 @@ import {
   useUpdateProviderService,
   useRemoveProviderService,
 } from "@/hooks/provider/useProviderService";
-import { useServices } from "@/hooks/admin/useAdminService";
+import { useProviderAreas } from "@/hooks/provider/useProviderAreas";
+import { usePublicServices, usePublicCategories } from "@/hooks/public/usePublic";
+import type { PublicService } from "@/types/public/public.types";
 
 import {
   addServiceSchema,
@@ -82,7 +84,20 @@ import { SheetFormActions } from "@/components/admin/sheet-form-actions";
 
 export default function ProviderServicesPage() {
   const { data: myServices = [], isLoading } = useProviderServices();
-  const { data: platformServices = [] } = useServices();
+  const { data: categories = [] } = usePublicCategories();
+  const { data: areasRaw = [] } = useProviderAreas();
+  const [selectedCategorySlug, setSelectedCategorySlug] = useState<string>("");
+
+  // Services: only fetch when user selects a category (sends slug to match backend)
+  const {
+    data: platformServices = [],
+    isLoading: isLoadingServices,
+    refetch: refetchServices,
+  } = usePublicServices(selectedCategorySlug || undefined, {
+    enabled: !!selectedCategorySlug,
+  });
+
+  const areas = Array.from(new Map(areasRaw.map((a) => [a.id, a])).values());
 
   const addMutation = useAddProviderService();
   const updateMutation = useUpdateProviderService();
@@ -94,7 +109,6 @@ export default function ProviderServicesPage() {
     useState<ProviderServiceWithService | null>(null);
   const [deleteTarget, setDeleteTarget] =
     useState<ProviderServiceWithService | null>(null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
 
   const isEditing = sheetMode === "edit";
 
@@ -106,22 +120,21 @@ export default function ProviderServicesPage() {
   // ── IDs already listed by this provider ────────────────────────────
   const listedServiceIds = new Set(myServices.map((s) => s.serviceId));
 
-  // ── Active services not yet listed ─────────────────────────────────
-  const listableServices = platformServices.filter(
-    (s) => s.isActive && !listedServiceIds.has(s.id),
+  // ── Active categories from Public API (fetched on mount, all are active)
+  const activeCategories = (categories as { id: string; slug: string; name: string }[]).map(
+    (c) => ({ id: c.id, slug: c.slug, name: c.name }),
   );
 
-  // ── Unique categories derived from listable services ────────────────
-  const activeCategories = Array.from(
-    new Map(
-      listableServices.map((s) => [s.category.id, s.category.name]),
-    ).entries(),
-  ).map(([id, name]) => ({ id, name }));
-
-  // ── Services filtered by selected category ──────────────────────────
-  const filteredServices = selectedCategoryId
-    ? listableServices.filter((s) => s.category.id === selectedCategoryId)
+  // ── Services for selected category (API returns filtered by category) ──
+  // Exclude services already listed by this provider
+  const platformServicesArray = Array.isArray(platformServices)
+    ? (platformServices as PublicService[])
     : [];
+  const listableServices = platformServicesArray.filter(
+    (s: PublicService) => !listedServiceIds.has(s.id),
+  );
+  const allFilteredOut =
+    platformServicesArray.length > 0 && listableServices.length === 0;
 
   // ── Forms ──────────────────────────────────────────────────────────
   const addForm = useForm<AddServiceFormValues>({
@@ -131,6 +144,7 @@ export default function ProviderServicesPage() {
       serviceId: "",
       customPrice: undefined,
       isAvailable: true,
+      areaIds: [],
     },
   });
 
@@ -146,11 +160,12 @@ export default function ProviderServicesPage() {
   // ── Handlers ───────────────────────────────────────────────────────
   function handleOpenAdd() {
     setSheetMode("add");
-    setSelectedCategoryId("");
+    setSelectedCategorySlug("");
     addForm.reset({
       serviceId: "",
       customPrice: undefined,
       isAvailable: true,
+      areaIds: [],
     });
     setIsSheetOpen(true);
   }
@@ -170,6 +185,7 @@ export default function ProviderServicesPage() {
       serviceId: data.serviceId,
       customPrice: data.customPrice || undefined,
       isAvailable: data.isAvailable,
+      areaIds: data.areaIds?.length ? data.areaIds : undefined,
     });
     setIsSheetOpen(false);
   }
@@ -414,9 +430,10 @@ export default function ProviderServicesPage() {
               <FormItem>
                 <FormLabel>Category</FormLabel>
                 <Select
-                  value={selectedCategoryId}
+                  key={`categories-${activeCategories.length}`}
+                  value={selectedCategorySlug}
                   onValueChange={(val) => {
-                    setSelectedCategoryId(val);
+                    setSelectedCategorySlug(val);
                     addForm.setValue("serviceId", "");
                   }}
                 >
@@ -430,7 +447,7 @@ export default function ProviderServicesPage() {
                       </div>
                     ) : (
                       activeCategories.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
+                        <SelectItem key={c.id} value={c.slug}>
                           {c.name}
                         </SelectItem>
                       ))
@@ -448,29 +465,41 @@ export default function ProviderServicesPage() {
                     <FormLabel>Service</FormLabel>
                     <Select
                       onValueChange={field.onChange}
+                      onOpenChange={(open) => open && refetchServices()}
                       value={field.value}
-                      disabled={!selectedCategoryId}
+                      disabled={!selectedCategorySlug}
                     >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue
                             placeholder={
-                              !selectedCategoryId
+                              !selectedCategorySlug
                                 ? "Select a category first"
                                 : "Select a service"
                             }
                           />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        {filteredServices.length === 0 ? (
-                          <div className="py-4 text-center text-sm text-muted-foreground px-3">
-                            {selectedCategoryId
-                              ? "No available services in this category."
-                              : "Select a category first."}
-                          </div>
+                      <SelectContent position="popper">
+                        {!selectedCategorySlug ? (
+                          <SelectItem value="__none__" disabled>
+                            Select a category first
+                          </SelectItem>
+                        ) : isLoadingServices ? (
+                          <SelectItem value="__loading__" disabled>
+                            <span className="flex items-center gap-2">
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Loading services...
+                            </span>
+                          </SelectItem>
+                        ) : listableServices.length === 0 ? (
+                          <SelectItem value="__empty__" disabled>
+                            {platformServicesArray.length > 0
+                              ? "You've already added all services in this category"
+                              : "No available services in this category"}
+                          </SelectItem>
                         ) : (
-                          filteredServices.map((s) => (
+                          listableServices.map((s) => (
                             <SelectItem key={s.id} value={s.id}>
                               {s.title} — ₹{s.basePrice.toFixed(2)}
                             </SelectItem>
@@ -478,6 +507,74 @@ export default function ProviderServicesPage() {
                         )}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Step 3 — Service Areas (optional) */}
+              <FormField
+                control={addForm.control}
+                name="areaIds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Service Areas</FormLabel>
+                    <FormDescription>
+                      Select the areas where you offer this service (optional).
+                    </FormDescription>
+                    <FormControl>
+                      <div className="max-h-40 overflow-y-auto rounded-md border p-2 space-y-1.5">
+                        {areas.length === 0 ? (
+                          <p className="text-sm text-muted-foreground py-2 px-2">
+                            No areas available. Ask admin to add service areas.
+                          </p>
+                        ) : (
+                          areas.map((area) => {
+                            const selected = (field.value ?? []).includes(area.id);
+                            return (
+                              <div
+                                key={area.id}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    const next = selected
+                                      ? (field.value ?? []).filter((id) => id !== area.id)
+                                      : [...(field.value ?? []), area.id];
+                                    field.onChange(next);
+                                  }
+                                }}
+                                onClick={() => {
+                                  const next = selected
+                                    ? (field.value ?? []).filter((id) => id !== area.id)
+                                    : [...(field.value ?? []), area.id];
+                                  field.onChange(next);
+                                }}
+                                className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm cursor-pointer transition-colors ${
+                                  selected
+                                    ? "bg-primary/10 text-primary"
+                                    : "hover:bg-muted"
+                                }`}
+                              >
+                                <div
+                                  className={`size-4 rounded border flex items-center justify-center shrink-0 ${
+                                    selected ? "bg-primary border-primary" : "border-input"
+                                  }`}
+                                >
+                                  {selected && (
+                                    <span className="text-primary-foreground text-xs">✓</span>
+                                  )}
+                                </div>
+                                <span>
+                                  {area.name}, {area.city}
+                                </span>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

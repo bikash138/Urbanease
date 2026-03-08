@@ -1,7 +1,6 @@
 "use client";
 
-import { Tags, Briefcase, Users, Star, LayoutDashboard } from "lucide-react";
-
+import { Tags, Briefcase, Users, Star, LayoutDashboard, MapPin } from "lucide-react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 
@@ -21,6 +20,11 @@ const navItems = [
     title: "Services",
     href: "/admin/services",
     icon: Briefcase,
+  },
+  {
+    title: "Service Areas",
+    href: "/admin/areas",
+    icon: MapPin,
   },
   {
     title: "Providers",

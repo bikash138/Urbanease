@@ -1,16 +1,16 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Building2, ShoppingCart, UserCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Building2, Search, ShoppingCart, UserCircle } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 
 const navItems = [
   { label: "Categories", href: "/categories" },
   { label: "Providers", href: "/providers" },
-  { label: "Testimonials", href: "#" },
-  { label: "About", href: "#" },
+  { label: "About", href: "/about" },
 ];
 
 const profileHref: Record<string, string> = {
@@ -21,17 +21,29 @@ const profileHref: Record<string, string> = {
 
 export default function PublicNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isAuthenticated, role } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) {
+      router.push("/search");
+      return;
+    }
+    router.push(`/search?service=${encodeURIComponent(q)}`);
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-zinc-100">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent border-b border-zinc-200/50">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center">
             <Building2 className="w-4 h-4 text-white" />
           </div>
@@ -40,32 +52,36 @@ export default function PublicNavbar() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
-          {navItems.map(({ label, href }) =>
-            href ? (
-              <Link
-                key={label}
-                href={href}
-                className={`text-sm transition-colors ${
-                  pathname === href
-                    ? "text-zinc-900 font-medium"
-                    : "text-zinc-800 hover:text-zinc-900"
-                }`}
-              >
-                {label}
-              </Link>
-            ) : (
-              <span
-                key={label}
-                className="text-sm text-zinc-500 cursor-default"
-              >
-                {label}
-              </span>
-            ),
-          )}
+        <nav className="hidden md:flex items-center gap-8 shrink-0">
+          {navItems.map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
+              className={`text-sm transition-colors ${
+                pathname === href
+                  ? "text-zinc-900 font-medium"
+                  : "text-zinc-800 hover:text-zinc-900"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+            <Input
+              type="search"
+              placeholder="Search for a service..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9 w-full rounded-lg border-zinc-200 bg-zinc-50/50 focus:bg-white"
+            />
+          </div>
+        </form>
+
+        <div className="flex items-center gap-2 shrink-0 ml-auto">
           {!mounted ? (
             <div className="w-[140px]" />
           ) : isAuthenticated && role ? (

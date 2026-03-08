@@ -20,3 +20,9 @@ export const adminReviewKeys = {
   all: ["admin", "reviews"] as const,
   flagged: () => [...adminReviewKeys.all, "flagged"] as const,
 };
+
+export const areaKeys = {
+  all: ["admin", "areas"] as const,
+  list: () => [...areaKeys.all, "list"] as const,
+  detail: (id: string) => [...areaKeys.all, "detail", id] as const,
+};

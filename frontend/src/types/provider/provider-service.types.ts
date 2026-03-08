@@ -39,6 +39,7 @@ export interface AddServicePayload {
   serviceId: string;
   customPrice?: number;
   isAvailable?: boolean;
+  areaIds?: string[];
 }
 
 /** PATCH /provider/services/:id */

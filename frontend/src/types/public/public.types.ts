@@ -186,3 +186,22 @@ export type PublicProviderDetailResponse =
 export type PublicReviewsResponse = ApiResponse<PublicReview[]>;
 
 export type PublicProviderSlotsResponse = ApiResponse<PublicSlot[]>;
+
+export type PublicSearchResult = {
+  id: string;
+  customPrice: number | null;
+  service: {
+    id: string;
+    slug: string;
+    title: string;
+    basePrice: number;
+    image: string;
+  };
+  provider: {
+    slug: string;
+    profileImage: string | null;
+    user: { name: string };
+  };
+};
+
+export type PublicSearchResponse = ApiResponse<PublicSearchResult[]>;

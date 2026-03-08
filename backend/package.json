@@ -12,6 +12,7 @@
     "@types/bun": "latest",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/geoip-lite": "^1.4.4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/pg": "^8.18.0",
     "prisma": "^7.4.2"

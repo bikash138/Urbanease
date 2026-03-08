@@ -28,8 +28,11 @@ export class PublicHandler {
   //  Services 
 
   getAllServices = asyncHandler(async (req: Request, res: Response) => {
+    const categorySlug = req.query.categorySlug as string | undefined;
     const categoryId = req.query.categoryId as string | undefined;
-    const services = await this.publicService.getAllServices(categoryId);
+    const services = await this.publicService.getAllServices(
+      categorySlug ?? categoryId,
+    );
     res.status(200).json({ success: true, data: services });
   });
 
@@ -75,6 +78,30 @@ export class PublicHandler {
       providerServiceId,
     );
     res.status(200).json({ success: true, data: result });
+  });
+
+  searchProviders = asyncHandler(async (req: Request, res: Response) => {
+    const { category, service, city } = req.query as {
+      category?: string;
+      service?: string;
+      city?: string;
+    };
+
+    const hasFilters = category || service || city;
+    if (!hasFilters) {
+      throw new AppError(
+        "At least one search filter is required (category, service, or city)",
+        400,
+        ErrorCode.VALIDATION_ERROR,
+      );
+    }
+
+    const providers = await this.publicService.searchProviders({
+      category: category?.trim(),
+      service: service?.trim(),
+      city: city?.trim(),
+    });
+    res.status(200).json({ success: true, data: providers });
   });
 
   getPublicReviews = asyncHandler(async (req: Request, res: Response) => {

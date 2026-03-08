@@ -18,3 +18,8 @@ export const providerReviewKeys = {
   all: ["provider", "reviews"] as const,
   list: () => [...providerReviewKeys.all, "list"] as const,
 };
+
+export const providerAreaKeys = {
+  all: ["provider", "areas"] as const,
+  list: () => [...providerAreaKeys.all, "list"] as const,
+};

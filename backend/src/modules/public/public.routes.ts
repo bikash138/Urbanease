@@ -12,6 +12,9 @@ publicRouter.get("/categories/:slug", publicHandler.getCategoryBySlug);
 publicRouter.get("/services", publicHandler.getAllServices);
 publicRouter.get("/services/:slug", publicHandler.getServiceBySlug);
 
+// Search (must be before /providers/:slug to avoid slug conflict)
+publicRouter.get("/search", publicHandler.searchProviders);
+
 // Providers
 publicRouter.get("/providers", publicHandler.getAllProviders);
 publicRouter.get("/providers/:slug", publicHandler.getProviderBySlug);
