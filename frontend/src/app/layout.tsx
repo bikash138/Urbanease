@@ -13,10 +13,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://urbanease.bikashshaw.in";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Urbanease — Your Urban Services Platform",
   description:
     "Book trusted home services at your fingertips. From cleaning to carpentry — verified professionals, transparent pricing, flexible slots.",
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: siteUrl,
+    siteName: "Urbanease",
+    title: "Urbanease — Your Urban Services Platform",
+    description:
+      "Book trusted home services at your fingertips. From cleaning to carpentry — verified professionals, transparent pricing, flexible slots.",
+    images: [
+      {
+        url: "/opengraph.png",
+        width: 1200,
+        height: 630,
+        alt: "Urbanease — Urban Services Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Urbanease — Your Urban Services Platform",
+    description:
+      "Book trusted home services at your fingertips. Verified professionals, transparent pricing.",
+    images: ["/opengraph.png"],
+  },
 };
 
 export default function RootLayout({
