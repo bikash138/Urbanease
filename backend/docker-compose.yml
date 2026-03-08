@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: urbanease-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "4000:4000"

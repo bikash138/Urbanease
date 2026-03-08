@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -115,7 +116,7 @@ function ProviderCardSkeleton() {
   );
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const serviceParam = searchParams.get("service") ?? "";
@@ -283,5 +284,38 @@ export default function SearchPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function SearchPageFallback() {
+  return (
+    <div className="min-h-screen bg-zinc-50">
+      <PublicNavbar />
+      <div className="pt-16 bg-white border-b border-zinc-100">
+        <div className="max-w-7xl mx-auto px-6 py-10 space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-9 w-48" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          <Skeleton className="h-11 w-full max-w-xl" />
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        <Skeleton className="h-4 w-32" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <ProviderCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchPageFallback />}>
+      <SearchPageContent />
+    </Suspense>
   );
 }

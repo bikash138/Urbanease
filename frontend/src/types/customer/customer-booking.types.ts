@@ -87,7 +87,6 @@ export interface CustomerBookingDetail extends CustomerBookingListItem {
     };
   };
   images?: CustomerBookingImage[];
-  review?: CustomerBookingReviewSummary | null;
 }
 
 export type CustomerBookingListResponse = ApiResponse<CustomerBookingListItem[]>;
