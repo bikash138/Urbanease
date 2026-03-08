@@ -1,6 +1,20 @@
 import { asyncHandler } from "../../common/utils/asyncHandler";
 import { AuthService } from "./auth.service";
+import { env } from "../../config";
 import type { Request, Response } from "express";
+
+function getCookieOptions() {
+  const base = {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: "/",
+  };
+  return {
+    ...base,
+    ...(env.COOKIE_DOMAIN && { domain: env.COOKIE_DOMAIN }),
+    ...(env.NODE_ENV === "production" && { secure: true }),
+  };
+}
 
 export class AuthHandler {
   private authService: AuthService;
@@ -11,16 +25,9 @@ export class AuthHandler {
 
   createSignin = asyncHandler(async (req: Request, res: Response) => {
     const signinData = await this.authService.signinService(req.body);
-    res.cookie("token", signinData.token, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
-    res.cookie("role", signinData.user.role, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
+    const cookieOpts = getCookieOptions();
+    res.cookie("token", signinData.token, cookieOpts);
+    res.cookie("role", signinData.user.role, cookieOpts);
     res.status(201).json({
       success: true,
       data: signinData,
@@ -39,16 +46,9 @@ export class AuthHandler {
 
   createAdminSignin = asyncHandler(async (req: Request, res: Response) => {
     const signinData = await this.authService.adminSigninService(req.body);
-    res.cookie("token", signinData.token, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
-    res.cookie("role", signinData.user.role, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-    });
+    const cookieOpts = getCookieOptions();
+    res.cookie("token", signinData.token, cookieOpts);
+    res.cookie("role", signinData.user.role, cookieOpts);
     res.status(200).json({
       success: true,
       data: signinData,
@@ -57,8 +57,9 @@ export class AuthHandler {
   });
 
   createSignout = asyncHandler(async (req: Request, res: Response) => {
-    res.clearCookie("token", { httpOnly: true, sameSite: "lax", path: "/" });
-    res.clearCookie("role", { httpOnly: true, sameSite: "lax", path: "/" });
+    const cookieOpts = getCookieOptions();
+    res.clearCookie("token", cookieOpts);
+    res.clearCookie("role", cookieOpts);
     res.status(200).json({ success: true, message: "Signed out successfully" });
   });
 }

@@ -4,6 +4,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(4000),
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   FRONTEND_URL: z.string().min(1, "FRONTEND_URL is required"),
+  COOKIE_DOMAIN: z.string().optional(),
   JWT_SECRET: z.string().min(4, "JWT_SECRET is required"),
   JWT_EXPIRES_IN: z.string().default("7d"),
   ADMIN_KEY: z.string().min(1, "ADMIN_KEY is required"),

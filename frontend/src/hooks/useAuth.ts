@@ -14,6 +14,17 @@ import type { SignupFormValues } from "@/schemas/auth.schema";
 import type { UserRole } from "@/types/auth.types";
 import { createCustomerProfileAPI } from "@/api/customer/customer-profile.api";
 
+function getRedirectUrl(role: UserRole, callbackUrl?: string): string {
+  const safeCallback =
+    callbackUrl &&
+    callbackUrl.startsWith("/") &&
+    !callbackUrl.startsWith("//");
+  if (safeCallback) return callbackUrl;
+  if (role === "ADMIN") return "/admin";
+  if (role === "PROVIDER") return "/provider/profile";
+  return "/";
+}
+
 export function useAuth() {
   const router = useRouter();
   const { setAuth, clearAuth, user, isAuthenticated } = useAuthStore();
@@ -22,17 +33,8 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
 
   function redirectByRole(role: UserRole, callbackUrl?: string) {
-    const safeCallback =
-      callbackUrl &&
-      callbackUrl.startsWith("/") &&
-      !callbackUrl.startsWith("//");
-    if (safeCallback) {
-      router.push(callbackUrl);
-      return;
-    }
-    if (role === "ADMIN") router.push("/admin");
-    else if (role === "PROVIDER") router.push("/provider/profile");
-    else router.push("/");
+    const url = getRedirectUrl(role, callbackUrl);
+    window.location.href = url;
   }
 
   async function signin(
