@@ -5,7 +5,6 @@ import Link from "next/link";
 import PublicNavbar from "@/components/public/PublicNavbar";
 import CategorySidebar from "@/components/public/categories/CategorySidebar";
 import ServiceGrid from "@/components/public/categories/ServiceGrid";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   usePublicCategories,
   usePublicCategoryDetail,
@@ -30,10 +29,10 @@ export default function CategoryDetailPage({
   const services = category?.services ?? [];
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-zinc-50 overflow-x-hidden w-full">
       <PublicNavbar />
 
-      <div className="pt-16 flex">
+      <div className="pt-16 flex flex-col lg:flex-row min-h-screen">
         {/*left sidebar (desktop only) */}
         <CategorySidebar
           category={category}
@@ -44,9 +43,9 @@ export default function CategoryDetailPage({
         />
 
         {/*Scrollable right content */}
-        <main className="flex-1 lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
+        <main className="flex-1 min-w-0 lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
           {/* Mobile: horizontal category chips */}
-          <div className="lg:hidden sticky top-16 z-10 bg-white border-b border-zinc-100 px-4 py-3 flex gap-2 overflow-x-auto">
+          <div className="lg:hidden sticky top-16 z-10 bg-white border-b border-zinc-100 px-3 sm:px-4 py-3 flex gap-2 overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <Link
               href="/categories"
               className="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400 transition-colors"
@@ -59,7 +58,7 @@ export default function CategoryDetailPage({
                 <Link
                   key={cat.id}
                   href={`/categories/${cat.slug}`}
-                  className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${
                     isActive
                       ? "bg-zinc-900 text-white border-zinc-900"
                       : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400"
@@ -71,7 +70,7 @@ export default function CategoryDetailPage({
             })}
           </div>
 
-          <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-5">
+          <div className="max-w-4xl mx-auto px-3 sm:px-6 md:px-8 py-6 sm:py-8 space-y-5">
             <ServiceGrid services={services} isLoading={isLoadingCategory} />
           </div>
         </main>

@@ -34,8 +34,8 @@ export function ServiceCardSkeleton() {
 
 export default function ServiceCard({ service }: ServiceCardProps) {
   return (
-    <Link href={`/services/${service.slug}`} className="group block">
-      <div className="rounded-2xl overflow-hidden bg-white border border-zinc-100 transition-all duration-150 flex flex-col h-full">
+    <Link href={`/services/${service.slug}`} className="group block min-w-0">
+      <div className="rounded-2xl overflow-hidden bg-white border border-zinc-100 transition-all duration-150 flex flex-col h-full min-w-0">
         {/*Image */}
         <div className="relative w-full aspect-4/3 bg-zinc-100 shrink-0">
           <Image
@@ -51,7 +51,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
         </div>
 
         {/*Content */}
-        <div className="p-3.5 flex flex-col gap-2 flex-1">
+        <div className="p-3 sm:p-3.5 flex flex-col gap-2 flex-1 min-w-0">
           <p className="text-sm font-semibold text-zinc-900 leading-snug group-hover:text-zinc-700 transition-colors">
             {service.title}
           </p>
