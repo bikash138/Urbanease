@@ -1,6 +1,6 @@
 "use client";
 
-import { Tags, Briefcase, Users, Star, LayoutDashboard, MapPin } from "lucide-react";
+import { Tags, Briefcase, Users, Star, LayoutDashboard, MapPin, Shield } from "lucide-react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 
@@ -49,7 +49,7 @@ export default function AdminLayout({
         <AppSidebar
           navItems={navItems}
           roleLabel="Admin Panel"
-          logoIcon={LayoutDashboard}
+          logoIcon={Shield}
         />
       }
     >

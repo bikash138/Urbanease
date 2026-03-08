@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAreas } from "@/hooks/admin/useAdminArea";
-import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { PageHeader } from "@/components/common/page-header";
 import { AreasStats } from "@/components/admin/areas/areas-stats";
 import { AreasTable } from "@/components/admin/areas/areas-table";
 import { AreasSheet } from "@/components/admin/areas/areas-sheet";
@@ -28,7 +28,7 @@ export default function AdminAreasPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <AdminPageHeader
+      <PageHeader
         title="Service Areas"
         description="Manage service areas that providers can select when offering services"
         actionLabel="Add Area"

@@ -3,7 +3,6 @@
 import {
   LayoutDashboard,
   User,
-  ShoppingBag,
   ListChecks,
   CalendarDays,
   Wrench,
@@ -46,7 +45,7 @@ export default function ProviderLayout({
       sidebar={
         <AppSidebar
           navItems={navItems}
-          roleLabel="Provider Panel"
+          roleLabel="Provider Dashboard"
           logoIcon={Wrench}
         />
       }

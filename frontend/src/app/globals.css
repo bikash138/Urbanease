@@ -124,3 +124,67 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Faded grid lines: vertical lines fade at top/bottom, horizontal fade at left/right */
+.faded-grid-lines {
+  position: relative;
+  overflow: hidden;
+}
+
+.faded-grid-lines::before,
+.faded-grid-lines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Vertical lines - fade at top and bottom */
+.faded-grid-lines::before {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 39px,
+    rgba(0, 0, 0, 0.06) 39px,
+    rgba(0, 0, 0, 0.06) 40px
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}
+
+/* Horizontal lines - fade at left and right */
+.faded-grid-lines::after {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 39px,
+    rgba(0, 0, 0, 0.06) 39px,
+    rgba(0, 0, 0, 0.06) 40px
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}

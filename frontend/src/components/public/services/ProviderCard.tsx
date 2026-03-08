@@ -10,6 +10,7 @@ interface ProviderCardProps {
   basePrice: number;
   avgRating: number | null;
   reviewCount: number;
+  serviceSlug?: string;
 }
 
 function StarRating({ rating }: { rating: number }) {
@@ -41,80 +42,99 @@ export default function ProviderCard({
   basePrice,
   avgRating,
   reviewCount,
+  serviceSlug,
 }: ProviderCardProps) {
   const { provider } = entry;
   const price = entry.customPrice ?? basePrice;
+  const bookHref = serviceSlug
+    ? `/providers/${provider.slug}/book?service=${encodeURIComponent(serviceSlug)}`
+    : null;
 
   return (
-    <div className="bg-white border border-zinc-100 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5 transition-all duration-200">
-      {/* Left content */}
-      <div className="flex-1 min-w-0 space-y-2.5 order-2 sm:order-1">
-        <div className="space-y-1">
-          <h3 className="font-bold text-zinc-900 text-base leading-tight">
-            {provider.user.name}
-          </h3>
+    <div className="bg-white p-4 sm:p-5 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5 transition-all duration-200 group">
+        {/* Left content */}
+        <div className="flex-1 min-w-0 space-y-2.5 order-2 sm:order-1">
+          <Link
+            href={`/providers/${provider.slug}`}
+            className="block space-y-1 hover:opacity-90 transition-opacity"
+          >
+            <h3 className="font-bold text-zinc-900 text-base leading-tight">
+              {provider.user.name}
+            </h3>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            {avgRating !== null ? (
-              <>
-                <StarRating rating={avgRating} />
-                <span className="text-xs text-zinc-400">
-                  ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
-                </span>
-              </>
-            ) : (
-              <span className="text-xs text-zinc-400">No reviews yet</span>
-            )}
+            <div className="flex items-center gap-2 flex-wrap">
+              {avgRating !== null ? (
+                <>
+                  <StarRating rating={avgRating} />
+                  <span className="text-xs text-zinc-400">
+                    ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
+                  </span>
+                </>
+              ) : (
+                <span className="text-xs text-zinc-400">No reviews yet</span>
+              )}
+            </div>
+
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-bold text-zinc-900">
+                ₹{price.toLocaleString("en-IN")}
+              </span>
+              {provider.experience !== null && (
+                <>
+                  <span className="text-zinc-300 text-xs">•</span>
+                  <span className="text-xs text-zinc-500">
+                    {provider.experience}{" "}
+                    {provider.experience === 1 ? "yr" : "yrs"} exp
+                  </span>
+                </>
+              )}
+            </div>
+          </Link>
+          {provider.bio && (
+            <p className="text-sm text-zinc-500 line-clamp-2 leading-relaxed">
+              {provider.bio}
+            </p>
+          )}
+
+          <div className="pt-1 flex gap-2 flex-wrap">
+            {bookHref ? (
+              <Link href={bookHref}>
+                <Button
+                  size="sm"
+                  className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg text-xs font-medium"
+                >
+                  Book Now
+                </Button>
+              </Link>
+            ) : null}
+            <Link href={`/providers/${provider.slug}`}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-zinc-200 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 rounded-lg text-xs font-medium"
+              >
+                View Provider
+              </Button>
+            </Link>
           </div>
         </div>
 
-        <div className="flex items-baseline gap-1.5">
-          <span className="font-bold text-zinc-900">
-            ₹{price.toLocaleString("en-IN")}
-          </span>
-          {provider.experience !== null && (
-            <>
-              <span className="text-zinc-300 text-xs">•</span>
-              <span className="text-xs text-zinc-500">
-                {provider.experience} {provider.experience === 1 ? "yr" : "yrs"}{" "}
-                exp
-              </span>
-            </>
-          )}
-        </div>
-
-        {provider.bio && (
-          <p className="text-sm text-zinc-500 line-clamp-2 leading-relaxed">
-            {provider.bio}
-          </p>
-        )}
-
-        <div className="pt-1">
-          <Link href={`/providers/${provider.slug}`}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-zinc-200 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 rounded-lg text-xs font-medium"
-            >
-              View Provider
-            </Button>
-          </Link>
-        </div>
+        {/* Image */}
+        <Link
+          href={`/providers/${provider.slug}`}
+          className="relative w-full sm:w-28 aspect-video sm:aspect-auto sm:h-24 rounded-xl overflow-hidden shrink-0 bg-zinc-100 order-1 sm:order-2 block"
+        >
+          <Image
+            src={
+              provider.profileImage ??
+              `https://api.dicebear.com/7.x/initials/svg?seed=${provider.user.name}`
+            }
+            alt={provider.user.name}
+            fill
+            className="object-cover"
+            unoptimized={!provider.profileImage}
+          />
+        </Link>
       </div>
-
-      {/* Image */}
-      <div className="relative w-full sm:w-28 aspect-video sm:aspect-auto sm:h-24 rounded-xl overflow-hidden shrink-0 bg-zinc-100 order-1 sm:order-2">
-        <Image
-          src={
-            provider.profileImage ??
-            `https://api.dicebear.com/7.x/initials/svg?seed=${provider.user.name}`
-          }
-          alt={provider.user.name}
-          fill
-          className="object-cover"
-          unoptimized={!provider.profileImage}
-        />
-      </div>
-    </div>
   );
 }

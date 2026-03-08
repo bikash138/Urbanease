@@ -23,8 +23,6 @@ export default function ServiceSidebar({
   isLoadingRelated,
   currentSlug,
 }: ServiceSidebarProps) {
-  const providerCount = service?.providers?.length ?? 0;
-
   return (
     <aside className="hidden lg:flex w-[300px] shrink-0 flex-col h-[calc(100vh-4rem)] overflow-y-auto sticky top-16 border-r border-zinc-100 bg-white">
       <div className="p-6 space-y-7">
@@ -54,17 +52,22 @@ export default function ServiceSidebar({
         {/* Stats */}
         {isLoadingService ? (
           <div className="grid grid-cols-2 gap-3">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 rounded-xl" />
-            ))}
+            <Skeleton className="aspect-video col-span-2 rounded-xl" />
+            <Skeleton className="h-16 rounded-xl" />
+            <Skeleton className="h-16 rounded-xl" />
           </div>
         ) : service ? (
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-zinc-50 border border-zinc-100 p-3 space-y-0.5">
-              <p className="text-lg font-bold text-zinc-900">{providerCount}</p>
-              <p className="text-xs text-zinc-500">
-                {providerCount === 1 ? "Provider" : "Providers"}
-              </p>
+            <div className="relative aspect-video rounded-xl overflow-hidden bg-zinc-100 col-span-2">
+              <Image
+                src={
+                  service.image ||
+                  "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
+                }
+                alt={service.title}
+                fill
+                className="object-cover"
+              />
             </div>
             <div className="rounded-xl bg-zinc-50 border border-zinc-100 p-3 space-y-0.5">
               <p className="text-lg font-bold text-zinc-900">
@@ -73,7 +76,7 @@ export default function ServiceSidebar({
               <p className="text-xs text-zinc-500">Starts at</p>
             </div>
             {service.category && (
-              <div className="col-span-2 rounded-xl bg-zinc-50 border border-zinc-100 p-3 space-y-0.5">
+              <div className="rounded-xl bg-zinc-50 border border-zinc-100 p-3 space-y-0.5">
                 <p className="text-sm font-semibold text-zinc-900">
                   {service.category.name}
                 </p>

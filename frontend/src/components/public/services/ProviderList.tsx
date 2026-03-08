@@ -23,7 +23,7 @@ function buildRatingMap(reviews: PublicReview[]) {
 
 function ProviderCardSkeleton() {
   return (
-    <div className="bg-white border border-zinc-100 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5">
+    <div className="bg-white flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5">
       <Skeleton className="w-full sm:w-28 aspect-video sm:aspect-auto sm:h-24 rounded-xl shrink-0 order-1 sm:order-2" />
       <div className="flex-1 space-y-3 order-2 sm:order-1">
         <Skeleton className="h-5 w-1/3" />
@@ -47,9 +47,11 @@ export default function ProviderList({
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="rounded-2xl border border-zinc-200 bg-white overflow-hidden divide-y divide-zinc-200 py-4 sm:py-6 px-4 sm:px-5">
         {Array.from({ length: 3 }).map((_, i) => (
-          <ProviderCardSkeleton key={i} />
+          <div key={i} className="p-4 sm:p-5">
+            <ProviderCardSkeleton />
+          </div>
         ))}
       </div>
     );
@@ -57,7 +59,7 @@ export default function ProviderList({
 
   if (providers.length === 0) {
     return (
-      <div className="py-20 text-center space-y-2 border border-zinc-100 rounded-2xl bg-white">
+      <div className="rounded-2xl border border-zinc-200 py-20 px-4 sm:px-5 text-center space-y-2 bg-white">
         <p className="font-semibold text-zinc-700">No providers yet</p>
         <p className="text-sm text-zinc-400">
           No approved providers are offering this service right now.
@@ -67,8 +69,9 @@ export default function ProviderList({
   }
 
   return (
-    <div className="space-y-4">
-      {providers.map((entry) => {
+    <div className="rounded-2xl border border-zinc-200 bg-white overflow-hidden py-4 sm:py-6 px-4 sm:px-5">
+      <div className="divide-y divide-zinc-200">
+        {providers.map((entry) => {
         const ratingData = ratingMap.get(entry.provider.id);
         const avgRating = ratingData
           ? ratingData.total / ratingData.count
@@ -76,15 +79,18 @@ export default function ProviderList({
         const reviewCount = ratingData?.count ?? 0;
 
         return (
-          <ProviderCard
-            key={entry.id}
-            entry={entry}
-            basePrice={service!.basePrice}
-            avgRating={avgRating}
-            reviewCount={reviewCount}
-          />
+          <div key={entry.id} className="py-4 first:pt-0">
+            <ProviderCard
+              entry={entry}
+              basePrice={service!.basePrice}
+              avgRating={avgRating}
+              reviewCount={reviewCount}
+              serviceSlug={service!.slug}
+            />
+          </div>
         );
       })}
+      </div>
     </div>
   );
 }

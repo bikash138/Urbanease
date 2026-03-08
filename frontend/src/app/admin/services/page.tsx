@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useServices } from "@/hooks/admin/useAdminService";
-import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { PageHeader } from "@/components/common/page-header";
 import { ServicesStats } from "@/components/admin/services/services-stats";
 import { ServicesTable } from "@/components/admin/services/services-table";
 import { ServicesSheet } from "@/components/admin/services/services-sheet";
@@ -30,7 +30,7 @@ export default function AdminServicesPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <AdminPageHeader
+      <PageHeader
         title="Services"
         description="Manage your service offerings and pricing"
         actionLabel="Add Service"

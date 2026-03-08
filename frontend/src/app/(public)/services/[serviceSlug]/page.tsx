@@ -88,7 +88,7 @@ export default function ServiceDetailPage({
             ) : null}
           </div>
 
-          <div className="max-w-3xl mx-auto px-4 sm:px-8 py-6 space-y-4">
+          <div className="max-w-3xl mx-4 sm:px-6 py-6 space-y-4">
             {!isLoadingService && service && (
               <p className="text-sm text-zinc-500">
                 <span className="font-semibold text-zinc-900">

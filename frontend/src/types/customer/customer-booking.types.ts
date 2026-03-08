@@ -23,7 +23,7 @@ export interface CustomerBookingProviderInfo {
   user: { name: string };
 }
 
-export type ReviewStatus = "VISIBLE" | "FLAGGED" | "HIDDEN" | "DELETED";
+export type ReviewStatus = "VISIBLE" | "FLAGGED" | "HIDDEN";
 
 export interface CustomerBookingReviewSummary {
   id: string;

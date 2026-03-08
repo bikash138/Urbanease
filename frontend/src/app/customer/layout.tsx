@@ -16,11 +16,6 @@ const navItems = [
     href: "/customer/bookings",
     icon: ShoppingBag,
   },
-  {
-    title: "Reviews",
-    href: "#",
-    icon: Star,
-  },
 ];
 
 export default function CustomerLayout({
@@ -33,7 +28,7 @@ export default function CustomerLayout({
       sidebar={
         <AppSidebar
           navItems={navItems}
-          roleLabel="Customer Panel"
+          roleLabel="Customer Dashboard"
           logoIcon={CalendarDays}
         />
       }

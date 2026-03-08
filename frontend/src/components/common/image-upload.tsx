@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useState, useRef, useEffect } from "react";
-import { UploadCloud, X, Image as ImageIcon } from "lucide-react";
+import { UploadCloud, X, Pencil, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -83,6 +83,7 @@ export function ImageUpload({
           onChange(file);
         }
       }
+      e.target.value = "";
     },
     [disabled, onChange],
   );
@@ -108,13 +109,32 @@ export function ImageUpload({
           className,
         )}
       >
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+          disabled={disabled}
+        />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={preview}
           alt="Upload preview"
           className="object-cover w-full h-full"
         />
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            onClick={handleClick}
+            className="h-10 w-10 shrink-0"
+            disabled={disabled}
+            title="Change photo"
+          >
+            <Pencil className="h-5 w-5" />
+          </Button>
           <Button
             type="button"
             variant="destructive"
@@ -122,6 +142,7 @@ export function ImageUpload({
             onClick={handleRemove}
             className="h-10 w-10 shrink-0"
             disabled={disabled}
+            title="Remove"
           >
             <X className="h-5 w-5" />
           </Button>

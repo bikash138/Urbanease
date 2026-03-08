@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useCategories, useCategory } from "@/hooks/admin/useAdminCategory";
-import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { PageHeader } from "@/components/common/page-header";
 import { CategoriesStats } from "@/components/admin/categories/categories-stats";
 import { CategoriesTable } from "@/components/admin/categories/categories-table";
 import { CategoriesSheet } from "@/components/admin/categories/categories-sheet";
@@ -32,7 +32,7 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <AdminPageHeader
+      <PageHeader
         title="Categories"
         description="Manage service categories and their visibility"
         actionLabel="Add Category"

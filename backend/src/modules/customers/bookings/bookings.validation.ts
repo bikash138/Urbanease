@@ -6,7 +6,10 @@ export const createBookingSchema = z.object({
   slotId: z.uuid("Invalid slod ID"),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
   totalAmount: z.number().positive("Total amount must be positive"),
-  customerNote: z.string().optional(),
+  customerNote: z
+    .string()
+    .max(100, "Note must be 100 characters or fewer")
+    .optional(),
 });
 
 export const rescheduleBookingSchema = z.object({

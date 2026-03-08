@@ -21,25 +21,39 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function redirectByRole(role: UserRole) {
+  function redirectByRole(role: UserRole, callbackUrl?: string) {
+    const safeCallback =
+      callbackUrl &&
+      callbackUrl.startsWith("/") &&
+      !callbackUrl.startsWith("//");
+    if (safeCallback) {
+      router.push(callbackUrl);
+      return;
+    }
     if (role === "ADMIN") router.push("/admin");
     else if (role === "PROVIDER") router.push("/provider/profile");
-    else router.push("/customer");
+    else router.push("/");
   }
 
-  async function signin(data: SigninFormValues) {
+  async function signin(
+    data: SigninFormValues,
+    options?: { callbackUrl?: string },
+  ) {
     return asyncHandler(
       async () => {
         const response = await signinAPI(data);
         setAuth(response.data.user, response.data.user.role);
-        redirectByRole(response.data.user.role);
+        redirectByRole(response.data.user.role, options?.callbackUrl);
       },
       setError,
       setIsLoading,
     );
   }
 
-  async function signup(data: SignupFormValues) {
+  async function signup(
+    data: SignupFormValues,
+    options?: { callbackUrl?: string },
+  ) {
     return asyncHandler(
       async () => {
         const response = await signupAPI(data);
@@ -58,7 +72,7 @@ export function useAuth() {
           } else {
             router.push("/admin-signin");
           }
-          redirectByRole(role);
+          redirectByRole(role, options?.callbackUrl);
         }
       },
       setError,

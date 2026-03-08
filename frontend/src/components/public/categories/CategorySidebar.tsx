@@ -23,8 +23,6 @@ export default function CategorySidebar({
   isLoadingRelated,
   currentSlug,
 }: CategorySidebarProps) {
-  const serviceCount = category?.services?.length ?? 0;
-
   return (
     <aside className="hidden lg:flex w-[280px] shrink-0 flex-col h-[calc(100vh-4rem)] overflow-y-auto sticky top-16 border-r border-zinc-100 bg-white">
       <div className="p-6 space-y-7">
@@ -52,15 +50,20 @@ export default function CategorySidebar({
           )}
         </div>
 
-        {/*Stats*/}
+        {/* Category Image */}
         {isLoadingCategory ? (
-          <Skeleton className="h-16 rounded-xl" />
+          <Skeleton className="w-full aspect-video rounded-xl" />
         ) : category ? (
-          <div className="rounded-xl bg-zinc-50 border border-zinc-100 p-4 space-y-0.5">
-            <p className="text-2xl font-bold text-zinc-900">{serviceCount}</p>
-            <p className="text-xs text-zinc-500">
-              {serviceCount === 1 ? "Service available" : "Services available"}
-            </p>
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-100">
+            <Image
+              src={
+                category.image ||
+                "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
+              }
+              alt={category.name}
+              fill
+              className="object-cover"
+            />
           </div>
         ) : null}
 

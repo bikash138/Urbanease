@@ -16,7 +16,7 @@ export function CategoryGridItem({ category }: CategoryGridItemProps) {
         <Image
           src={
             category.image ||
-            "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
+            "https://urbanease.t3.storage.dev/public/error-placeholder-image.png"
           }
           alt={category.name}
           fill

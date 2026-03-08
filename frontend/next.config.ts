@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "urbanease.fly.storage.tigris.dev",
       },
+      {
+        protocol: "https",
+        hostname: "urbanease.t3.storage.dev",
+      },
     ],
   },
 };

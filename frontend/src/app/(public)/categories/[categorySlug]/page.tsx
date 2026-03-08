@@ -72,21 +72,6 @@ export default function CategoryDetailPage({
           </div>
 
           <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-5">
-            {/* Result count */}
-            {isLoadingCategory ? (
-              <Skeleton className="h-4 w-48" />
-            ) : category ? (
-              <p className="text-sm text-zinc-500">
-                <span className="font-semibold text-zinc-900">
-                  {services.length}
-                </span>{" "}
-                {services.length === 1 ? "service" : "services"} in{" "}
-                <span className="font-medium text-zinc-700">
-                  {category.name}
-                </span>
-              </p>
-            ) : null}
-
             <ServiceGrid services={services} isLoading={isLoadingCategory} />
           </div>
         </main>

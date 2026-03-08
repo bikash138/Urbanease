@@ -136,7 +136,7 @@ export class PublicRepository {
         experience: true,
         profileImage: true,
         user: {
-          select: { name: true, phone: true },
+          select: { name: true },
         },
         servicesOffered: {
           where: { isAvailable: true },
@@ -146,10 +146,10 @@ export class PublicRepository {
             service: {
               select: {
                 id: true,
-                slug: true,
+                // slug: true,
                 title: true,
-                basePrice: true,
-                image: true,
+                // basePrice: true,
+                // image: true,
               },
             },
           },

@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/lib/api-client";
 
-export type ReviewStatus = "VISIBLE" | "FLAGGED" | "HIDDEN" | "DELETED";
+export type ReviewStatus = "VISIBLE" | "FLAGGED" | "HIDDEN";
 
 export interface CustomerReview {
   id: string;
