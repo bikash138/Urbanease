@@ -17,17 +17,11 @@ export default function proxy(req: NextRequest) {
 
   if (role) {
     if (pathname.startsWith("/customer") && role !== "CUSTOMER")
-      return NextResponse.redirect(
-        new URL(roleRoutes[role] ?? "/", req.url),
-      );
+      return NextResponse.redirect(new URL(roleRoutes[role] ?? "/", req.url));
     if (pathname.startsWith("/provider") && role !== "PROVIDER")
-      return NextResponse.redirect(
-        new URL(roleRoutes[role] ?? "/", req.url),
-      );
+      return NextResponse.redirect(new URL(roleRoutes[role] ?? "/", req.url));
     if (pathname.startsWith("/admin") && role !== "ADMIN")
-      return NextResponse.redirect(
-        new URL(roleRoutes[role] ?? "/", req.url),
-      );
+      return NextResponse.redirect(new URL(roleRoutes[role] ?? "/", req.url));
   }
 
   return NextResponse.next();

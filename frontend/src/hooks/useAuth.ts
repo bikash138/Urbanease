@@ -44,7 +44,7 @@ export function useAuth() {
     return asyncHandler(
       async () => {
         const response = await signinAPI(data);
-        setAuth(response.data.user, response.data.user.role);
+        setAuth(response.data.user, response.data.user.role, response.data.token);
         redirectByRole(response.data.user.role, options?.callbackUrl);
       },
       setError,
@@ -86,7 +86,7 @@ export function useAuth() {
     return asyncHandler(
       async () => {
         const response = await adminSigninAPI(data);
-        setAuth(response.data.user, response.data.user.role);
+        setAuth(response.data.user, response.data.user.role, response.data.token);
         redirectByRole(response.data.user.role);
       },
       setError,

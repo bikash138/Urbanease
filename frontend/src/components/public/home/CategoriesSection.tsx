@@ -26,30 +26,28 @@ function CategoryCard({
   index: number;
 }) {
   return (
-    <Link href={`/categories/${category.slug}`}>
-      <div className="group cursor-pointer overflow-hidden hover:shadow-md transition-all duration-200">
-        <div className="relative w-full rounded-2xl aspect-square bg-zinc-100">
-          <Image
-            src={
-              category.image ||
-              "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
-            }
-            alt={category.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-            }}
-          />
-        </div>
-        <div className="px-3 py-2.5">
-          <p className="text-sm font-medium text-zinc-900 leading-snug">
-            {category.name}
-          </p>
-        </div>
+    <div className="group cursor-pointer rounded-2xl overflow-hidden transition-all duration-200">
+      <div className="relative w-full aspect-square bg-zinc-100">
+        <Image
+          src={
+            category.image ||
+            "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
+          }
+          alt={category.name}
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.display = "none";
+          }}
+        />
       </div>
-    </Link>
+      <div className="px-3 py-2.5">
+        <p className="text-sm font-medium text-zinc-900 leading-snug">
+          {category.name}
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -90,7 +88,9 @@ export default function CategoriesSection({
               ))
             : displayCategories.length > 0
               ? displayCategories.map((cat, i) => (
-                  <CategoryCard key={cat.id} category={cat} index={i} />
+                  <Link href={`/categories/${cat.slug}`} key={cat.id}>
+                    <CategoryCard category={cat} index={i} />
+                  </Link>
                 ))
               : Array.from({ length: 4 }).map((_, i) => (
                   <CategoryCardSkeleton key={i} />

@@ -8,29 +8,27 @@ import type {
 
 export class ServiceRepository {
   async createService(data: CreateServiceSchemaDTO) {
-    return await prisma.$transaction(async (tx) => {
-      return await tx.service.create({
-        data: {
-          title: data.title,
-          slug: createSlug(data.title),
-          description: data.description,
-          basePrice: data.basePrice,
-          categoryId: data.categoryId,
-          image: data.image,
-          isActive: true,
-        },
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          basePrice: true,
-          isActive: true,
-          image: true,
-          categoryId: true,
-          category: { select: { name: true } },
-          createdAt: true,
-        },
-      });
+    return await prisma.service.create({
+      data: {
+        title: data.title,
+        slug: createSlug(data.title),
+        description: data.description,
+        basePrice: data.basePrice,
+        categoryId: data.categoryId,
+        image: data.image,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        basePrice: true,
+        isActive: true,
+        image: true,
+        categoryId: true,
+        category: { select: { name: true } },
+        createdAt: true,
+      },
     });
   }
 

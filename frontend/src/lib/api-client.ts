@@ -1,5 +1,6 @@
 import axios from "axios";
 import { config } from "./config";
+import { tokenStorage } from "./token";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -7,12 +8,22 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+const API_VERSION = "/api/v1";
+
 const apiClient = axios.create({
-  baseURL: config.apiBaseUrl,
+  baseURL: `${config.apiBaseUrl}${API_VERSION}`,
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true,
+});
+
+apiClient.interceptors.request.use((req) => {
+  const token = tokenStorage.get();
+  if (token) {
+    req.headers.Authorization = `Bearer ${token}`;
+  }
+  return req;
 });
 
 apiClient.interceptors.response.use(

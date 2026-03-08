@@ -26,8 +26,8 @@ function ServiceCardSkeleton() {
 function ServiceCard({ service }: { service: PublicService }) {
   return (
     <Link href={`/services/${service.slug}`}>
-      <div className="group overflow-hidden bg-white transition-all duration-200">
-        <div className="relative rounded-2xl w-full aspect-square bg-zinc-100">
+      <div className="group overflow-hidden rounded-2xl bg-white transition-all duration-200">
+        <div className="relative w-full aspect-square bg-zinc-100">
           <Image
             src={
               service.image ||

@@ -19,6 +19,20 @@ export class ServiceService {
     try {
       return await this.serviceRepository.createService(data);
     } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError
+      ) {
+        if (error.code === "P2002") {
+          throw new AppError(
+            "A service with this title or slug already exists",
+            409,
+            ErrorCode.CONFLICT,
+          );
+        }
+        if (error.code === "P2003") {
+          throw new AppError("Category not found", 404, ErrorCode.NOT_FOUND);
+        }
+      }
       throw new AppError(
         "Service creation failed",
         500,
