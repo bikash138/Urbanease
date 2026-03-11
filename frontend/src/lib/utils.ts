@@ -11,21 +11,3 @@ export function extractErrorMessage(err: unknown): string {
   }
   return "Something went wrong. Please try again.";
 }
-
-export async function asyncHandler<T>(
-  asyncFn: () => Promise<T>,
-  setError: (msg: string | null) => void,
-  setIsLoading: (loading: boolean) => void,
-  throwError: boolean = true,
-): Promise<T | void> {
-  setIsLoading(true);
-  setError(null);
-  try {
-    return await asyncFn();
-  } catch (err: unknown) {
-    setError(extractErrorMessage(err));
-    if (throwError) throw err;
-  } finally {
-    setIsLoading(false);
-  }
-}

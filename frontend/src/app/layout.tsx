@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/components/tanstack-providers/query-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
@@ -59,6 +60,7 @@ export default function RootLayout({
       >
         <QueryProvider>
           {children}
+          <Toaster />
           <Analytics />
         </QueryProvider>
       </body>

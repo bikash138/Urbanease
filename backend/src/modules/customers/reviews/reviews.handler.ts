@@ -30,7 +30,13 @@ export class CustomerReviewHandler {
       req.params.id as string,
       req.body,
     );
-    res.status(200).json({ success: true, data: review });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: review,
+        message: "Review updated successfully",
+      });
   });
 
   deleteReview = asyncHandler(async (req: Request, res: Response) => {

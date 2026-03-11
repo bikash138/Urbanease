@@ -26,13 +26,12 @@ import {
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
-import { ErrorBanner } from "./ErrorBanner";
 import { authInputClassName } from "./form-input-classes";
 
 export function SignupForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? undefined;
-  const { signup, isLoading, error } = useAuth();
+  const { signup, isLoading } = useAuth();
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -58,8 +57,6 @@ export function SignupForm() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {error && <ErrorBanner message={error} />}
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

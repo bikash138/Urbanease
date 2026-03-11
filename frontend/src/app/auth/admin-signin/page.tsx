@@ -26,10 +26,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertCircle, ArrowLeft, Loader2, Shield } from "lucide-react";
+import { ArrowLeft, Loader2, Shield } from "lucide-react";
 
 export default function AdminSigninPage() {
-  const { adminSignin, isLoading, error } = useAuth();
+  const { adminSignin, isLoading } = useAuth();
 
   const form = useForm<AdminSigninFormValues>({
     resolver: zodResolver(adminSigninSchema),
@@ -99,14 +99,6 @@ export default function AdminSigninPage() {
                 logged and may result in account suspension.
               </p>
             </div>
-
-            {/* Error banner */}
-            {error && (
-              <div className="flex items-center gap-3 rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-3">
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                <p className="text-sm text-red-300">{error}</p>
-              </div>
-            )}
 
             <Form {...form}>
               <form

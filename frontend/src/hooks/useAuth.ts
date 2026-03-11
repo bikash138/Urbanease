@@ -1,8 +1,9 @@
 "use client";
 
-import { asyncHandler } from "@/lib/utils";
+import { extractErrorMessage } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { adminSigninAPI, signinAPI, signoutAPI, signupAPI } from "@/api/auth.api";
 import { createProviderProfileAPI } from "@/api/provider/provider-profile.api";
 import { useAuthStore } from "@/store/auth.store";
@@ -41,66 +42,79 @@ export function useAuth() {
     data: SigninFormValues,
     options?: { callbackUrl?: string },
   ) {
-    return asyncHandler(
-      async () => {
-        const response = await signinAPI(data);
-        setAuth(response.data.user, response.data.user.role, response.data.token);
-        redirectByRole(response.data.user.role, options?.callbackUrl);
-      },
-      setError,
-      setIsLoading,
-    );
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await signinAPI(data);
+      toast.success(response.message ?? "Signed in successfully");
+      setAuth(response.data.user, response.data.user.role, response.data.token);
+      redirectByRole(response.data.user.role, options?.callbackUrl);
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function signup(
     data: SignupFormValues,
     options?: { callbackUrl?: string },
   ) {
-    return asyncHandler(
-      async () => {
-        const response = await signupAPI(data);
-        if (response.success) {
-          const r = await signinAPI({
-            email: data.email,
-            password: data.password,
-          });
-          const role = r.data.user.role;
-          setAuth(r.data.user, role);
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await signupAPI(data);
+      const r = await signinAPI({
+        email: data.email,
+        password: data.password,
+      });
+      toast.success(response.message ?? "Account created successfully");
+      const role = r.data.user.role;
+      setAuth(r.data.user, role);
 
-          if (role === "PROVIDER") {
-            await createProviderProfileAPI({});
-          } else if (role === "CUSTOMER") {
-            await createCustomerProfileAPI();
-          } else {
-            router.push("/admin-signin");
-          }
-          redirectByRole(role, options?.callbackUrl);
-        }
-      },
-      setError,
-      setIsLoading,
-    );
+      if (role === "PROVIDER") {
+        await createProviderProfileAPI({});
+      } else if (role === "CUSTOMER") {
+        await createCustomerProfileAPI();
+      } else {
+        router.push("/admin-signin");
+      }
+      redirectByRole(role, options?.callbackUrl);
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function adminSignin(data: AdminSigninFormValues) {
-    return asyncHandler(
-      async () => {
-        const response = await adminSigninAPI(data);
-        setAuth(response.data.user, response.data.user.role, response.data.token);
-        redirectByRole(response.data.user.role);
-      },
-      setError,
-      setIsLoading,
-    );
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await adminSigninAPI(data);
+      toast.success(response.message ?? "Admin signed in successfully");
+      setAuth(response.data.user, response.data.user.role, response.data.token);
+      redirectByRole(response.data.user.role);
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function logout() {
     try {
       await signoutAPI();
+      toast.success("Signed out successfully");
     } catch {
       // proceed even if server call fails
-    }
-    finally{
+    } finally {
       clearAuth();
       router.push("/");
     }

@@ -72,7 +72,13 @@ export class ProviderBookingHandler {
       req.params.id as string,
       req.body,
     );
-    res.status(200).json({ success: true, data: result });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: result,
+        message: "Note added successfully",
+      });
   });
 
   addImage = asyncHandler(async (req: Request, res: Response) => {
@@ -81,7 +87,13 @@ export class ProviderBookingHandler {
       req.params.id as string,
       req.body,
     );
-    res.status(201).json({ success: true, data: image });
+    res
+      .status(201)
+      .json({
+        success: true,
+        data: image,
+        message: "Image added successfully",
+      });
   });
 
   getImages = asyncHandler(async (req: Request, res: Response) => {

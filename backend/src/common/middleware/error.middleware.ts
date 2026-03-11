@@ -10,7 +10,6 @@ export const errorMiddleware = (
 ) => {
   console.error(`[${req.requestId}] Error:`, {
     message: error.message,
-    stack: error.stack,
   });
 
   if (error instanceof AppError) {
