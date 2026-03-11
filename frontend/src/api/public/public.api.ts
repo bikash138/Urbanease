@@ -11,6 +11,15 @@ import type {
   PublicSearchResponse,
 } from "@/types/public/public.types";
 
+const DEFAULT_PAGINATION = {
+  page: 1,
+  limit: 20,
+  total: 0,
+  totalPages: 0,
+  hasNext: false,
+  hasPrev: false,
+} as const;
+
 export async function getPublicCategoriesAPI(): Promise<PublicCategoriesResponse> {
   return apiClient.get("/public/categories");
 }
@@ -75,15 +84,23 @@ export async function searchPublicProvidersAPI(params: {
   service?: string;
   city?: string;
 }): Promise<PublicSearchResponse> {
+  const hasFilters =
+    params.category?.trim() ||
+    params.service?.trim() ||
+    params.city?.trim();
+  if (!hasFilters) {
+    return Promise.resolve({
+      success: true,
+      data: [],
+      message: "",
+      pagination: DEFAULT_PAGINATION,
+    });
+  }
   const searchParams = new URLSearchParams();
   if (params.category?.trim())
     searchParams.set("category", params.category.trim());
   if (params.service?.trim())
     searchParams.set("service", params.service.trim());
   if (params.city?.trim()) searchParams.set("city", params.city.trim());
-  const query = searchParams.toString();
-  if (!query) {
-    return Promise.resolve({ success: true, data: [], message: "" });
-  }
-  return apiClient.get(`/public/search?${query}`);
+  return apiClient.get(`/public/search?${searchParams.toString()}`);
 }

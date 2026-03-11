@@ -11,7 +11,7 @@ export class PublicHandler {
     this.publicService = new PublicService();
   }
 
-  //  Categories 
+  //  Categories
 
   getAllCategories = asyncHandler(async (req: Request, res: Response) => {
     const categories = await this.publicService.getAllCategories();
@@ -25,7 +25,7 @@ export class PublicHandler {
     res.status(200).json({ success: true, data: category });
   });
 
-  //  Services 
+  //  Services
 
   getAllServices = asyncHandler(async (req: Request, res: Response) => {
     const categorySlug = req.query.categorySlug as string | undefined;
@@ -37,10 +37,40 @@ export class PublicHandler {
   });
 
   getServiceBySlug = asyncHandler(async (req: Request, res: Response) => {
-    const service = await this.publicService.getServiceBySlug(
-      req.params.slug as string,
+    const { page: pageStr, limit: limitStr } = req.query as {
+      page?: string;
+      limit?: string;
+    };
+    const pageNum = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
+    const limitNum = Math.min(
+      100,
+      Math.max(1, parseInt(limitStr ?? "20", 10) || 20),
     );
-    res.status(200).json({ success: true, data: service });
+    const skip = (pageNum - 1) * limitNum;
+    const result = await this.publicService.getServiceBySlug(
+      req.params.slug as string,
+      skip,
+      limitNum,
+    );
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: `Service not found`,
+      });
+    }
+    const { total, ...service } = result;
+    res.status(200).json({
+      success: true,
+      data: service,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+        hasNext: pageNum * limitNum < total,
+        hasPrev: pageNum > 1,
+      },
+    });
   });
 
   //Providers
@@ -80,11 +110,15 @@ export class PublicHandler {
     res.status(200).json({ success: true, data: result });
   });
 
+  //Search
+
   searchProviders = asyncHandler(async (req: Request, res: Response) => {
-    const { category, service, city } = req.query as {
+    const { category, service, city, page, limit } = req.query as {
       category?: string;
       service?: string;
       city?: string;
+      page?: string;
+      limit?: string;
     };
 
     const hasFilters = category || service || city;
@@ -96,13 +130,35 @@ export class PublicHandler {
       );
     }
 
-    const providers = await this.publicService.searchProviders({
+    const pageNum = Math.max(1, parseInt(page ?? "1", 10) || 1);
+    const limitNum = Math.min(
+      100,
+      Math.max(1, parseInt(limit ?? "20", 10) || 20),
+    );
+
+    const result = await this.publicService.searchProviders({
       category: category?.trim(),
       service: service?.trim(),
       city: city?.trim(),
+      pageNum,
+      limitNum,
     });
-    res.status(200).json({ success: true, data: providers });
+
+    res.status(200).json({
+      success: true,
+      data: result.providerServices,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total: result.total,
+        totalPages: Math.ceil(result.total / limitNum),
+        hasNext: pageNum * limitNum < result.total,
+        hasPrev: pageNum > 1,
+      },
+    });
   });
+
+  //Reviews
 
   getPublicReviews = asyncHandler(async (req: Request, res: Response) => {
     const providerId = req.query.providerId as string | undefined;

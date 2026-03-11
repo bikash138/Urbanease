@@ -8,7 +8,8 @@ export const publicServiceKeys = {
   all: ["public", "services"] as const,
   list: (categoryId?: string) =>
     [...publicServiceKeys.all, "list", { categoryId }] as const,
-  detail: (slug: string) => [...publicServiceKeys.all, "detail", slug] as const,
+  detail: (slug: string) =>
+    [...publicServiceKeys.all, "detail", slug] as const,
 };
 
 export const publicProviderKeys = {
@@ -35,6 +36,9 @@ export const publicSlotKeys = {
 
 export const publicSearchKeys = {
   all: ["public", "search"] as const,
-  list: (params: { category?: string; service?: string; city?: string }) =>
-    [...publicSearchKeys.all, "list", params] as const,
+  list: (params: {
+    category?: string;
+    service?: string;
+    city?: string;
+  }) => [...publicSearchKeys.all, "list", params] as const,
 };

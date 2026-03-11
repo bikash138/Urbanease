@@ -177,7 +177,9 @@ export type PublicCategoryDetailResponse =
 
 export type PublicServicesResponse = ApiResponse<PublicService[]>;
 export type PublicServiceDetailResponse =
-  ApiResponse<PublicServiceDetail | null>;
+  ApiResponse<PublicServiceDetail | null> & {
+    pagination: PaginationMeta;
+  };
 
 export type PublicProvidersResponse = ApiResponse<PublicProvider[]>;
 export type PublicProviderDetailResponse =
@@ -204,4 +206,15 @@ export type PublicSearchResult = {
   };
 };
 
-export type PublicSearchResponse = ApiResponse<PublicSearchResult[]>;
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+};
+
+export type PublicSearchResponse = ApiResponse<PublicSearchResult[]> & {
+  pagination: PaginationMeta;
+};
