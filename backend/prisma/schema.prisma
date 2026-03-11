@@ -96,6 +96,8 @@ model ProviderProfile {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([status])
 }
 
 model ProviderService {
@@ -116,6 +118,8 @@ model ProviderService {
   updatedAt DateTime @updatedAt
 
   @@unique([providerId, serviceId])
+  @@index([serviceId, isAvailable])
+  @@index([providerId])
 }
 
 model Address {
@@ -133,6 +137,8 @@ model Address {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   bookings  Booking[]
+
+  @@index([customerId])
 }
 
 model Booking {
@@ -164,6 +170,8 @@ model Booking {
   updatedAt DateTime @updatedAt
 
   @@unique([providerServiceId, slotId, date])
+  @@index([customerId])
+  @@index([providerServiceId])
 }
 
 model BookingImage {
@@ -174,6 +182,8 @@ model BookingImage {
   booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+
+  @@index([bookingId])
 }
 
 model ServiceCategory {
@@ -187,6 +197,8 @@ model ServiceCategory {
   services Service[]
 
   createdAt DateTime @default(now())
+
+  @@index([isActive])
 }
 
 model Service {
@@ -205,6 +217,8 @@ model Service {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([categoryId, isActive])
 }
 
 model Review {
@@ -224,6 +238,9 @@ model Review {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([providerId])
+  @@index([status])
 }
 
 model ProviderSlot {
