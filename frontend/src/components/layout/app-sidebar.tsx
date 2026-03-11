@@ -48,7 +48,10 @@ export function AppSidebar({
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/60">
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-border/60 left-[max(0px,calc((100vw-80rem)/2))]"
+    >
       {/* Header */}
       <SidebarHeader className="border-b border-border/60">
         <SidebarMenu>

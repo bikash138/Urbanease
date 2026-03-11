@@ -52,7 +52,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, sidebar }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className="flex min-h-screen w-full max-w-7xl mx-auto">
         {sidebar}
 
         {/* Main content area */}

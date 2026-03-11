@@ -59,7 +59,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          {children}
+          <div className="max-w-7xl mx-auto w-full min-h-screen">
+            {children}
+          </div>
           <Toaster />
           <Analytics />
         </QueryProvider>

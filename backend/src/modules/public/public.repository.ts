@@ -169,7 +169,7 @@ export class PublicRepository {
                 id: true,
                 // slug: true,
                 title: true,
-                // basePrice: true,
+                basePrice: true,
                 // image: true,
               },
             },
