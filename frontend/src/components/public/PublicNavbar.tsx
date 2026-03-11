@@ -47,7 +47,7 @@ export default function PublicNavbar() {
           <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center">
             <Building2 className="w-4 h-4 text-white" />
           </div>
-          <span className="text-xl font-semibold text-zinc-900 tracking-tight">
+          <span className="hidden md:inline text-xl font-semibold text-zinc-900 tracking-tight">
             Urbanease
           </span>
         </Link>
@@ -68,7 +68,7 @@ export default function PublicNavbar() {
           ))}
         </nav>
 
-        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md">
+        <form onSubmit={handleSearch} className="flex flex-1 min-w-0 max-w-md">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
             <Input

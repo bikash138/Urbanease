@@ -36,7 +36,7 @@ export default function HeroSection({
   return (
     <>
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden bg-gradient-to-br from-zinc-50 via-white to-zinc-100">
+      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden bg-linear-to from-zinc-50 via-white to-zinc-100">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-amber-400/20 blur-3xl" />
           <div className="absolute top-1/2 -left-40 w-80 h-80 rounded-full bg-blue-500/15 blur-3xl" />
@@ -75,7 +75,7 @@ export default function HeroSection({
             </p>
 
             <div className="flex flex-wrap gap-3">
-              <Link href="/search">
+              <Link href="/categories">
                 <Button className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl px-6 h-12 text-base gap-2">
                   Find Services
                   <ArrowRight className="w-4 h-4" />

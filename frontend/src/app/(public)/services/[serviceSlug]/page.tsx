@@ -32,15 +32,16 @@ export default function ServiceDetailPage({
     <div className="min-h-screen bg-zinc-50">
       <PublicNavbar />
 
-      <div className="pt-16 flex flex-col lg:flex-row">
-        {/*left sidebar (desktop only) */}
-        <ServiceSidebar
-          service={service}
-          relatedServices={relatedServices}
-          isLoadingService={isLoadingService}
-          isLoadingRelated={isLoadingRelated}
-          currentSlug={serviceSlug}
-        />
+      <div className="pt-16 w-full px-4 sm:px-6">
+        <div className="flex flex-col lg:flex-row">
+          {/*left sidebar (desktop only) */}
+          <ServiceSidebar
+            service={service}
+            relatedServices={relatedServices}
+            isLoadingService={isLoadingService}
+            isLoadingRelated={isLoadingRelated}
+            currentSlug={serviceSlug}
+          />
 
         {/* Scrollable right content */}
         <main className="flex-1 lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
@@ -109,6 +110,7 @@ export default function ServiceDetailPage({
             />
           </div>
         </main>
+        </div>
       </div>
     </div>
   );
