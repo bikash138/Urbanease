@@ -49,6 +49,15 @@ Book trusted home services at your fingertips. From cleaning to carpentry, verif
 
 ## Quick Start
 
+### 1. Environment variables
+
+Copy the example env files and fill in your values:
+
+- **Backend** – [`backend/.env.example`](backend/.env.example) → `backend/.env`
+- **Frontend** – [`frontend/.env.example`](frontend/.env.example) → `frontend/.env`
+
+### 2. Run the app
+
 ```bash
 # Backend (requires PostgreSQL + .env)
 cd backend && bun install && bunx --bun prisma migrate dev && bun run dev
