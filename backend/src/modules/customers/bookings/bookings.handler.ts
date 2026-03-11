@@ -14,7 +14,13 @@ export class BookingHandler {
       req.user!.id,
       req.body,
     );
-    res.status(201).json({ success: true, data: booking });
+    res
+      .status(201)
+      .json({
+        success: true,
+        data: booking,
+        message: "Booking created successfully",
+      });
   });
 
   getAllBookings = asyncHandler(async (req: Request, res: Response) => {

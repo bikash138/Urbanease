@@ -29,10 +29,26 @@ apiClient.interceptors.request.use((req) => {
 apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    console.log(error);
-    const message = error?.response?.data?.message ?? "Something went wrong";
     const statusCode = error?.response?.status ?? 500;
-    return Promise.reject({ message, statusCode });
+    console.error(error);
+    if (error?.response?.data?.message) {
+      const message = error.response.data.message;
+      const errorCode = error.response.data.errorCode;
+      const displayMessage = errorCode ? `${errorCode}: ${message}` : message;
+      return Promise.reject({ message: displayMessage, errorCode, statusCode });
+    }
+
+    if (!error?.response) {
+      return Promise.reject({
+        message: "Connection failed. The server may be unavailable.",
+        statusCode: 0,
+      });
+    }
+
+    return Promise.reject({
+      message: "Something went wrong",
+      statusCode,
+    });
   },
 );
 

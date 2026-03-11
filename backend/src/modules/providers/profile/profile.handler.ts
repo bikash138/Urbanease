@@ -14,7 +14,13 @@ export class ProfileHandler {
       req.user!.id,
       req.body,
     );
-    res.status(201).json({ success: true, data: profile });
+    res
+      .status(201)
+      .json({
+        success: true,
+        data: profile,
+        message: "Provider profile created successfully",
+      });
   });
 
   getProfile = asyncHandler(async (req: Request, res: Response) => {
@@ -27,6 +33,12 @@ export class ProfileHandler {
       req.user!.id,
       req.body,
     );
-    res.status(200).json({ success: true, data: profile });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: profile,
+        message: "Provider profile rofile updated successfully",
+      });
   });
 }

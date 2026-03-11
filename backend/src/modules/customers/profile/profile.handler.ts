@@ -11,7 +11,7 @@ export class CustomerProfileHandler {
 
   createProfile = asyncHandler(async (req: Request, res: Response) => {
     const profile = await this.profileService.createProfile(req.user!.id);
-    res.status(201).json({ success: true, data: profile });
+    res.status(201).json({ success: true, data: profile, message: "Profile created successfully" });
   });
 
   getProfile = asyncHandler(async (req: Request, res: Response) => {
