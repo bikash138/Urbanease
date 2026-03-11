@@ -84,8 +84,9 @@ export class PublicRepository {
     });
   }
 
-  async getServiceBySlug(slug: string) {
-    return await prisma.service.findUnique({
+  async getServiceBySlug(slug: string, skip: number, limit: number) {
+
+    const service = await prisma.service.findUnique({
       where: {
         slug,
         isActive: true,
@@ -100,30 +101,50 @@ export class PublicRepository {
         category: {
           select: { id: true, slug: true, name: true },
         },
-        providers: {
-          where: {
-            isAvailable: true,
-            provider: { status: "APPROVED" },
-          },
-          select: {
-            id: true,
-            customPrice: true,
-            provider: {
-              select: {
-                id: true,
-                slug: true,
-                bio: true,
-                experience: true,
-                profileImage: true,
-                user: {
-                  select: { name: true, phone: true },
-                },
+      },
+    });
+
+    if (!service) return null;
+
+    const providerWhere = {
+      serviceId: service.id,
+      isAvailable: true,
+      provider: { status: "APPROVED" as const },
+    };
+
+    const [providers, total] = await Promise.all([
+      prisma.providerService.findMany({
+        where: providerWhere,
+        select: {
+          id: true,
+          customPrice: true,
+          provider: {
+            select: {
+              id: true,
+              slug: true,
+              bio: true,
+              experience: true,
+              profileImage: true,
+              user: {
+                select: { name: true, phone: true },
               },
             },
           },
         },
-      },
-    });
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.providerService.count({
+        where: providerWhere,
+      }),
+    ]);
+
+    return {
+      ...service,
+      providers,
+      total,
+    };
   }
 
   async getAllProviders() {
@@ -217,8 +238,10 @@ export class PublicRepository {
     category?: string;
     service?: string;
     city?: string;
+    pageNum: number;
+    limitNum: number;
   }) {
-    const { category, service, city } = filters;
+    const { category, service, city, pageNum, limitNum } = filters;
 
     const isUuid = (s: string) =>
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
@@ -228,8 +251,8 @@ export class PublicRepository {
       { provider: { status: "APPROVED" } },
     ];
 
-    if (category?.trim()) {
-      const term = category.trim();
+    if (category) {
+      const term = category;
       andConditions.push({
         service: {
           isActive: true,
@@ -246,8 +269,8 @@ export class PublicRepository {
       });
     }
 
-    if (service?.trim()) {
-      const term = service.trim();
+    if (service) {
+      const term = service;
       andConditions.push({
         service: isUuid(term)
           ? { id: term, isActive: true }
@@ -261,8 +284,8 @@ export class PublicRepository {
       });
     }
 
-    if (city?.trim()) {
-      const term = city.trim();
+    if (city) {
+      const term = city;
       andConditions.push({
         serviceArea: {
           some: {
@@ -278,32 +301,46 @@ export class PublicRepository {
       });
     }
 
-    return await prisma.providerService.findMany({
-      where: { AND: andConditions },
-      select: {
-        id: true,
-        customPrice: true,
-        service: {
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            basePrice: true,
-            image: true,
+    const skip = (pageNum - 1) * limitNum;
+
+    const [providerServices, total] = await Promise.all([
+      prisma.providerService.findMany({
+        where: { AND: andConditions },
+        select: {
+          id: true,
+          customPrice: true,
+          service: {
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              basePrice: true,
+              image: true,
+            },
           },
-        },
-        provider: {
-          select: {
-            slug: true,
-            profileImage: true,
-            user: {
-              select: { name: true },
+          provider: {
+            select: {
+              slug: true,
+              profileImage: true,
+              user: {
+                select: { name: true },
+              },
             },
           },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limitNum,
+      }),
+      prisma.providerService.count({
+        where: { AND: andConditions },
+      }),
+    ]);
+
+    return {
+      providerServices,
+      total,
+    };
   }
 
   async getPublicReviews(providerId?: string) {

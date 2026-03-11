@@ -56,9 +56,9 @@ export class PublicService {
     }
   }
 
-  async getServiceBySlug(slug: string) {
+  async getServiceBySlug(slug: string, skip: number, limit: number) {
     try {
-      return await this.publicRepository.getServiceBySlug(slug);
+      return await this.publicRepository.getServiceBySlug(slug, skip, limit);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -185,6 +185,8 @@ export class PublicService {
     category?: string;
     service?: string;
     city?: string;
+    pageNum: number;
+    limitNum: number;
   }) {
     try {
       return await this.publicRepository.searchProviders(filters);

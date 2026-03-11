@@ -50,7 +50,6 @@ export function usePublicServices(
     queryKey: publicServiceKeys.list(categorySlugOrId),
     queryFn: async () => {
       const response = await getPublicServicesAPI(categorySlugOrId);
-      // apiClient returns response.data from axios = full body { success, data: [...] }
       const data = response && typeof response === "object" && "data" in response
         ? (response as { data: unknown }).data
         : response;

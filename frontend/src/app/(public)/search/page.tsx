@@ -130,6 +130,8 @@ function SearchPageContent() {
   const category = searchParams.get("category") ?? "";
   const city = searchParams.get("city") ?? "";
 
+  const hasFilters = !!service || !!category || !!city;
+
   const searchParamsObj = {
     service: service || undefined,
     category: category || undefined,
@@ -137,7 +139,6 @@ function SearchPageContent() {
   };
 
   const { data: results, isLoading } = usePublicSearch(searchParamsObj);
-  const hasFilters = !!service || !!category || !!city;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
