@@ -17,6 +17,7 @@ export class ProfileRepository {
         slug,
         bio: data.bio,
         experience: data.experience,
+        profileImage: data.profileImage,
       },
     });
   }
@@ -32,9 +33,15 @@ export class ProfileRepository {
   }
 
   async updateProfile(userId: string, data: UpdateProfileDTO) {
+    const updateData: Parameters<typeof prisma.providerProfile.update>[0]["data"] =
+      {};
+    if (data.bio !== undefined) updateData.bio = data.bio;
+    if (data.experience !== undefined) updateData.experience = data.experience;
+    if (data.profileImage != null) updateData.profileImage = data.profileImage;
+
     return await prisma.providerProfile.update({
       where: { userId },
-      data,
+      data: updateData,
     });
   }
 }

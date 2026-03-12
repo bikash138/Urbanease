@@ -82,7 +82,7 @@ model ProviderProfile {
   slug         String  @unique
   bio          String?
   experience   Int?
-  profileImage String?
+  profileImage String
 
   status          ProviderStatus @default(PENDING)
   rejectionReason String?

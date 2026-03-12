@@ -33,7 +33,12 @@ export function ProviderIdentityCard({
           <div className="relative h-16 w-16 shrink-0">
             <div className="relative h-16 w-16 rounded-full overflow-hidden">
               <Image
-                src={getImageUrl(profile?.profileImage, "avatar") || "/error-placeholder-image.webp"}
+                src={
+                  profile
+                    ? getImageUrl(profile.profileImage, "avatar") ||
+                      "/error-placeholder-image.webp"
+                    : "/error-placeholder-image.webp"
+                }
                 alt={userName}
                 fill
                 className="object-cover"

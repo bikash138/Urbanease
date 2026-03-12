@@ -6,6 +6,9 @@ export function getImageUrl(src: string, type: "banner" | "card" | "avatar") {
   };
 
   try {
+    if (!src.toLowerCase().includes("urbanease")) {
+      return src;
+    }
     const path = new URL(src).pathname;
     return `${path}?tr=${transforms[type]}`;
   } catch {
