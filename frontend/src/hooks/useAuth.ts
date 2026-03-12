@@ -109,15 +109,17 @@ export function useAuth() {
     }
   }
 
-  async function logout() {
+  async function logout(options?: { redirectTo?: string }) {
+    const redirectUrl = options?.redirectTo ?? "/";
     try {
       await signoutAPI();
       toast.success("Signed out successfully");
+      await new Promise((resolve) => setTimeout(resolve, 150));
     } catch {
-      // proceed even if server call fails
+      toast.error("Error while signing out");
     } finally {
       clearAuth();
-      router.push("/");
+      router.push(redirectUrl);
     }
   }
 
