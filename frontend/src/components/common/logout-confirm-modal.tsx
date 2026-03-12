@@ -1,9 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
-import { useAuthStore } from "@/store/auth.store";
+import { useAuth } from "@/hooks/useAuth";
 
 interface LogoutConfirmModalProps {
   /** The element that triggers the modal (e.g. a button or menu item) */
@@ -14,14 +12,12 @@ interface LogoutConfirmModalProps {
 
 export function LogoutConfirmModal({
   trigger,
-  redirectTo = "/auth/signin",
+  redirectTo = "/",
 }: LogoutConfirmModalProps) {
-  const router = useRouter();
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const { logout } = useAuth();
 
   const handleConfirm = () => {
-    clearAuth();
-    router.push(redirectTo);
+    logout({ redirectTo });
   };
 
   return (
