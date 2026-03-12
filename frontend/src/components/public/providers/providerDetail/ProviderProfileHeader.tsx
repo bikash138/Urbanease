@@ -1,5 +1,6 @@
 "use client";
 
+import { Image } from "@imagekit/next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,7 +14,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StarRating } from "./StarRating";
-import { getInitials } from "./utils";
 import type { PublicProviderDetail } from "@/types/public/public.types";
 
 interface ProviderProfileHeaderProps {
@@ -33,27 +33,19 @@ export function ProviderProfileHeader({
   bookHref,
   bookCtaText,
 }: ProviderProfileHeaderProps) {
-  const initials = getInitials(provider.user.name);
-
   return (
     <div className="pt-16 bg-white border-b border-zinc-100">
       <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="flex flex-col sm:flex-row gap-6 items-start">
           {/* Avatar */}
-          {provider.profileImage ? (
-            <div className="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 shadow-lg">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={provider.profileImage}
-                alt={provider.user.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className="w-20 h-20 rounded-2xl bg-zinc-900 flex items-center justify-center text-white font-bold text-2xl shrink-0 shadow-lg">
-              {initials}
-            </div>
-          )}
+          <div className="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 shadow-lg bg-zinc-100">
+            <Image
+              src={provider.profileImage || "/error-placeholder-image.webp"}
+              alt={provider.user.name}
+              fill
+              className="object-cover"
+            />
+          </div>
 
           {/* Info */}
           <div className="flex-1 min-w-0 space-y-2">

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -39,10 +39,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
         {/*Image */}
         <div className="relative w-full aspect-4/3 bg-zinc-100 shrink-0">
           <Image
-            src={
-              service.image ||
-              "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
-            }
+            src={service.image || "/error-placeholder-image.webp"}
             alt={service.title}
             fill
             className="object-cover"

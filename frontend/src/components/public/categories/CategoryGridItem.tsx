@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import { PublicCategory } from "@/types/public/public.types";
 
 interface CategoryGridItemProps {
@@ -14,10 +14,7 @@ export function CategoryGridItem({ category }: CategoryGridItemProps) {
     >
       <div className="relative w-16 h-16 rounded-xl bg-zinc-100 overflow-hidden shrink-0">
         <Image
-          src={
-            category.image ||
-            "https://urbanease.t3.storage.dev/public/error-placeholder-image.png"
-          }
+          src={category.image || "/error-placeholder-image.webp"}
           alt={category.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
