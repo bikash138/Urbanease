@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { BadgeCheck } from "lucide-react";
@@ -30,7 +31,7 @@ export function ProviderCard({ provider }: ProviderCardProps) {
           <div className="flex items-start gap-3 min-w-0">
             <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-zinc-100">
               <Image
-                src={provider.profileImage || "/error-placeholder-image.webp"}
+                src={getImageUrl(provider.profileImage, "avatar") || "/error-placeholder-image.webp"}
                 alt={provider.user.name}
                 fill
                 className="object-cover"

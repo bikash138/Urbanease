@@ -1,6 +1,7 @@
 "use client";
 
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import { Loader2 } from "lucide-react";
 import type { ProviderProfileData } from "@/types/provider/provider-profile.types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,7 +33,12 @@ export function ProviderIdentityCard({
           <div className="relative h-16 w-16 shrink-0">
             <div className="relative h-16 w-16 rounded-full overflow-hidden">
               <Image
-                src={profile?.profileImage || "/error-placeholder-image.webp"}
+                src={
+                  profile
+                    ? getImageUrl(profile.profileImage, "avatar") ||
+                      "/error-placeholder-image.webp"
+                    : "/error-placeholder-image.webp"
+                }
                 alt={userName}
                 fill
                 className="object-cover"

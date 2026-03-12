@@ -1,6 +1,7 @@
 "use client";
 
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import type {
@@ -60,7 +61,7 @@ export default function ServiceSidebar({
           <div className="grid grid-cols-2 gap-3">
             <div className="relative aspect-video rounded-xl overflow-hidden bg-zinc-100 col-span-2">
               <Image
-                src={service.image || "/error-placeholder-image.webp"}
+                src={getImageUrl(service.image, "card") || "/error-placeholder-image.webp"}
                 alt={service.title}
                 fill
                 className="object-cover"
@@ -111,7 +112,7 @@ export default function ServiceSidebar({
                   >
                     <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-zinc-200">
                       <Image
-                        src={s.image || "/error-placeholder-image.webp"}
+                        src={getImageUrl(s.image, "card") || "/error-placeholder-image.webp"}
                         alt={s.title}
                         fill
                         className="object-cover"

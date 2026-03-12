@@ -1,13 +1,17 @@
-const IMAGEKIT_URL = process.env.IMAGEKIT_BASE_URL;
-
 export function getImageUrl(src: string, type: "banner" | "card" | "avatar") {
-  const path = new URL(src).pathname;
-
   const transforms = {
-    banner: "w-1400,f-webp,q-70",
-    card: "w-400,h-300,f-webp,q-70",
-    avatar: "w-100,h-100,f-webp,q-70",
+    banner: "w-1400,f-webp,q-100",
+    card: "w-400,h-300,f-webp,q-100",
+    avatar: "w-100,h-100,f-webp,q-100",
   };
 
-  return `${IMAGEKIT_URL}${path}?tr=${transforms[type]}`;
+  try {
+    if (!src.toLowerCase().includes("urbanease")) {
+      return src;
+    }
+    const path = new URL(src).pathname;
+    return `${path}?tr=${transforms[type]}`;
+  } catch {
+    return src;
+  }
 }

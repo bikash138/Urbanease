@@ -1,4 +1,5 @@
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { PublicServiceDetail } from "@/types/public/public.types";
@@ -125,7 +126,7 @@ export default function ProviderCard({
           className="relative w-full sm:w-28 aspect-video sm:aspect-auto sm:h-24 rounded-xl overflow-hidden shrink-0 bg-zinc-100 order-1 sm:order-2 block"
         >
           <Image
-            src={provider.profileImage || "/error-placeholder-image.webp"}
+            src={getImageUrl(provider.profileImage, "avatar") || "/error-placeholder-image.webp"}
             alt={provider.user.name}
             fill
             className="object-cover"

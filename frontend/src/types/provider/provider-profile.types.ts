@@ -11,7 +11,7 @@ export interface ProviderProfileData {
   id: string;
   bio: string | null;
   experience: number;
-  profileImage: string | null;
+  profileImage: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
 }
 

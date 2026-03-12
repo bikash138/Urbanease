@@ -1,6 +1,6 @@
 "use client";
 
-import { extractErrorMessage } from "@/lib/utils";
+import { extractErrorMessage, getDiceBearAvatarUrl } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -75,7 +75,8 @@ export function useAuth() {
       setAuth(r.data.user, role);
 
       if (role === "PROVIDER") {
-        await createProviderProfileAPI({});
+        const profileImage = getDiceBearAvatarUrl(r.data.user.id, r.data.user.name);
+        await createProviderProfileAPI({ profileImage });
       } else if (role === "CUSTOMER") {
         await createCustomerProfileAPI();
       } else {
