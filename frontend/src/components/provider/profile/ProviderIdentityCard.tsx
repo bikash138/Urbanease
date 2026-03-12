@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import { Loader2 } from "lucide-react";
 import type { ProviderProfileData } from "@/types/provider/provider-profile.types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,25 +30,19 @@ export function ProviderIdentityCard({
       <CardContent className="pt-6">
         <div className="flex items-center gap-4">
           <div className="relative h-16 w-16 shrink-0">
-            {profile?.profileImage ? (
-              <div className="relative h-16 w-16 rounded-full overflow-hidden">
-                <Image
-                  src={profile.profileImage}
-                  alt={userName}
-                  fill
-                  className="object-cover"
-                />
-                {isUploadingImage && (
-                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-background/80">
-                    <Loader2 className="size-6 animate-spin text-primary" />
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="h-16 w-16 rounded-full bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl select-none">
-                {userName?.charAt(0).toUpperCase() ?? "P"}
-              </div>
-            )}
+            <div className="relative h-16 w-16 rounded-full overflow-hidden">
+              <Image
+                src={profile?.profileImage || "/error-placeholder-image.webp"}
+                alt={userName}
+                fill
+                className="object-cover"
+              />
+              {isUploadingImage && (
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-background/80">
+                  <Loader2 className="size-6 animate-spin text-primary" />
+                </div>
+              )}
+            </div>
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">

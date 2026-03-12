@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import { Users, Briefcase, Wrench } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -32,7 +32,7 @@ export function ProviderBanner({
       {/* Image */}
       <div className="relative flex-1 rounded-xl bg-zinc-100 overflow-hidden min-h-40 sm:min-h-48 lg:min-h-52">
         <Image
-          src="https://urbanease.t3.storage.dev/public/provider-image1.webp"
+          src="public/provider-image1.webp"
           alt="Service providers"
           fill
           className="object-cover"

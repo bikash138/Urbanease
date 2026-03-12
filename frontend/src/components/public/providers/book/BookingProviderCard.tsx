@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import { Building2 } from "lucide-react";
 import type { PublicProviderDetail } from "@/types/public/public.types";
 
@@ -18,21 +18,15 @@ export function BookingProviderCard({ provider }: BookingProviderCardProps) {
 
   return (
     <div className="bg-white rounded-2xl border border-zinc-200 p-4 flex items-center gap-3">
-      {provider.profileImage ? (
-        <div className="relative w-10 h-10 rounded-xl overflow-hidden shrink-0">
-          <Image
-            src={provider.profileImage}
-            alt={provider.user.name}
-            width={40}
-            height={40}
-            className="object-cover w-full h-full"
-          />
-        </div>
-      ) : (
-        <div className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center text-white font-bold text-sm shrink-0">
-          {initials}
-        </div>
-      )}
+      <div className="relative w-10 h-10 rounded-xl overflow-hidden shrink-0">
+        <Image
+          src={provider.profileImage || "/error-placeholder-image.webp"}
+          alt={provider.user.name}
+          width={40}
+          height={40}
+          className="object-cover w-full h-full"
+        />
+      </div>
       <div className="min-w-0">
         <p className="font-semibold text-zinc-900 text-sm truncate">
           {provider.user.name}

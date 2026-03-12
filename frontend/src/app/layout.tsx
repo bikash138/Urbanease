@@ -4,6 +4,7 @@ import "./globals.css";
 import QueryProvider from "@/components/tanstack-providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
+import { ImageKitProvider } from "@imagekit/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,11 +60,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          <div className="max-w-7xl mx-auto w-full min-h-screen">
-            {children}
-          </div>
-          <Toaster />
-          <Analytics />
+          <ImageKitProvider
+            urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_BASE_URL!}
+          >
+            <div className="max-w-7xl mx-auto w-full min-h-screen">
+              {children}
+            </div>
+            <Toaster />
+            <Analytics />
+          </ImageKitProvider>
         </QueryProvider>
       </body>
     </html>

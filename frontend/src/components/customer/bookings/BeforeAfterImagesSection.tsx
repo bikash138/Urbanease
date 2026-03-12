@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
@@ -29,13 +29,14 @@ export function BeforeAfterImagesSection({ images = [] }: BeforeAfterImagesSecti
                 href={beforeImage.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block rounded-lg overflow-hidden border border-border aspect-video bg-muted/50 hover:opacity-90 transition-opacity"
+                className="block rounded-lg overflow-hidden border border-border aspect-video bg-muted/50 hover:opacity-90 transition-opacity relative"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={beforeImage.url}
+                <Image
+                  src={beforeImage.url || "/error-placeholder-image.webp"}
                   alt="Before service"
-                  className="object-cover w-full h-full"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 250px"
                 />
               </a>
             </div>
@@ -50,7 +51,7 @@ export function BeforeAfterImagesSection({ images = [] }: BeforeAfterImagesSecti
                 className="block rounded-lg overflow-hidden border border-border aspect-video bg-muted/50 hover:opacity-90 transition-opacity relative"
               >
                 <Image
-                  src={afterImage.url}
+                  src={afterImage.url || "/error-placeholder-image.webp"}
                   alt="After service"
                   fill
                   className="object-cover"

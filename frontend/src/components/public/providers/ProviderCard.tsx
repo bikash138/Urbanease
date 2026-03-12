@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { Image } from "@imagekit/next";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { BadgeCheck } from "lucide-react";
@@ -30,14 +30,10 @@ export function ProviderCard({ provider }: ProviderCardProps) {
           <div className="flex items-start gap-3 min-w-0">
             <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-zinc-100">
               <Image
-                src={
-                  provider.profileImage ??
-                  `https://api.dicebear.com/7.x/initials/svg?seed=${provider.user.name}`
-                }
+                src={provider.profileImage || "/error-placeholder-image.webp"}
                 alt={provider.user.name}
                 fill
                 className="object-cover"
-                unoptimized={!provider.profileImage}
               />
             </div>
             <div className="min-w-0 flex-1 overflow-hidden">

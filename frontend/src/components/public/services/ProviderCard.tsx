@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { PublicServiceDetail } from "@/types/public/public.types";
@@ -125,14 +125,10 @@ export default function ProviderCard({
           className="relative w-full sm:w-28 aspect-video sm:aspect-auto sm:h-24 rounded-xl overflow-hidden shrink-0 bg-zinc-100 order-1 sm:order-2 block"
         >
           <Image
-            src={
-              provider.profileImage ??
-              `https://api.dicebear.com/7.x/initials/svg?seed=${provider.user.name}`
-            }
+            src={provider.profileImage || "/error-placeholder-image.webp"}
             alt={provider.user.name}
             fill
             className="object-cover"
-            unoptimized={!provider.profileImage}
           />
         </Link>
       </div>

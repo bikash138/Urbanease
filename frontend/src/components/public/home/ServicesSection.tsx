@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,18 +29,12 @@ function ServiceCard({ service }: { service: PublicService }) {
       <div className="group overflow-hidden rounded-2xl bg-white transition-all duration-200">
         <div className="relative w-full aspect-square bg-zinc-100">
           <Image
-            src={
-              service.image ||
-              "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
-            }
+            src={service.image || "/error-placeholder-image.webp"}
             alt={service.title}
             fill
             className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-            }}
-          />
+        />
         </div>
         <div className="px-3 py-3 space-y-2.5">
           <p className="text-sm font-medium text-zinc-900 leading-snug">

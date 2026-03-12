@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import type {
@@ -56,10 +56,7 @@ export default function CategorySidebar({
         ) : category ? (
           <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-100">
             <Image
-              src={
-                category.image ||
-                "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
-              }
+              src={category.image || "/error-placeholder-image.webp"}
               alt={category.name}
               fill
               className="object-cover"
@@ -95,10 +92,7 @@ export default function CategorySidebar({
                   >
                     <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-zinc-200">
                       <Image
-                        src={
-                          cat.image ||
-                          "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=2940&auto=format&fit=crop"
-                        }
+                        src={cat.image || "/error-placeholder-image.webp"}
                         alt={cat.name}
                         fill
                         className="object-cover"
