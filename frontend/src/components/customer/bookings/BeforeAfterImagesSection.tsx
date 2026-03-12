@@ -1,6 +1,7 @@
 "use client";
 
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
@@ -32,7 +33,7 @@ export function BeforeAfterImagesSection({ images = [] }: BeforeAfterImagesSecti
                 className="block rounded-lg overflow-hidden border border-border aspect-video bg-muted/50 hover:opacity-90 transition-opacity relative"
               >
                 <Image
-                  src={beforeImage.url || "/error-placeholder-image.webp"}
+                  src={getImageUrl(beforeImage.url, "card") || "/error-placeholder-image.webp"}
                   alt="Before service"
                   fill
                   className="object-cover"
@@ -51,7 +52,7 @@ export function BeforeAfterImagesSection({ images = [] }: BeforeAfterImagesSecti
                 className="block rounded-lg overflow-hidden border border-border aspect-video bg-muted/50 hover:opacity-90 transition-opacity relative"
               >
                 <Image
-                  src={afterImage.url || "/error-placeholder-image.webp"}
+                  src={getImageUrl(afterImage.url, "card") || "/error-placeholder-image.webp"}
                   alt="After service"
                   fill
                   className="object-cover"

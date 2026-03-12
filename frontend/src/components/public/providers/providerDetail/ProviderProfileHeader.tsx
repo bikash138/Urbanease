@@ -1,6 +1,7 @@
 "use client";
 
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -40,7 +41,7 @@ export function ProviderProfileHeader({
           {/* Avatar */}
           <div className="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 shadow-lg bg-zinc-100">
             <Image
-              src={provider.profileImage || "/error-placeholder-image.webp"}
+              src={getImageUrl(provider.profileImage, "avatar") || "/error-placeholder-image.webp"}
               alt={provider.user.name}
               fill
               className="object-cover"

@@ -1,6 +1,7 @@
 "use client";
 
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +30,7 @@ function ServiceCard({ service }: { service: PublicService }) {
       <div className="group overflow-hidden rounded-2xl bg-white transition-all duration-200">
         <div className="relative w-full aspect-square bg-zinc-100">
           <Image
-            src={service.image || "/error-placeholder-image.webp"}
+            src={getImageUrl(service.image, "card") || "/error-placeholder-image.webp"}
             alt={service.title}
             fill
             className="object-cover"

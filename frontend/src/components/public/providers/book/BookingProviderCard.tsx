@@ -1,6 +1,7 @@
 "use client";
 
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import { Building2 } from "lucide-react";
 import type { PublicProviderDetail } from "@/types/public/public.types";
 
@@ -20,7 +21,7 @@ export function BookingProviderCard({ provider }: BookingProviderCardProps) {
     <div className="bg-white rounded-2xl border border-zinc-200 p-4 flex items-center gap-3">
       <div className="relative w-10 h-10 rounded-xl overflow-hidden shrink-0">
         <Image
-          src={provider.profileImage || "/error-placeholder-image.webp"}
+          src={getImageUrl(provider.profileImage, "avatar") || "/error-placeholder-image.webp"}
           alt={provider.user.name}
           width={40}
           height={40}

@@ -1,6 +1,7 @@
 "use client";
 
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +30,7 @@ function CategoryCard({
     <div className="group cursor-pointer rounded-2xl overflow-hidden transition-all duration-200">
       <div className="relative w-full aspect-square bg-zinc-100">
         <Image
-          src={category.image || "/error-placeholder-image.webp"}
+          src={getImageUrl(category.image, "card") || "/error-placeholder-image.webp"}
           alt={category.name}
           fill
           className="object-cover"

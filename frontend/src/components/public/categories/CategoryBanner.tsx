@@ -1,4 +1,5 @@
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import { Grid3X3, Wrench } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -28,7 +29,7 @@ export function CategoryBanner({
 
       <div className="relative flex-1 rounded-xl bg-zinc-100 overflow-hidden min-h-40 sm:min-h-48 lg:min-h-52">
         <Image
-          src="public/category-hero-image.png"
+          src={"public/category-hero-image.png"}
           alt="Categories banner"
           fill
           className="object-cover"

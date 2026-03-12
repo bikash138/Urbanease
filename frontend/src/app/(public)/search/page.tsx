@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +36,7 @@ function SearchResultCard({ result }: { result: PublicSearchResult }) {
           <div className="flex items-start gap-4">
             <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-zinc-100">
               <Image
-                src={result.provider.profileImage || "/error-placeholder-image.webp"}
+                src={getImageUrl(result.provider.profileImage, "avatar") || "/error-placeholder-image.webp"}
                 alt={providerName}
                 fill
                 className="object-cover"

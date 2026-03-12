@@ -1,6 +1,7 @@
 "use client";
 
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import { Users, Briefcase, Wrench } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -32,7 +33,7 @@ export function ProviderBanner({
       {/* Image */}
       <div className="relative flex-1 rounded-xl bg-zinc-100 overflow-hidden min-h-40 sm:min-h-48 lg:min-h-52">
         <Image
-          src="public/provider-image1.webp"
+          src={getImageUrl("public/provider-image1.webp", "banner")}
           alt="Service providers"
           fill
           className="object-cover"

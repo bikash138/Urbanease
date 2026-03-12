@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Image } from "@imagekit/next";
+import { getImageUrl } from "@/lib/imagekit-url-generator";
 import { PublicCategory } from "@/types/public/public.types";
 
 interface CategoryGridItemProps {
@@ -14,7 +15,7 @@ export function CategoryGridItem({ category }: CategoryGridItemProps) {
     >
       <div className="relative w-16 h-16 rounded-xl bg-zinc-100 overflow-hidden shrink-0">
         <Image
-          src={category.image || "/error-placeholder-image.webp"}
+          src={getImageUrl(category.image, "card") || "/error-placeholder-image.webp"}
           alt={category.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
