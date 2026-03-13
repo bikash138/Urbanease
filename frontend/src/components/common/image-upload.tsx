@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useState, useRef, useEffect } from "react";
-import { UploadCloud, X, Pencil, Image as ImageIcon } from "lucide-react";
+import { UploadCloud, X, Pencil, Image as ImageIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +11,7 @@ interface ImageUploadProps {
   onRemove?: () => void;
   className?: string;
   disabled?: boolean;
+  isUploading?: boolean;
 }
 
 export function ImageUpload({
@@ -19,6 +20,7 @@ export function ImageUpload({
   onRemove,
   className,
   disabled = false,
+  isUploading = false,
 }: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
@@ -101,6 +103,34 @@ export function ImageUpload({
     [disabled, onChange, onRemove],
   );
 
+  const uploadOverlay = isUploading && (
+    <div
+      className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-lg bg-background/90 backdrop-blur-md animate-in fade-in duration-300"
+    >
+      <style>{`
+        @keyframes uploadShimmer {
+          0%, 100% { transform: translateX(-100%); }
+          50% { transform: translateX(100%); }
+        }
+      `}</style>
+      <div className="relative flex items-center justify-center">
+        <div className="absolute h-14 w-14 rounded-full bg-primary/20 animate-ping animation-duration-[2s]" />
+        <div className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary/30 bg-primary/5 shadow-lg">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-sm font-semibold text-foreground">Uploading...</p>
+        <div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full w-1/3 rounded-full bg-primary"
+            style={{ animation: "uploadShimmer 1.5s ease-in-out infinite" }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
   if (preview) {
     return (
       <div
@@ -123,7 +153,13 @@ export function ImageUpload({
           alt="Upload preview"
           className="object-cover w-full h-full"
         />
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+        {uploadOverlay}
+        <div
+          className={cn(
+            "absolute inset-0 bg-black/40 flex items-center justify-center gap-2 transition-opacity",
+            isUploading ? "opacity-0" : "opacity-0 group-hover:opacity-100",
+          )}
+        >
           <Button
             type="button"
             variant="secondary"
@@ -158,14 +194,16 @@ export function ImageUpload({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={cn(
-        "cursor-pointer flex flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors w-full aspect-video",
+        "relative cursor-pointer flex flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors w-full aspect-video overflow-hidden",
         isDragging
           ? "border-primary bg-primary/5"
           : "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50",
         disabled && "pointer-events-none opacity-50",
+        isUploading && "border-primary/50 bg-primary/5",
         className,
       )}
     >
+      {uploadOverlay}
       <input
         ref={inputRef}
         type="file"

@@ -165,6 +165,8 @@ export function CategoriesSheet({
                         value={field.value}
                         onChange={field.onChange}
                         onRemove={() => field.onChange(null)}
+                        disabled={isMutating}
+                        isUploading={isMutating}
                       />
                     </FormControl>
                     <FormMessage />

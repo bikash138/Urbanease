@@ -53,7 +53,7 @@ type ServiceFormValues = {
   basePrice: number;
   categoryId: string;
   isActive: boolean;
-  image?: any;
+  image?: File | string | null;
 };
 
 export function ServicesSheet({
@@ -195,6 +195,7 @@ export function ServicesSheet({
                     onChange={field.onChange}
                     onRemove={() => field.onChange(null)}
                     disabled={isMutating}
+                    isUploading={isMutating}
                   />
                 </FormControl>
                 <FormMessage />

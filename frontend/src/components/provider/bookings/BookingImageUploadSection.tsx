@@ -39,6 +39,7 @@ export function BookingImageUploadSection({
         value={null}
         onChange={(file) => file && onUpload(bookingId, file, imageType)}
         disabled={isUploading}
+        isUploading={isUploading}
         className="aspect-video max-h-32"
       />
     </div>
