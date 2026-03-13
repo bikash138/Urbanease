@@ -25,7 +25,7 @@ export async function getOrSet<T>(
   if (cached) {
     return JSON.parse(cached) as T;
   }
-
+    
   const data = await fetcher();
 
   // If skipCacheWhen returns true, means repository havent returned any data
