@@ -24,6 +24,7 @@ Create a `.env` file with:
 | `AWS_ENDPOINT_URL_IAM` | IAM endpoint URL |
 | `AWS_REGION` | AWS region |
 | `S3_BUCKET_NAME` | Bucket name for uploads |
+| `REDIS_URL` | Valkey/Redis connection URL (e.g. `redis://localhost:6379` or `redis://valkey:6379` for Docker) |
 
 ---
 
@@ -35,18 +36,25 @@ backend/
 │   ├── schema.prisma
 │   └── migrations/
 ├── src/
-│   ├── common/        # Middleware, errors, utils
-│   ├── config/        # Env validation
+│   ├── common/           # Middleware, errors, utils
+│   │   ├── errors/       # App error types
+│   │   ├── middleware/   # Auth, validation, error handling, roles
+│   │   └── utils/        # S3, asyncHandler, slug-generator
+│   ├── config/           # Env validation, DB & Redis connection
+│   ├── lib/              # Redis client, cache, cache-keys
 │   ├── modules/
-│   │   ├── admin/     # Category, service, provider, review, area, upload
+│   │   ├── admin/        # Category, service, provider, review, area
 │   │   ├── auth/
-│   │   ├── customers/
-│   │   ├── providers/
+│   │   ├── customers/    # Addresses, bookings, profile, reviews
+│   │   ├── providers/    # Areas, bookings, profile, reviews, services, upload
 │   │   └── public/
 │   ├── app.ts
 │   ├── route.ts
 │   └── index.ts
-├── docker-compose.yml
+├── db.ts                 # Prisma client
+├── prisma.config.ts
+├── docker-compose.yml    # Backend + Valkey
+├── Dockerfile
 └── package.json
 ```
 
@@ -64,7 +72,11 @@ bunx --bun prisma studio        # Open Prisma Studio
 
 ## Docker
 
+The stack includes the backend and Valkey. PostgreSQL must be running separately (or add it to `docker-compose.yml`).
+
 ```bash
 docker compose build
-docker-compose up
+docker compose up -d
 ```
+
+Ensure `REDIS_URL=redis://valkey:6379` in your `.env` so the backend connects to the Valkey container.

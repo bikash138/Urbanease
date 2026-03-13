@@ -20,26 +20,22 @@ async function start() {
       console.error("Timeout reached, some request may drop");
       process.exit(1);
     }, 10_000);
-    server.close((error) => {
+    server.close(async (error) => {
       if (error) {
         console.error("Error while closing server");
         process.exit(1);
       }
-      console.log("Server closed");
-    });
-    try {
-      await prisma.$disconnect();
-      console.log("Database disconnected");
-    } catch (error) {
-      console.error("Error while disconnecting database", error);
-    }
-    try {
+      console.log("Server closed, no more incoming requests");
+      try {
+        await prisma.$disconnect();
+        console.log("Database disconnected");
+      } catch (e) {
+        console.error("Error while disconnecting database", e);
+      }
       await disconnectRedis();
-    } catch (error) {
-      console.error("Error while disconnecting Redis", error);
-    }
-    console.log("Shutdown Complete");
-    process.exit(0);
+      console.log("Shutdown complete");
+      process.exit(0);
+    });
   }
 
   process.on("SIGTERM", () => shutdown("SIGTERM"));
