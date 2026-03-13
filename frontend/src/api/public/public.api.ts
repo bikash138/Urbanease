@@ -31,16 +31,11 @@ export async function getPublicCategoryBySlugAPI(
 }
 
 export async function getPublicServicesAPI(
-  categorySlugOrId?: string,
+  categorySlug?: string,
 ): Promise<PublicServicesResponse> {
-  if (!categorySlugOrId) return apiClient.get("/public/services");
-  const isUuid =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      categorySlugOrId,
-    );
-  const param = isUuid ? "categoryId" : "categorySlug";
+  if (!categorySlug) return apiClient.get("/public/services");
   return apiClient.get(
-    `/public/services?${param}=${encodeURIComponent(categorySlugOrId)}`,
+    `/public/services?categorySlug=${encodeURIComponent(categorySlug)}`,
   );
 }
 

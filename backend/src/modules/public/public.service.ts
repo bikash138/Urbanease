@@ -2,6 +2,9 @@ import { Prisma } from "../../../generated/prisma/client";
 import { AppError } from "../../common/errors/app.error";
 import { ErrorCode } from "../../common/errors/error.types";
 import { PublicRepository } from "./public.repository";
+import { CacheTTL, getOrSet } from "../../lib/cache";
+import { CacheKeys } from "../../lib/cache-keys";
+import { redis } from "../../lib/redis";
 
 export class PublicService {
   private publicRepository: PublicRepository;
@@ -12,8 +15,13 @@ export class PublicService {
 
   async getAllCategories() {
     try {
-      return await this.publicRepository.getAllCategories();
+      return await getOrSet(
+        CacheKeys.publicCategories(),
+        CacheTTL.CATEGORIES,
+        () => this.publicRepository.getAllCategories(),
+      );
     } catch (error) {
+      console.log(error);
       throw new AppError(
         "Failed to fetch categories",
         500,
@@ -24,7 +32,11 @@ export class PublicService {
 
   async getCategoryBySlug(slug: string) {
     try {
-      return await this.publicRepository.getCategoryBySlug(slug);
+      return await getOrSet(
+        CacheKeys.publicCategory(slug),
+        CacheTTL.CATEGORIES,
+        () => this.publicRepository.getCategoryBySlug(slug),
+      );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -46,7 +58,11 @@ export class PublicService {
 
   async getAllServices(categorySlugOrId?: string) {
     try {
-      return await this.publicRepository.getAllServices(categorySlugOrId);
+      return await getOrSet(
+        CacheKeys.publicServices(categorySlugOrId),
+        CacheTTL.SERVICES,
+        () => this.publicRepository.getAllServices(categorySlugOrId),
+      );
     } catch (error) {
       throw new AppError(
         "Failed to fetch services",
@@ -58,7 +74,11 @@ export class PublicService {
 
   async getServiceBySlug(slug: string, skip: number, limit: number) {
     try {
-      return await this.publicRepository.getServiceBySlug(slug, skip, limit);
+      return await getOrSet(
+        CacheKeys.publicService(slug),
+        CacheTTL.SERVICES,
+        () => this.publicRepository.getServiceBySlug(slug, skip, limit)
+      );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -80,7 +100,9 @@ export class PublicService {
 
   async getAllProviders() {
     try {
-      return await this.publicRepository.getAllProviders();
+      getOrSet(CacheKeys.publicProvider(), CacheTTL.PROVIDER, () =>
+        this.publicRepository.getAllProviders(),
+      );
     } catch (error) {
       throw new AppError(
         "Failed to fetch providers",
@@ -92,7 +114,12 @@ export class PublicService {
 
   async getProviderBySlug(slug: string) {
     try {
-      return await this.publicRepository.getProviderBySlug(slug);
+      return await getOrSet(
+        CacheKeys.publicProvider(slug),
+        CacheTTL.PROVIDER,
+        () => this.publicRepository.getProviderBySlug(slug),
+        // { skipCacheWhen: (data) => data === null },
+      );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

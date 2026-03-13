@@ -30,6 +30,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "ioredis": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.19.0",
     "zod": "^4.3.6"
