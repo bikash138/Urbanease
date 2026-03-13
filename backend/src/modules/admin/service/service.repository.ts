@@ -20,13 +20,14 @@ export class ServiceRepository {
       },
       select: {
         id: true,
+        slug: true,
         title: true,
         description: true,
         basePrice: true,
         isActive: true,
         image: true,
         categoryId: true,
-        category: { select: { name: true } },
+        category: { select: { name: true, slug: true } },
         createdAt: true,
       },
     });
@@ -98,12 +99,14 @@ export class ServiceRepository {
         },
         select: {
           id: true,
+          slug: true,
           title: true,
           description: true,
           basePrice: true,
           isActive: true,
           image: true,
           categoryId: true,
+          category: { select: { slug: true } },
         },
       });
     });
@@ -112,7 +115,12 @@ export class ServiceRepository {
   async deleteServiceByID(data: ServiceIdParamDTO) {
     return await prisma.service.delete({
       where: { id: data.id },
-      select: { id: true, title: true },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        category: { select: { slug: true } },
+      },
     });
   }
 }

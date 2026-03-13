@@ -1,6 +1,8 @@
 import { Prisma } from "../../../../generated/prisma/client";
 import { AppError } from "../../../common/errors/app.error";
 import { ErrorCode } from "../../../common/errors/error.types";
+import { invalidateMany } from "../../../lib/cache";
+import { CacheKeys } from "../../../lib/cache-keys";
 import { ServiceRepository } from "./service.repository";
 import type {
   CreateServiceSchemaDTO,
@@ -17,7 +19,13 @@ export class ServiceService {
 
   async addService(data: CreateServiceSchemaDTO) {
     try {
-      return await this.serviceRepository.createService(data);
+      const service = await this.serviceRepository.createService(data);
+      await invalidateMany([
+        CacheKeys.publicServices(),
+        CacheKeys.publicServices(service.category.slug),
+        CacheKeys.publicCategory(service.category.slug),
+      ]);
+      return service;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError
@@ -72,7 +80,14 @@ export class ServiceService {
 
   async updateServiceByID(id: string, data: UpdateServiceSchemaDTO) {
     try {
-      return await this.serviceRepository.updateServiceByID(id, data);
+      const updated = await this.serviceRepository.updateServiceByID(id, data);
+      await invalidateMany([
+        CacheKeys.publicService(updated.slug),
+        CacheKeys.publicServices(),
+        CacheKeys.publicServices(updated.category.slug),
+        CacheKeys.publicCategory(updated.category.slug),
+      ]);
+      return updated;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -90,7 +105,14 @@ export class ServiceService {
 
   async deleteServiceByID(data: ServiceIdParamDTO) {
     try {
-      return await this.serviceRepository.deleteServiceByID(data);
+      const deleted = await this.serviceRepository.deleteServiceByID(data);
+      await invalidateMany([
+        CacheKeys.publicService(deleted.slug),
+        CacheKeys.publicServices(),
+        CacheKeys.publicServices(deleted.category.slug),
+        CacheKeys.publicCategory(deleted.category.slug),
+      ]);
+      return deleted;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

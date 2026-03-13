@@ -1,3 +1,5 @@
+export type CacheKey = string;
+
 export const CacheKeys = {
   publicCategories: () => "public:categories",
   publicCategory: (slug: string) => `public:category:${slug}`,

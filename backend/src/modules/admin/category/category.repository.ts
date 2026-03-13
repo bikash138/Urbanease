@@ -41,6 +41,7 @@ export class CategoryRepository {
         description: true,
         isActive: true,
         image: true,
+        slug: true,
       },
     });
   }
@@ -51,6 +52,7 @@ export class CategoryRepository {
       select: {
         id: true,
         name: true,
+        slug: true,
       },
     });
   }

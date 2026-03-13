@@ -1,4 +1,5 @@
 import { redis } from "./redis";
+import type { CacheKey } from "./cache-keys";
 
 export const CacheTTL = {
   CATEGORIES: 900,
@@ -39,4 +40,21 @@ export async function getOrSet<T>(
   }
 
   return data;
+}
+
+export async function invalidate(cacheKey: CacheKey): Promise<void> {
+  try{
+    await redis.del(cacheKey);
+  } catch {
+    //invalidation failed 
+  }
+}
+
+export async function invalidateMany(cacheKeys: CacheKey[]): Promise<void> {
+  try {
+    if (cacheKeys.length === 0) return;
+    await redis.del(...cacheKeys);
+  } catch (error) {
+    //invalidation failed
+  }
 }
