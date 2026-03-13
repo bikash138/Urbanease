@@ -100,7 +100,7 @@ export class PublicService {
 
   async getAllProviders() {
     try {
-      getOrSet(CacheKeys.publicProvider(), CacheTTL.PROVIDER, () =>
+      return await getOrSet(CacheKeys.publicProvider(), CacheTTL.PROVIDER, () =>
         this.publicRepository.getAllProviders(),
       );
     } catch (error) {
