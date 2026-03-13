@@ -73,6 +73,7 @@ export class ProviderRepository {
       },
       select: {
         id: true,
+        slug: true,
         status: true,
         user: { select: { name: true, email: true } },
       },
@@ -88,6 +89,7 @@ export class ProviderRepository {
       },
       select: {
         id: true,
+        slug: true,
         status: true,
         rejectionReason: true,
         user: { select: { name: true, email: true } },

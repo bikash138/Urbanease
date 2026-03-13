@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   urbanease-backend:
     build:
@@ -10,3 +9,16 @@ services:
       - .env
     ports:
       - "4000:4000"
+    depends_on:
+      - valkey
+  valkey:
+    image: valkey/valkey:latest
+    container_name: urbanease-valkey
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes: 
+      - valkey-data:/data
+
+volumes:
+  valkey-data:

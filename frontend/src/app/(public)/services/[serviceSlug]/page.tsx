@@ -22,7 +22,7 @@ export default function ServiceDetailPage({
     usePublicServiceDetail(serviceSlug);
   const { data: allReviews = [] } = usePublicReviews();
   const { data: relatedServicesRaw = [], isLoading: isLoadingRelated } =
-    usePublicServices(service?.category?.id);
+    usePublicServices(service?.category?.slug);
 
   const relatedServices = relatedServicesRaw
     .filter((s) => s.slug !== serviceSlug)

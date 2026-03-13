@@ -1,6 +1,8 @@
 import { Prisma } from "../../../../generated/prisma/client";
 import { AppError } from "../../../common/errors/app.error";
 import { ErrorCode } from "../../../common/errors/error.types";
+import { invalidateMany } from "../../../lib/cache";
+import { CacheKeys } from "../../../lib/cache-keys";
 import { ProviderRepository } from "./provider.repository";
 import type {
   ProviderIdParamDTO,
@@ -47,7 +49,13 @@ export class ProviderService {
 
   async approveProvider(data: ProviderIdParamDTO) {
     try {
-      return await this.providerRepository.approveProvider(data);
+      const provider =
+        await this.providerRepository.approveProvider(data);
+      await invalidateMany([
+        CacheKeys.publicProvider(),
+        CacheKeys.publicProvider(provider.slug),
+      ]);
+      return provider;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -65,7 +73,15 @@ export class ProviderService {
 
   async rejectProvider(data: ProviderIdParamDTO, body: RejectProviderDTO) {
     try {
-      return await this.providerRepository.rejectProvider(data, body);
+      const provider = await this.providerRepository.rejectProvider(
+        data,
+        body,
+      );
+      await invalidateMany([
+        CacheKeys.publicProvider(),
+        CacheKeys.publicProvider(provider.slug),
+      ]);
+      return provider;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

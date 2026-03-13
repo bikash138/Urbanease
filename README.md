@@ -58,13 +58,24 @@ Copy the example env files and fill in your values:
 
 ### 2. Run the app
 
+**Option A: Docker**
+
 ```bash
-# Backend (requires PostgreSQL + .env)
+# Backend + Valkey (PostgreSQL must be running separately; set DATABASE_URL in .env)
+cd backend && docker compose up -d
+```
+
+**Option B: Local development**
+
+```bash
+# Backend (requires PostgreSQL, Valkey, and .env)
 cd backend && bun install && bunx --bun prisma migrate dev && bun run dev
 
 # Frontend (in another terminal)
 cd frontend && bun install && bun run dev
 ```
+
+> **Note:** The backend requires a Redis-compatible store (Valkey or Redis). The Docker stack includes Valkey; for local dev, run Valkey or Redis (e.g. `docker run -d -p 6379:6379 valkey/valkey`).
 
 Backend: `http://localhost:4000` · Frontend: `http://localhost:3000`
 
@@ -72,6 +83,7 @@ Backend: `http://localhost:4000` · Frontend: `http://localhost:3000`
 
 **Frontend** - Next.js 16, React 19, Tailwind, shadcn/ui, TanStackQuery
 **Backend** - Bun, Express 5, Prisma 7  
-**Database** -  PostgreSQL  
+**Database** - PostgreSQL  
+**Cache** - Valkey (Redis-compatible)  
 **Auth** - JWT, HTTP-only cookies  
-**Storage** - S3-compatible (tigris)
+**Storage** - S3-compatible (Tigris)

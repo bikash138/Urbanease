@@ -2,8 +2,10 @@ import { env, connectDB } from "./config";
 import app from "./app";
 import http from "http";
 import { prisma } from "../db";
+import { disconnectRedis, connectRedis } from "./lib/redis";
 
 async function start() {
+  await connectRedis();
   await connectDB();
   const server = http.createServer(app);
 
@@ -18,21 +20,22 @@ async function start() {
       console.error("Timeout reached, some request may drop");
       process.exit(1);
     }, 10_000);
-    server.close((error) => {
+    server.close(async (error) => {
       if (error) {
         console.error("Error while closing server");
         process.exit(1);
       }
-      console.log("Server closed");
+      console.log("Server closed, no more incoming requests");
+      try {
+        await prisma.$disconnect();
+        console.log("Database disconnected");
+      } catch (e) {
+        console.error("Error while disconnecting database", e);
+      }
+      await disconnectRedis();
+      console.log("Shutdown complete");
+      process.exit(0);
     });
-    try {
-      await prisma.$disconnect();
-      console.log("Database disconnected");
-    } catch (error) {
-      console.error("Error while disconnecting database", error);
-    }
-    console.log("Shutdown Complete");
-    process.exit(0);
   }
 
   process.on("SIGTERM", () => shutdown("SIGTERM"));

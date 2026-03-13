@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AppError } from "../errors/app.error";
 import { ErrorCode } from "../errors/error.types";
+import { env } from "../../config";
 
 declare global {
   namespace Express {
@@ -29,7 +30,7 @@ export const authMiddleware = (
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+    const decoded = jwt.verify(token, env.JWT_SECRET) as {
       id: string;
       email: string;
       role: "CUSTOMER" | "PROVIDER" | "ADMIN";
