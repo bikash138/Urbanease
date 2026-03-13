@@ -2,8 +2,10 @@ import { env, connectDB } from "./config";
 import app from "./app";
 import http from "http";
 import { prisma } from "../db";
+import { disconnectRedis, connectRedis } from "./lib/redis";
 
 async function start() {
+  await connectRedis();
   await connectDB();
   const server = http.createServer(app);
 
@@ -30,6 +32,11 @@ async function start() {
       console.log("Database disconnected");
     } catch (error) {
       console.error("Error while disconnecting database", error);
+    }
+    try {
+      await disconnectRedis();
+    } catch (error) {
+      console.error("Error while disconnecting Redis", error);
     }
     console.log("Shutdown Complete");
     process.exit(0);
