@@ -2,6 +2,7 @@ import { Router } from "express";
 import { generateUploadUrl } from "../../../common/utils/s3.service";
 import { authMiddleware } from "../../../common/middleware/auth.middleware";
 import { roleMiddleware } from "../../../common/middleware/role.middleware";
+import { logger } from "../../../lib/logger";
 
 const uploadRouter = Router();
 
@@ -24,7 +25,7 @@ uploadRouter.post("/presigned-url", async (req, res) => {
       data: uploadData,
     });
   } catch (error) {
-    console.error("Error generating presigned URL:", error);
+    logger.error({ err: error }, "Error generating presigned URL");
     res
       .status(500)
       .json({ error: "Failed to generate presigned upload URL" });

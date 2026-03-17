@@ -4,7 +4,7 @@ import { ErrorCode } from "../../common/errors/error.types";
 import { PublicRepository } from "./public.repository";
 import { CacheTTL, getOrSet } from "../../lib/cache";
 import { CacheKeys } from "../../lib/cache-keys";
-import { redis } from "../../lib/redis";
+import { logger } from "../../lib/logger";
 
 export class PublicService {
   private publicRepository: PublicRepository;
@@ -21,7 +21,7 @@ export class PublicService {
         () => this.publicRepository.getAllCategories(),
       );
     } catch (error) {
-      console.log(error);
+      logger.error({ err: error }, "Failed to fetch categories");
       throw new AppError(
         "Failed to fetch categories",
         500,
