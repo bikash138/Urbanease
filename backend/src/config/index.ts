@@ -1,12 +1,13 @@
 export { env } from "./env";
 import { prisma } from "../../db";
+import { logger } from "../lib/logger";
 
 export async function connectDB(): Promise<void> {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    console.log("Database connected successfully");
+    logger.info("Database connected successfully");
   } catch (error) {
-    console.error("Failed to connect to database");
+    logger.error({ err: error }, "Failed to connect to database");
     process.exit(1);
   }
 }

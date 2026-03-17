@@ -21,8 +21,8 @@ categoryRouter.post(
 
 categoryRouter.get(
   "/",
-  // authMiddleware,
-  // roleMiddleware("ADMIN"),
+  authMiddleware,
+  roleMiddleware("ADMIN"),
   categoryHandler.getAllServiceCategories,
 );
 

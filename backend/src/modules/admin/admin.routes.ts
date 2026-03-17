@@ -10,6 +10,7 @@ import {
 } from "../../common/utils/s3.service";
 import { authMiddleware } from "../../common/middleware/auth.middleware";
 import { roleMiddleware } from "../../common/middleware/role.middleware";
+import { logger } from "../../lib/logger";
 
 const adminRouter = Router();
 
@@ -46,7 +47,7 @@ adminRouter.post(
         data: uploadData,
       });
     } catch (error) {
-      console.error("Error generating presigned URL:", error);
+      logger.error({ err: error }, "Error generating presigned URL");
       res
         .status(500)
         .json({ error: "Failed to generate presigned upload URL" });
@@ -70,7 +71,7 @@ adminRouter.delete(
 
       res.status(200).json({ message: "Image deleted successfully" });
     } catch (error) {
-      console.error("Error deleting image from S3:", error);
+      logger.error({ err: error }, "Error deleting image from S3");
       res.status(500).json({ error: "Failed to delete image" });
     }
   },

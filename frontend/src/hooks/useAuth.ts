@@ -113,8 +113,8 @@ export function useAuth() {
     const redirectUrl = options?.redirectTo ?? "/";
     try {
       await signoutAPI();
-      toast.success("Signed out successfully");
       await new Promise((resolve) => setTimeout(resolve, 150));
+      toast.success("Signed out successfully");
     } catch {
       toast.error("Error while signing out");
     } finally {

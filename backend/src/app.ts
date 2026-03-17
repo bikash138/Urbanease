@@ -5,6 +5,7 @@ import { errorMiddleware } from "./common/middleware/error.middleware";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { env } from "./config";
+import { createHttpLogger } from "./lib/logger";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(requestIdMiddleware);
+app.use(createHttpLogger());
 
 app.use("/api/v1", router);
 

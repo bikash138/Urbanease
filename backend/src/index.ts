@@ -3,6 +3,7 @@ import app from "./app";
 import http from "http";
 import { prisma } from "../db";
 import { disconnectRedis, connectRedis } from "./lib/redis";
+import { logger } from "./lib/logger";
 
 async function start() {
   await connectRedis();
@@ -10,30 +11,30 @@ async function start() {
   const server = http.createServer(app);
 
   server.listen(env.PORT, () => {
-    console.log(`Urbanease backend is up and running at PORT:${env.PORT}`);
-    console.log(`Environment: ${env.NODE_ENV}`);
+    logger.info(`Urbanease backend is up and running at PORT:${env.PORT}`);
+    logger.info(`Environment: ${env.NODE_ENV}`);
   });
 
   async function shutdown(signal: string) {
-    console.log(`Received ${signal}. Starting graceful shutdown...`);
+    logger.info(`Received ${signal}. Starting graceful shutdown...`);
     setTimeout(() => {
-      console.error("Timeout reached, some request may drop");
+      logger.error("Timeout reached, some request may drop");
       process.exit(1);
     }, 10_000);
     server.close(async (error) => {
       if (error) {
-        console.error("Error while closing server");
+        logger.error({ err: error }, "Error while closing server");
         process.exit(1);
       }
-      console.log("Server closed, no more incoming requests");
+      logger.info("Server closed, no more incoming requests");
       try {
         await prisma.$disconnect();
-        console.log("Database disconnected");
+        logger.info("Database disconnected");
       } catch (e) {
-        console.error("Error while disconnecting database", e);
+        logger.error({ err: e }, "Error while disconnecting database");
       }
       await disconnectRedis();
-      console.log("Shutdown complete");
+      logger.info("Shutdown complete");
       process.exit(0);
     });
   }
@@ -42,6 +43,6 @@ async function start() {
   process.on("SIGINT", () => shutdown("SIGINT"));
 }
 start().catch((error) => {
-  console.error("App Startup Failed: ", error);
+  logger.error({ err: error }, "App Startup Failed: ");
   process.exit(1);
 });
