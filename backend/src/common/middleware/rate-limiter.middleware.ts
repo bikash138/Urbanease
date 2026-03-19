@@ -7,29 +7,42 @@ import { ErrorCode } from "../errors/error.types";
 const generalLimiter = new RateLimiterRedis({
   storeClient: redis,
   keyPrefix: "general_limit",
-  points: 10,
+  points: 50,
   duration: 1,
 });
 
 const authLimiter = new RateLimiterRedis({
   storeClient: redis,
   keyPrefix: "auth_limit",
-  points: 2,
+  points: 5,
   duration: 60 * 10,
 });
 
 const searchLimiter = new RateLimiterRedis({
   storeClient: redis,
   keyPrefix: "search_limit",
-  points: 20,
+  points: 8,
   duration: 60,
+});
+
+const uploadLimiter = new RateLimiterRedis({
+  storeClient: redis,
+  keyPrefix: "upload_limit",
+  points: 10,
+  duration: 60 * 60,
+});
+
+const actionLimiter = new RateLimiterRedis({
+  storeClient: redis,
+  keyPrefix: "action_limit",
+  points: 20,
+  duration: 60 * 60,
 });
 
 const createRateLimitMiddleware = (limiter: RateLimiterRedis) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    console.log("ENtered" + limiter);
     limiter
-      .consume(req.ip!)
+      .consume(req.user?.id || req.ip!)
       .then(() => {
         next();
       })
@@ -47,3 +60,5 @@ const createRateLimitMiddleware = (limiter: RateLimiterRedis) => {
 export const generalRateLimit = createRateLimitMiddleware(generalLimiter);
 export const authRateLimit = createRateLimitMiddleware(authLimiter);
 export const searchRateLimit = createRateLimitMiddleware(searchLimiter);
+export const uploadRateLimit = createRateLimitMiddleware(uploadLimiter);
+export const actionRateLimit = createRateLimitMiddleware(actionLimiter);
