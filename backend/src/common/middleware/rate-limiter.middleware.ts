@@ -3,6 +3,7 @@ import { redis } from "../../lib/redis";
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/app.error";
 import { ErrorCode } from "../errors/error.types";
+import { env } from "../../config";
 
 const generalLimiter = new RateLimiterRedis({
   storeClient: redis,
@@ -41,18 +42,30 @@ const actionLimiter = new RateLimiterRedis({
 
 const createRateLimitMiddleware = (limiter: RateLimiterRedis) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    if (env.NODE_ENV !== "production") {
+      return next();
+    }
     limiter
       .consume(req.user?.id || req.ip!)
       .then(() => {
         next();
       })
       .catch((rejRes) => {
-        const seconds = Math.round(rejRes.msBeforeNext / 1000) || 1;
-        const message =
-          seconds > 60
-            ? `Retry after ${Math.ceil(seconds / 60)} minutes`
-            : `Retry after ${seconds} seconds`;
-        return next(new AppError(message, 429, ErrorCode.RATE_LIMIT_REACHED));
+        if (rejRes.msBeforeNext !== undefined) {
+          const seconds = Math.round(rejRes.msBeforeNext / 1000) || 1;
+          const message =
+            seconds > 60
+              ? `Retry after ${Math.ceil(seconds / 60)} minutes`
+              : `Retry after ${seconds} seconds`;
+          return next(new AppError(message, 429, ErrorCode.RATE_LIMIT_REACHED));
+        }
+        return next(
+          new AppError(
+            "Critical internal service unavailable",
+            500,
+            ErrorCode.INTERNAL_SERVER_ERROR,
+          ),
+        );
       });
   };
 };
