@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   User,
@@ -8,8 +10,10 @@ import {
   TrendingUp,
   Clock,
   CheckCircle2,
+  IndianRupee,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useProviderStats } from "@/hooks/provider/useProviderStats";
 
 const quickLinks = [
   {
@@ -23,61 +27,58 @@ const quickLinks = [
     title: "Orders",
     description: "View and manage incoming service requests.",
     icon: ShoppingBag,
-    href: "#",
+    href: "/provider/bookings",
     color: "bg-blue-500/10 text-blue-600",
   },
   {
     title: "Listed Services",
     description: "Manage the services you offer to customers.",
     icon: ListChecks,
-    href: "#",
+    href: "/provider/service",
     color: "bg-emerald-500/10 text-emerald-600",
   },
   {
     title: "Bookings",
     description: "Track your upcoming and past appointments.",
     icon: CalendarDays,
-    href: "#",
+    href: "/provider/bookings",
     color: "bg-amber-500/10 text-amber-600",
   },
 ];
 
-const stats = [
-  {
-    label: "Total Orders",
-    value: "—",
-    icon: ShoppingBag,
-    sub: "Coming soon",
-    color: "text-blue-500",
-    bg: "bg-blue-500/10",
-  },
-  {
-    label: "Bookings",
-    value: "—",
-    icon: CalendarDays,
-    sub: "Coming soon",
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
-  },
-  {
-    label: "Completed",
-    value: "—",
-    icon: CheckCircle2,
-    sub: "Coming soon",
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-  },
-  {
-    label: "Pending",
-    value: "—",
-    icon: Clock,
-    sub: "Coming soon",
-    color: "text-orange-500",
-    bg: "bg-orange-500/10",
-  },
-];
-
 export default function ProviderDashboardPage() {
+  const { data: statsData, isLoading } = useProviderStats();
+
+  const stats = [
+    {
+      label: "Total Bookings",
+      value: isLoading ? "—" : (statsData?.totalBookings ?? 0).toString(),
+      icon: CalendarDays,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+    },
+    {
+      label: "Completed",
+      value: isLoading ? "—" : (statsData?.completedBookings ?? 0).toString(),
+      icon: CheckCircle2,
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10",
+    },
+    {
+      label: "Pending",
+      value: isLoading ? "—" : (statsData?.pendingBookings ?? 0).toString(),
+      icon: Clock,
+      color: "text-orange-500",
+      bg: "bg-orange-500/10",
+    },
+    {
+      label: "Total Earnings",
+      value: isLoading ? "—" : `₹${(statsData?.totalEarnings ?? 0).toLocaleString()}`,
+      icon: IndianRupee,
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+    },
+  ];
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
       {/* Page header */}
@@ -117,9 +118,6 @@ export default function ProviderDashboardPage() {
                   </p>
                   <p className="text-sm font-medium text-foreground mt-1 truncate">
                     {stat.label}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {stat.sub}
                   </p>
                 </div>
               </CardContent>

@@ -1,6 +1,8 @@
 import { Prisma } from "../../../../generated/prisma/client";
 import { AppError } from "../../../common/errors/app.error";
 import { ErrorCode } from "../../../common/errors/error.types";
+import { invalidate } from "../../../lib/cache";
+import { CacheKeys } from "../../../lib/cache-keys";
 import { ProviderBookingRepository } from "./bookings.repository";
 import { prisma } from "../../../../db";
 import type { AddImageDTO, AddNoteDTO } from "./bookings.validation";
@@ -93,6 +95,7 @@ export class ProviderBookingService {
         bookingId,
         "CONFIRMED",
       );
+      await invalidate(CacheKeys.providerStats(providerId));
       return { id: bookingId, status: "CONFIRMED" };
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -136,6 +139,7 @@ export class ProviderBookingService {
         "IN_PROGRESS",
         { startedAt: new Date() },
       );
+      await invalidate(CacheKeys.providerStats(providerId));
       return { id: bookingId, status: "IN_PROGRESS" };
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -179,6 +183,7 @@ export class ProviderBookingService {
         "COMPLETED",
         { completedAt: new Date() },
       );
+      await invalidate(CacheKeys.providerStats(providerId));
       return { id: bookingId, status: "COMPLETED" };
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -208,6 +213,7 @@ export class ProviderBookingService {
         bookingId,
         "CANCELLED",
       );
+      await invalidate(CacheKeys.providerStats(providerId));
       return { id: bookingId, status: "CANCELLED" };
     } catch (error) {
       if (error instanceof AppError) throw error;

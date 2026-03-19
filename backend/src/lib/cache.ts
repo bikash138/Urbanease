@@ -7,6 +7,7 @@ export const CacheTTL = {
   SERVICES: 900,
   PROVIDER: 600, 
   SLOTS: 120,
+  STATS: 86400,
 } as const;
 
 export async function getOrSet<T>(
@@ -23,9 +24,10 @@ export async function getOrSet<T>(
   }
 
   if (cached) {
+    console.log("CACHE HIT", key)
     return JSON.parse(cached) as T;
   }
-    
+  console.log("CACHE LOSS", key);
   const data = await fetcher();
 
   // If skipCacheWhen returns true, means repository havent returned any data

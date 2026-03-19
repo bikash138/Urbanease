@@ -12,5 +12,6 @@ export const CacheKeys = {
     providerSlug
       ? `public:provider:${providerSlug}`
       : "public:providers:all",
+  providerStats: (providerId: string) => `provider:stats:${providerId}`,
 } as const;
   
