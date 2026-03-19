@@ -8,10 +8,12 @@ import {
   updateAddressSchema,
 } from "./addresses.validation";
 
+import { actionRateLimit } from "../../../common/middleware/rate-limiter.middleware";
+
 const addressesRouter = Router();
 const addressHandler = new AddressHandler();
 
-addressesRouter.use(authMiddleware, roleMiddleware("CUSTOMER"));
+addressesRouter.use(authMiddleware, roleMiddleware("CUSTOMER"), actionRateLimit);
 
 addressesRouter.post(
   "/",

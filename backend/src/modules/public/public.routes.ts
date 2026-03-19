@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { PublicHandler } from "./public.handler";
+import { searchRateLimit } from "../../common/middleware/rate-limiter.middleware";
 
 const publicRouter = Router();
 const publicHandler = new PublicHandler();
@@ -13,7 +14,7 @@ publicRouter.get("/services", publicHandler.getAllServices);
 publicRouter.get("/services/:slug", publicHandler.getServiceBySlug);
 
 //Search
-publicRouter.get("/search", publicHandler.searchProviders);
+publicRouter.get("/search", searchRateLimit, publicHandler.searchProviders);
 
 // Providers
 publicRouter.get("/providers", publicHandler.getAllProviders);

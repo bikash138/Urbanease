@@ -5,10 +5,12 @@ import { roleMiddleware } from "../../../common/middleware/role.middleware";
 import { validateRequest } from "../../../common/middleware/validate.middleware";
 import { addImageSchema, addNoteSchema } from "./bookings.validation";
 
+import { actionRateLimit } from "../../../common/middleware/rate-limiter.middleware";
+
 const bookingsRouter = Router();
 const bookingHandler = new ProviderBookingHandler();
 
-bookingsRouter.use(authMiddleware, roleMiddleware("PROVIDER"));
+bookingsRouter.use(authMiddleware, roleMiddleware("PROVIDER"), actionRateLimit);
 
 bookingsRouter.get("/", bookingHandler.getAllBookings);
 bookingsRouter.get("/:id", bookingHandler.getBookingByID);

@@ -5,10 +5,12 @@ import { roleMiddleware } from "../../../common/middleware/role.middleware";
 import { validateRequest } from "../../../common/middleware/validate.middleware";
 import { createReviewSchema, updateReviewSchema } from "./reviews.validation";
 
+import { actionRateLimit } from "../../../common/middleware/rate-limiter.middleware";
+
 const reviewsRouter = Router();
 const reviewHandler = new CustomerReviewHandler();
 
-reviewsRouter.use(authMiddleware, roleMiddleware("CUSTOMER"));
+reviewsRouter.use(authMiddleware, roleMiddleware("CUSTOMER"), actionRateLimit);
 
 reviewsRouter.post(
   "/",

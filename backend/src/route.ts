@@ -5,12 +5,14 @@ import providerRouter from "./modules/providers/provider.routes";
 import publicRouter from "./modules/public/public.routes";
 import customerRouter from "./modules/customers/customer.routes";
 
+import { generalRateLimit } from "./common/middleware/rate-limiter.middleware";
+
 const router = Router();
 
 router.use("/admin", adminRouter);
-router.use("/auth", authRoute);
-router.use("/provider", providerRouter);
-router.use("/public", publicRouter);
-router.use("/customer", customerRouter);
+router.use("/auth", generalRateLimit, authRoute);
+router.use("/provider", generalRateLimit, providerRouter);
+router.use("/public", generalRateLimit, publicRouter);
+router.use("/customer", generalRateLimit, customerRouter);
 
 export default router;

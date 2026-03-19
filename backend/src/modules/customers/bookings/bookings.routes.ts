@@ -8,10 +8,12 @@ import {
   rescheduleBookingSchema,
 } from "./bookings.validation";
 
+import { actionRateLimit } from "../../../common/middleware/rate-limiter.middleware";
+
 const bookingsRouter = Router();
 const bookingHandler = new BookingHandler();
 
-bookingsRouter.use(authMiddleware, roleMiddleware("CUSTOMER"));
+bookingsRouter.use(authMiddleware, roleMiddleware("CUSTOMER"), actionRateLimit);
 
 bookingsRouter.post(
   "/",

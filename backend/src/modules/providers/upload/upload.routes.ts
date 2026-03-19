@@ -3,10 +3,11 @@ import { generateUploadUrl } from "../../../common/utils/s3.service";
 import { authMiddleware } from "../../../common/middleware/auth.middleware";
 import { roleMiddleware } from "../../../common/middleware/role.middleware";
 import { logger } from "../../../lib/logger";
+import { uploadRateLimit } from "../../../common/middleware/rate-limiter.middleware";
 
 const uploadRouter = Router();
 
-uploadRouter.use(authMiddleware, roleMiddleware("PROVIDER"));
+uploadRouter.use(authMiddleware, roleMiddleware("PROVIDER"), uploadRateLimit);
 
 uploadRouter.post("/presigned-url", async (req, res) => {
   try {
@@ -26,9 +27,7 @@ uploadRouter.post("/presigned-url", async (req, res) => {
     });
   } catch (error) {
     logger.error({ err: error }, "Error generating presigned URL");
-    res
-      .status(500)
-      .json({ error: "Failed to generate presigned upload URL" });
+    res.status(500).json({ error: "Failed to generate presigned upload URL" });
   }
 });
 
