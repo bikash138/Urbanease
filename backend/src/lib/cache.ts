@@ -5,9 +5,10 @@ export const CacheTTL = {
   CATEGORIES: 900,
   CATEGORY: 900,
   SERVICES: 900,
-  PROVIDER: 600, 
+  PROVIDER: 600,
   SLOTS: 120,
   STATS: 86400,
+  PROVIDER_PROFILE: 300,
 } as const;
 
 export async function getOrSet<T>(
@@ -24,15 +25,14 @@ export async function getOrSet<T>(
   }
 
   if (cached) {
-    console.log("CACHE HIT", key)
+    console.log("CACHE HIT", key);
     return JSON.parse(cached) as T;
   }
   console.log("CACHE LOSS", key);
   const data = await fetcher();
 
   // If skipCacheWhen returns true, means repository havent returned any data
-  const shouldSkip =
-    options?.skipCacheWhen && options.skipCacheWhen(data);
+  const shouldSkip = options?.skipCacheWhen && options.skipCacheWhen(data);
   if (!shouldSkip) {
     try {
       await redis.set(key, JSON.stringify(data), "EX", ttlSeconds);
@@ -45,10 +45,10 @@ export async function getOrSet<T>(
 }
 
 export async function invalidate(cacheKey: CacheKey): Promise<void> {
-  try{
+  try {
     await redis.del(cacheKey);
   } catch {
-    //invalidation failed 
+    //invalidation failed
   }
 }
 

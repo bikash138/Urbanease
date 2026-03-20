@@ -4,12 +4,37 @@ import { ServicesRepository } from "./services.repository";
 import type { AddServiceDTO, UpdateServiceDTO } from "./services.validation";
 import { Prisma } from "../../../../generated/prisma/client";
 import { prisma } from "../../../../db";
+import { invalidateMany } from "../../../lib/cache";
+import { CacheKeys } from "../../../lib/cache-keys";
 
 export class ServicesService {
   private servicesRepository: ServicesRepository;
 
   constructor() {
     this.servicesRepository = new ServicesRepository();
+  }
+
+  private async invalidatePublicCachesAfterServiceMutation(
+    providerId: string,
+    providerSlug?: string,
+    catalogServiceSlug?: string,
+  ) {
+    let resolvedProviderSlug = providerSlug;
+    if (resolvedProviderSlug === undefined) {
+      const profile = await prisma.providerProfile.findUnique({
+        where: { id: providerId },
+        select: { slug: true },
+      });
+      resolvedProviderSlug = profile?.slug;
+    }
+    const keys = [CacheKeys.publicProvider()];
+    if (resolvedProviderSlug) {
+      keys.push(CacheKeys.publicProvider(resolvedProviderSlug));
+    }
+    if (catalogServiceSlug) {
+      keys.push(CacheKeys.publicService(catalogServiceSlug));
+    }
+    await invalidateMany(keys);
   }
 
   private async getProvider(providerId: string) {
@@ -33,6 +58,11 @@ export class ServicesService {
         data,
       );
       await this.servicesRepository.createSlotsForProvider(provider.slug);
+      await this.invalidatePublicCachesAfterServiceMutation(
+        providerId,
+        provider.slug,
+        service.service.slug,
+      );
       return service;
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -73,11 +103,17 @@ export class ServicesService {
     data: UpdateServiceDTO,
   ) {
     try {
-      return await this.servicesRepository.updateService(
+      const service = await this.servicesRepository.updateService(
         providerId,
         providerServiceId,
         data,
       );
+      await this.invalidatePublicCachesAfterServiceMutation(
+        providerId,
+        undefined,
+        service.service.slug,
+      );
+      return service;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -99,10 +135,17 @@ export class ServicesService {
 
   async removeService(providerId: string, providerServiceId: string) {
     try {
-      return await this.servicesRepository.removeService(
+      const { id, catalogServiceSlug } =
+        await this.servicesRepository.removeService(
+          providerId,
+          providerServiceId,
+        );
+      await this.invalidatePublicCachesAfterServiceMutation(
         providerId,
-        providerServiceId,
+        undefined,
+        catalogServiceSlug,
       );
+      return { id };
     } catch (error) {
       if (error instanceof AppError) throw error;
       if (

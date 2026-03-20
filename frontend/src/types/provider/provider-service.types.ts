@@ -62,4 +62,4 @@ export type GetAllServicesResponse = ApiResponse<ProviderServiceWithService[]>;
 export type UpdateServiceResponse = ApiResponse<ProviderServiceData>;
 
 /** DELETE /provider/services/:id → 200 */
-export type RemoveServiceResponse = ApiResponse<ProviderServiceData>;
+export type RemoveServiceResponse = ApiResponse<{ id: string }>;

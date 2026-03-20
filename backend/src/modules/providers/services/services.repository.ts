@@ -21,6 +21,11 @@ const providerServiceSelect = {
   },
 } as const;
 
+export type RemoveListedServiceResult = {
+  id: string;
+  catalogServiceSlug: string;
+};
+
 const SLOT_LABELS: SlotLabel[] = ["MORNING", "AFTERNOON", "NIGHT"];
 const TOTAL_SLOTS_PER_LABEL = 2;
 const DAYS_AHEAD = 10;
@@ -96,12 +101,31 @@ export class ServicesRepository {
     });
   }
 
-  async removeService(providerId: string, providerServiceId: string) {
-    return await prisma.providerService.delete({
-      where: {
-        id: providerServiceId,
-        providerId: providerId,
-      },
+  async removeService(
+    providerId: string,
+    providerServiceId: string,
+  ): Promise<RemoveListedServiceResult> {
+    return await prisma.$transaction(async (tx) => {
+      const row = await tx.providerService.findFirstOrThrow({
+        where: {
+          id: providerServiceId,
+          providerId: providerId,
+        },
+        select: {
+          id: true,
+          service: { select: { slug: true } },
+        },
+      });
+      await tx.providerService.delete({
+        where: {
+          id: providerServiceId,
+          providerId: providerId,
+        },
+      });
+      return {
+        id: row.id,
+        catalogServiceSlug: row.service.slug,
+      };
     });
   }
 }

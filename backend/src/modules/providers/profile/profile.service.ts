@@ -3,7 +3,8 @@ import { ErrorCode } from "../../../common/errors/error.types";
 import { ProfileRepository } from "./profile.repository";
 import type { CreateProfileDTO, UpdateProfileDTO } from "./profile.validation";
 import { Prisma } from "../../../../generated/prisma/client";
-import {createUserSlug} from "../../../common/utils/slug-generator"
+import { CacheTTL, getOrSet, invalidateMany } from "../../../lib/cache";
+import { CacheKeys } from "../../../lib/cache-keys";
 
 export class ProfileService {
   private profileRepository: ProfileRepository;
@@ -12,9 +13,19 @@ export class ProfileService {
     this.profileRepository = new ProfileRepository();
   }
 
+  private async invalidateProviderCaches(providerId: string, slug: string) {
+    await invalidateMany([
+      CacheKeys.providerProfile(providerId),
+      CacheKeys.publicProvider(),
+      CacheKeys.publicProvider(slug),
+    ]);
+  }
+
   async createProfile(userId: string, data: CreateProfileDTO) {
     try {
-      return await this.profileRepository.createProfile(userId, data);
+      const profile = await this.profileRepository.createProfile(userId, data);
+      await this.invalidateProviderCaches(profile.id, profile.slug);
+      return profile;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -32,7 +43,12 @@ export class ProfileService {
 
   async getProfile(providerId: string) {
     try {
-      return await this.profileRepository.getProfile(providerId);
+      return await getOrSet(
+        CacheKeys.providerProfile(providerId),
+        CacheTTL.PROVIDER_PROFILE,
+        () => this.profileRepository.getProfile(providerId),
+        { skipCacheWhen: (data) => data == null },
+      );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -50,7 +66,12 @@ export class ProfileService {
 
   async updateProfile(providerId: string, data: UpdateProfileDTO) {
     try {
-      return await this.profileRepository.updateProfile(providerId, data);
+      const profile = await this.profileRepository.updateProfile(
+        providerId,
+        data,
+      );
+      await this.invalidateProviderCaches(profile.id, profile.slug);
+      return profile;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
