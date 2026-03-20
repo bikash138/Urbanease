@@ -8,7 +8,6 @@ import {
   getPublicServiceBySlugAPI,
   getPublicProvidersAPI,
   getPublicProviderBySlugAPI,
-  getPublicReviewsAPI,
   getPublicProviderSlotsAPI,
   searchPublicProvidersAPI,
 } from "@/api/public/public.api";
@@ -16,7 +15,6 @@ import {
   publicCategoryKeys,
   publicServiceKeys,
   publicProviderKeys,
-  publicReviewKeys,
   publicSlotKeys,
   publicSearchKeys,
 } from "./query-keys";
@@ -90,16 +88,6 @@ export function usePublicProviderDetail(slug: string | null) {
       return response.data;
     },
     enabled: !!slug,
-  });
-}
-
-export function usePublicReviews(providerId?: string) {
-  return useQuery({
-    queryKey: publicReviewKeys.list(providerId),
-    queryFn: async () => {
-      const response = await getPublicReviewsAPI(providerId);
-      return response.data;
-    },
   });
 }
 

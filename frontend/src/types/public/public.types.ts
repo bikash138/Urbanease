@@ -63,6 +63,8 @@ export type PublicServiceDetail = {
       bio: string | null;
       experience: number | null;
       profileImage: string;
+      averageRating: number | null;
+      reviewCount: number;
       user: {
         name: string;
         phone: string | null;
@@ -128,34 +130,6 @@ export type PublicProviderDetail = {
   }[];
 };
 
-// Reviews
-
-export type PublicReview = {
-  id: string;
-  rating: number;
-  comment: string | null;
-  status: "VISIBLE" | "FLAGGED";
-  customer: {
-    name: string;
-  };
-  provider: {
-    id: string;
-    user: {
-      name: string;
-    };
-  };
-  booking: {
-    date: string;
-    providerService: {
-      service: {
-        id: string;
-        title: string;
-      };
-    };
-  };
-  createdAt: string;
-};
-
 // Slots
 
 export type SlotLabel = "MORNING" | "AFTERNOON" | "NIGHT";
@@ -184,8 +158,6 @@ export type PublicServiceDetailResponse =
 export type PublicProvidersResponse = ApiResponse<PublicProvider[]>;
 export type PublicProviderDetailResponse =
   ApiResponse<PublicProviderDetail | null>;
-
-export type PublicReviewsResponse = ApiResponse<PublicReview[]>;
 
 export type PublicProviderSlotsResponse = ApiResponse<PublicSlot[]>;
 

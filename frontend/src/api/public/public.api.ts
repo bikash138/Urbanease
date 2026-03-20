@@ -6,7 +6,6 @@ import type {
   PublicServiceDetailResponse,
   PublicProvidersResponse,
   PublicProviderDetailResponse,
-  PublicReviewsResponse,
   PublicProviderSlotsResponse,
   PublicSearchResponse,
 } from "@/types/public/public.types";
@@ -53,13 +52,6 @@ export async function getPublicProviderBySlugAPI(
   slug: string,
 ): Promise<PublicProviderDetailResponse> {
   return apiClient.get(`/public/providers/${slug}`);
-}
-
-export async function getPublicReviewsAPI(
-  providerId?: string,
-): Promise<PublicReviewsResponse> {
-  const params = providerId ? `?providerId=${providerId}` : "";
-  return apiClient.get(`/public/reviews${params}`);
 }
 
 export async function getPublicProviderSlotsAPI(

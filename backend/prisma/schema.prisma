@@ -86,6 +86,8 @@ model ProviderProfile {
 
   status          ProviderStatus @default(PENDING)
   rejectionReason String?
+  averageRating   Float?
+  reviewCount     Int @default(0)
   reviewsGained   Review[]
 
   userId          String            @unique

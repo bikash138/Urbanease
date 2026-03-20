@@ -8,7 +8,6 @@ import ProviderList from "@/components/public/services/ProviderList";
 import {
   usePublicServiceDetail,
   usePublicServices,
-  usePublicReviews,
 } from "@/hooks/public/usePublic";
 
 export default function ServiceDetailPage({
@@ -20,7 +19,6 @@ export default function ServiceDetailPage({
 
   const { data: service, isLoading: isLoadingService } =
     usePublicServiceDetail(serviceSlug);
-  const { data: allReviews = [] } = usePublicReviews();
   const { data: relatedServicesRaw = [], isLoading: isLoadingRelated } =
     usePublicServices(service?.category?.slug);
 
@@ -103,11 +101,7 @@ export default function ServiceDetailPage({
               </p>
             )}
 
-            <ProviderList
-              service={service}
-              reviews={allReviews}
-              isLoading={isLoadingService}
-            />
+            <ProviderList service={service} isLoading={isLoadingService} />
           </div>
         </main>
         </div>
