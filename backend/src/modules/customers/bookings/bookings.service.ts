@@ -3,6 +3,8 @@ import { AppError } from "../../../common/errors/app.error";
 import { ErrorCode } from "../../../common/errors/error.types";
 import { BookingRepository } from "./bookings.repository";
 import { prisma } from "../../../../db";
+import { invalidate } from "../../../lib/cache";
+import { CacheKeys } from "../../../lib/cache-keys";
 import type {
   CreateBookingDTO,
   RescheduleBookingDTO,
@@ -93,11 +95,13 @@ export class BookingService {
           ErrorCode.CONFLICT,
         );
       }
-      return await this.bookingRepository.createBooking(
+      const booking = await this.bookingRepository.createBooking(
         customerId,
         data,
         providerService.provider.slug,
       );
+      await invalidate(CacheKeys.providerStats(providerService.provider.id));
+      return booking;
     } catch (error) {
       if (error instanceof AppError) throw error;
       if (
@@ -169,7 +173,11 @@ export class BookingService {
 
       const booking = await prisma.booking.findUnique({
         where: { id: bookingId, customerId },
-        select: { status: true, slotId: true },
+        select: {
+          status: true,
+          slotId: true,
+          providerService: { select: { providerId: true } },
+        },
       });
       if (!booking) {
         throw new AppError("Booking not found", 404, ErrorCode.NOT_FOUND);
@@ -186,11 +194,13 @@ export class BookingService {
         );
       }
 
-      return await this.bookingRepository.cancelBooking(
+      const result = await this.bookingRepository.cancelBooking(
         customerId,
         bookingId,
         booking.slotId,
       );
+      await invalidate(CacheKeys.providerStats(booking.providerService.providerId));
+      return result;
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(
