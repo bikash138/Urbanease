@@ -4,7 +4,6 @@ import { ErrorCode } from "../../../common/errors/error.types";
 import { invalidate } from "../../../lib/cache";
 import { CacheKeys } from "../../../lib/cache-keys";
 import { ProviderBookingRepository } from "./bookings.repository";
-import { prisma } from "../../../../db";
 import type { AddImageDTO, AddNoteDTO } from "./bookings.validation";
 
 export class ProviderBookingService {
@@ -12,20 +11,6 @@ export class ProviderBookingService {
 
   constructor() {
     this.bookingRepository = new ProviderBookingRepository();
-  }
-
-  private async getProviderId(userId: string) {
-    const profile = await prisma.providerProfile.findUnique({
-      where: { userId },
-    });
-    if (!profile) {
-      throw new AppError(
-        "Provider profile not found",
-        404,
-        ErrorCode.NOT_FOUND,
-      );
-    }
-    return profile.id;
   }
 
   // ─── Check booking exists and belongs to provider ────
@@ -40,9 +25,8 @@ export class ProviderBookingService {
     return booking;
   }
 
-  async getAllBookings(userId: string, status?: string) {
+  async getAllBookings(providerId: string, status?: string) {
     try {
-      const providerId = await this.getProviderId(userId);
       return await this.bookingRepository.getAllBookings(providerId, status);
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -54,9 +38,8 @@ export class ProviderBookingService {
     }
   }
 
-  async getBookingByID(userId: string, bookingId: string) {
+  async getBookingByID(providerId: string, bookingId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
       const booking = await this.bookingRepository.getBookingByID(
         providerId,
         bookingId,
@@ -77,9 +60,8 @@ export class ProviderBookingService {
 
   // ─── Status Change ───
 
-  async confirmBooking(userId: string, bookingId: string) {
+  async confirmBooking(providerId: string, bookingId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
       const booking = await this.guardBooking(providerId, bookingId);
 
       if (booking.status !== "PENDING") {
@@ -107,9 +89,8 @@ export class ProviderBookingService {
     }
   }
 
-  async startBooking(userId: string, bookingId: string) {
+  async startBooking(providerId: string, bookingId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
       const booking = await this.guardBooking(providerId, bookingId);
 
       if (booking.status !== "CONFIRMED") {
@@ -151,9 +132,8 @@ export class ProviderBookingService {
     }
   }
 
-  async completeBooking(userId: string, bookingId: string) {
+  async completeBooking(providerId: string, bookingId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
       const booking = await this.guardBooking(providerId, bookingId);
 
       if (booking.status !== "IN_PROGRESS") {
@@ -195,9 +175,8 @@ export class ProviderBookingService {
     }
   }
 
-  async cancelBooking(userId: string, bookingId: string) {
+  async cancelBooking(providerId: string, bookingId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
       const booking = await this.guardBooking(providerId, bookingId);
 
       if (booking.status !== "PENDING" && booking.status !== "CONFIRMED") {
@@ -227,9 +206,8 @@ export class ProviderBookingService {
 
   // ─── Note & Images ─────
 
-  async addNote(userId: string, bookingId: string, data: AddNoteDTO) {
+  async addNote(providerId: string, bookingId: string, data: AddNoteDTO) {
     try {
-      const providerId = await this.getProviderId(userId);
       await this.guardBooking(providerId, bookingId);
       await this.bookingRepository.addNote(providerId, bookingId, data);
       return { id: bookingId, providerNote: data.providerNote };
@@ -243,9 +221,8 @@ export class ProviderBookingService {
     }
   }
 
-  async addImage(userId: string, bookingId: string, data: AddImageDTO) {
+  async addImage(providerId: string, bookingId: string, data: AddImageDTO) {
     try {
-      const providerId = await this.getProviderId(userId);
       await this.guardBooking(providerId, bookingId);
       return await this.bookingRepository.addImage(providerId, bookingId, data);
     } catch (error) {
@@ -258,9 +235,8 @@ export class ProviderBookingService {
     }
   }
 
-  async getImages(userId: string, bookingId: string) {
+  async getImages(providerId: string, bookingId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
       await this.guardBooking(providerId, bookingId);
       return await this.bookingRepository.getImages(providerId, bookingId);
     } catch (error) {
@@ -273,9 +249,8 @@ export class ProviderBookingService {
     }
   }
 
-  async deleteImage(userId: string, imageId: string) {
+  async deleteImage(providerId: string, imageId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
       return await this.bookingRepository.deleteImage(providerId, imageId);
     } catch (error) {
       if (error instanceof AppError) throw error;

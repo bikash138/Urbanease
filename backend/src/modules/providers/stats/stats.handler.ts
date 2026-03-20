@@ -10,7 +10,7 @@ export class StatsHandler {
   }
 
   getStats = asyncHandler(async (req: Request, res: Response) => {
-    const stats = await this.statsService.getStats(req.user!.id);
+    const stats = await this.statsService.getStats(req.providerId!);
     res.status(200).json({ success: true, data: stats });
   });
 }

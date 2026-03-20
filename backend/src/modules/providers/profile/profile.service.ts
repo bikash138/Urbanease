@@ -30,9 +30,9 @@ export class ProfileService {
     }
   }
 
-  async getProfile(userId: string) {
+  async getProfile(providerId: string) {
     try {
-      return await this.profileRepository.getProfile(userId);
+      return await this.profileRepository.getProfile(providerId);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -48,9 +48,9 @@ export class ProfileService {
     }
   }
 
-  async updateProfile(userId: string, data: UpdateProfileDTO) {
+  async updateProfile(providerId: string, data: UpdateProfileDTO) {
     try {
-      return await this.profileRepository.updateProfile(userId, data);
+      return await this.profileRepository.updateProfile(providerId, data);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

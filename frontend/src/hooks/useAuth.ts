@@ -1,11 +1,10 @@
 "use client";
 
-import { extractErrorMessage, getDiceBearAvatarUrl } from "@/lib/utils";
+import { extractErrorMessage } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { adminSigninAPI, signinAPI, signoutAPI, signupAPI } from "@/api/auth.api";
-import { createProviderProfileAPI } from "@/api/provider/provider-profile.api";
 import { useAuthStore } from "@/store/auth.store";
 import type {
   AdminSigninFormValues,
@@ -13,7 +12,6 @@ import type {
 } from "@/schemas/auth.schema";
 import type { SignupFormValues } from "@/schemas/auth.schema";
 import type { UserRole } from "@/types/auth.types";
-import { createCustomerProfileAPI } from "@/api/customer/customer-profile.api";
 
 function getRedirectUrl(role: UserRole, callbackUrl?: string): string {
   const safeCallback =
@@ -22,7 +20,7 @@ function getRedirectUrl(role: UserRole, callbackUrl?: string): string {
     !callbackUrl.startsWith("//");
   if (safeCallback) return callbackUrl;
   if (role === "ADMIN") return "/admin";
-  if (role === "PROVIDER") return "/provider/profile";
+  if (role === "PROVIDER") return "/provider";
   return "/";
 }
 
@@ -66,23 +64,9 @@ export function useAuth() {
     setError(null);
     try {
       const response = await signupAPI(data);
-      const r = await signinAPI({
-        email: data.email,
-        password: data.password,
-      });
       toast.success(response.message ?? "Account created successfully");
-      const role = r.data.user.role;
-      setAuth(r.data.user, role);
-
-      if (role === "PROVIDER") {
-        const profileImage = getDiceBearAvatarUrl(r.data.user.id, r.data.user.name);
-        await createProviderProfileAPI({ profileImage });
-      } else if (role === "CUSTOMER") {
-        await createCustomerProfileAPI();
-      } else {
-        router.push("/admin-signin");
-      }
-      redirectByRole(role, options?.callbackUrl);
+      setAuth(response.data.user, response.data.user.role, response.data.token);
+      redirectByRole(response.data.user.role, options?.callbackUrl);
     } catch (err) {
       const msg = extractErrorMessage(err);
       setError(msg);

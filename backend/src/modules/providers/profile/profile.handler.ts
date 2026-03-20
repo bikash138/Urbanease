@@ -24,13 +24,13 @@ export class ProfileHandler {
   });
 
   getProfile = asyncHandler(async (req: Request, res: Response) => {
-    const profile = await this.profileService.getProfile(req.user!.id);
+    const profile = await this.profileService.getProfile(req.providerId!);
     res.status(200).json({ success: true, data: profile });
   });
 
   updateProfile = asyncHandler(async (req: Request, res: Response) => {
     const profile = await this.profileService.updateProfile(
-      req.user!.id,
+      req.providerId!,
       req.body,
     );
     res

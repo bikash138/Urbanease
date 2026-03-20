@@ -11,7 +11,7 @@ export class ServicesHandler {
 
   addService = asyncHandler(async (req: Request, res: Response) => {
     const service = await this.servicesService.addService(
-      req.user!.id,
+      req.providerId!,
       req.body,
     );
     res
@@ -24,13 +24,13 @@ export class ServicesHandler {
   });
 
   getAllServices = asyncHandler(async (req: Request, res: Response) => {
-    const services = await this.servicesService.getAllServices(req.user!.id);
+    const services = await this.servicesService.getAllServices(req.providerId!);
     res.status(200).json({ success: true, data: services });
   });
 
   updateService = asyncHandler(async (req: Request, res: Response) => {
     const service = await this.servicesService.updateService(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
       req.body,
     );
@@ -45,7 +45,7 @@ export class ServicesHandler {
 
   removeService = asyncHandler(async (req: Request, res: Response) => {
     const service = await this.servicesService.removeService(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
     );
     res

@@ -22,9 +22,9 @@ export class ProfileRepository {
     });
   }
 
-  async getProfile(userId: string) {
+  async getProfile(providerId: string) {
     return await prisma.providerProfile.findUnique({
-      where: { userId },
+      where: { id: providerId },
       include: {
         servicesOffered: { include: { service: true } },
         reviewsGained: true,
@@ -32,7 +32,7 @@ export class ProfileRepository {
     });
   }
 
-  async updateProfile(userId: string, data: UpdateProfileDTO) {
+  async updateProfile(providerId: string, data: UpdateProfileDTO) {
     const updateData: Parameters<typeof prisma.providerProfile.update>[0]["data"] =
       {};
     if (data.bio !== undefined) updateData.bio = data.bio;
@@ -40,7 +40,7 @@ export class ProfileRepository {
     if (data.profileImage != null) updateData.profileImage = data.profileImage;
 
     return await prisma.providerProfile.update({
-      where: { userId },
+      where: { id: providerId },
       data: updateData,
     });
   }

@@ -12,7 +12,7 @@ export class ProviderBookingHandler {
   getAllBookings = asyncHandler(async (req: Request, res: Response) => {
     const status = req.query.status as string | undefined;
     const bookings = await this.bookingService.getAllBookings(
-      req.user!.id,
+      req.providerId!,
       status,
     );
     res.status(200).json({ success: true, data: bookings });
@@ -20,7 +20,7 @@ export class ProviderBookingHandler {
 
   getBookingByID = asyncHandler(async (req: Request, res: Response) => {
     const booking = await this.bookingService.getBookingByID(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
     );
     res.status(200).json({ success: true, data: booking });
@@ -28,7 +28,7 @@ export class ProviderBookingHandler {
 
   confirmBooking = asyncHandler(async (req: Request, res: Response) => {
     const result = await this.bookingService.confirmBooking(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
     );
     res
@@ -38,7 +38,7 @@ export class ProviderBookingHandler {
 
   startBooking = asyncHandler(async (req: Request, res: Response) => {
     const result = await this.bookingService.startBooking(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
     );
     res
@@ -48,7 +48,7 @@ export class ProviderBookingHandler {
 
   completeBooking = asyncHandler(async (req: Request, res: Response) => {
     const result = await this.bookingService.completeBooking(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
     );
     res
@@ -58,7 +58,7 @@ export class ProviderBookingHandler {
 
   cancelBooking = asyncHandler(async (req: Request, res: Response) => {
     const result = await this.bookingService.cancelBooking(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
     );
     res
@@ -68,7 +68,7 @@ export class ProviderBookingHandler {
 
   addNote = asyncHandler(async (req: Request, res: Response) => {
     const result = await this.bookingService.addNote(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
       req.body,
     );
@@ -83,7 +83,7 @@ export class ProviderBookingHandler {
 
   addImage = asyncHandler(async (req: Request, res: Response) => {
     const image = await this.bookingService.addImage(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
       req.body,
     );
@@ -98,7 +98,7 @@ export class ProviderBookingHandler {
 
   getImages = asyncHandler(async (req: Request, res: Response) => {
     const images = await this.bookingService.getImages(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
     );
     res.status(200).json({ success: true, data: images });
@@ -106,7 +106,7 @@ export class ProviderBookingHandler {
 
   deleteImage = asyncHandler(async (req: Request, res: Response) => {
     await this.bookingService.deleteImage(
-      req.user!.id,
+      req.providerId!,
       req.params.imgId as string,
     );
     res.status(200).json({ success: true, message: "Image deleted" });

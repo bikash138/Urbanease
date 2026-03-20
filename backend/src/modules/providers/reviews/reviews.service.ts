@@ -12,22 +12,8 @@ export class ReviewsService {
     this.reviewsRepository = new ReviewsRepository();
   }
 
-  private async getProviderId(userId: string) {
-    const profile = await prisma.providerProfile.findUnique({
-      where: { userId },
-    });
-    if (!profile)
-      throw new AppError(
-        "Provider profile not found",
-        404,
-        ErrorCode.NOT_FOUND,
-      );
-    return profile.id;
-  }
-
-  async getReviews(userId: string, query: ReviewStatusQueryDTO) {
+  async getReviews(providerId: string, query: ReviewStatusQueryDTO) {
     try {
-      const providerId = await this.getProviderId(userId);
       return await this.reviewsRepository.getReviews(providerId, query);
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -39,10 +25,8 @@ export class ReviewsService {
     }
   }
 
-  async flagReview(userId: string, reviewId: string) {
+  async flagReview(providerId: string, reviewId: string) {
     try {
-      const providerId = await this.getProviderId(userId);
-
       // Check the review exists and belongs to this provider before flagging
       const review = await prisma.review.findUnique({
         where: { id: reviewId },

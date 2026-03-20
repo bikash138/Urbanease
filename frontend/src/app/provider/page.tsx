@@ -73,7 +73,9 @@ export default function ProviderDashboardPage() {
     },
     {
       label: "Total Earnings",
-      value: isLoading ? "—" : `₹${(statsData?.totalEarnings ?? 0).toLocaleString()}`,
+      value: isLoading
+        ? "—"
+        : `₹${(statsData?.totalEarnings ?? 0).toLocaleString()}`,
       icon: IndianRupee,
       color: "text-amber-500",
       bg: "bg-amber-500/10",
@@ -107,9 +109,7 @@ export default function ProviderDashboardPage() {
               className="border shadow-sm hover:shadow-md transition-shadow duration-200"
             >
               <CardContent className="p-5 flex items-start gap-4">
-                <div
-                  className={`p-2.5 rounded-xl shrink-0 ${stat.bg}`}
-                >
+                <div className={`p-2.5 rounded-xl shrink-0 ${stat.bg}`}>
                   <Icon className={`size-5 ${stat.color}`} />
                 </div>
                 <div className="min-w-0">
@@ -147,9 +147,7 @@ export default function ProviderDashboardPage() {
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg mb-1.5">
-                    {item.title}
-                  </h3>
+                  <h3 className="font-semibold text-lg mb-1.5">{item.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {item.description}
                   </p>

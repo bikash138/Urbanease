@@ -18,8 +18,8 @@ export const createSignupSchema = z.object({
   email: z.email(),
   password: z.string().min(4, "Password Lenght should not be less than 4"),
   role: z.enum(
-    ["CUSTOMER", "PROVIDER", "ADMIN"],
-    "Role should be one of CUSTOMER, PROVIDER, ADMIN",
+    ["CUSTOMER", "PROVIDER"],
+    "Role should be one of CUSTOMER and PROVIDER",
   ),
 });
 
