@@ -28,3 +28,8 @@ export const providerProfileKeys = {
   all: ["provider", "profile"] as const,
   detail: () => [...providerProfileKeys.all, "detail"] as const,
 };
+
+export const providerStatsKeys = {
+  all: ["provider", "stats"] as const,
+  detail: () => [...providerStatsKeys.all, "detail"] as const,
+};

@@ -12,6 +12,7 @@ declare global {
         email: string;
         role: "CUSTOMER" | "PROVIDER" | "ADMIN";
       };
+      providerId?: string;
     }
   }
 }
@@ -34,8 +35,16 @@ export const authMiddleware = (
       id: string;
       email: string;
       role: "CUSTOMER" | "PROVIDER" | "ADMIN";
+      providerId?: string;
     };
-    req.user = decoded;
+    req.user = {
+      id: decoded.id,
+      email: decoded.email,
+      role: decoded.role,
+    };
+    if (decoded.providerId) {
+      req.providerId = decoded.providerId;
+    }
     next();
   } catch (error) {
     return next(new AppError("Invalid token", 401, ErrorCode.TOKEN_EXPIRED));

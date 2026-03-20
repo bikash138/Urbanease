@@ -23,6 +23,18 @@ export class AuthHandler {
     this.authService = new AuthService();
   }
 
+  createSignup = asyncHandler(async (req: Request, res: Response) => {
+    const signupData = await this.authService.signupService(req.body);
+    const cookieOpts = getCookieOptions();
+    res.cookie("token", signupData.token, cookieOpts);
+    res.cookie("role", signupData.user.role, cookieOpts);
+    res.status(201).json({
+      success: true,
+      data: signupData,
+      message: "Signed up successfully",
+    });
+  });
+
   createSignin = asyncHandler(async (req: Request, res: Response) => {
     const signinData = await this.authService.signinService(req.body);
     const cookieOpts = getCookieOptions();
@@ -32,15 +44,6 @@ export class AuthHandler {
       success: true,
       data: signinData,
       message: "Signed in successfully",
-    });
-  });
-
-  createSignup = asyncHandler(async (req: Request, res: Response) => {
-    const signupData = await this.authService.singupService(req.body);
-    res.status(201).json({
-      success: true,
-      data: signupData,
-      message: "Signed up successfully",
     });
   });
 

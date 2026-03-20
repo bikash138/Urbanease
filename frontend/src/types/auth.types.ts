@@ -36,11 +36,6 @@ export interface SigninData {
 
 export type SigninResponse = ApiResponse<SigninData>;
 
-export interface SignupData {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-}
+export type SignupData = SigninData;
 
 export type SignupResponse = ApiResponse<SignupData>;

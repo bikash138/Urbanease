@@ -18,7 +18,7 @@ import type {
   AddNotePayload,
   AddImagePayload,
 } from "@/types/provider/provider-booking.types";
-import { providerBookingKeys } from "./query-keys";
+import { providerBookingKeys, providerStatsKeys } from "./query-keys";
 
 // ── Queries (READ) ─────────────────────────────────────────────────
 
@@ -60,7 +60,7 @@ export function useProviderBookingImages(id: string | null) {
   });
 }
 
-// ── Status mutations (WRITE) ───────────────────────────────────────
+// ── Status mutations (WRITE) ───
 
 /** PENDING → CONFIRMED */
 export function useConfirmBooking() {
@@ -69,6 +69,7 @@ export function useConfirmBooking() {
     mutationFn: (id: string) => confirmProviderBookingAPI(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: providerBookingKeys.all });
+      queryClient.invalidateQueries({ queryKey: providerStatsKeys.all });
     },
   });
 }
@@ -80,6 +81,7 @@ export function useStartBooking() {
     mutationFn: (id: string) => startProviderBookingAPI(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: providerBookingKeys.all });
+      queryClient.invalidateQueries({ queryKey: providerStatsKeys.all });
     },
   });
 }
@@ -91,6 +93,7 @@ export function useCompleteBooking() {
     mutationFn: (id: string) => completeProviderBookingAPI(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: providerBookingKeys.all });
+      queryClient.invalidateQueries({ queryKey: providerStatsKeys.all });
     },
   });
 }
@@ -102,11 +105,12 @@ export function useCancelBooking() {
     mutationFn: (id: string) => cancelProviderBookingAPI(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: providerBookingKeys.all });
+      queryClient.invalidateQueries({ queryKey: providerStatsKeys.all });
     },
   });
 }
 
-// ── Note & image mutations ─────────────────────────────────────────
+// ── Note & image mutations ────
 
 export function useAddBookingNote() {
   const queryClient = useQueryClient();
@@ -131,6 +135,7 @@ export function useAddBookingImage() {
         queryKey: providerBookingKeys.images(variables.id),
       });
       queryClient.invalidateQueries({ queryKey: providerBookingKeys.all });
+      queryClient.invalidateQueries({ queryKey: providerStatsKeys.all });
     },
   });
 }

@@ -17,21 +17,46 @@ export class AuthService {
     this.authRepository = new AuthRepository();
   }
 
-  async singupService(data: CreateSignupSchema) {
+  async signupService(data: CreateSignupSchema) {
     const existingUser = await this.authRepository.findUserByEmail(data.email);
     if (existingUser) {
       throw new AppError("Email already in use", 409, ErrorCode.CONFLICT);
     }
     const passwordHash = await bcrypt.hash(data.password, 10);
 
-    const user = await this.authRepository.createUser({
-      name: data.name,
-      email: data.email,
-      password: passwordHash,
-      role: data.role,
+    let result: {
+      user: { id: string; name: string; email: string; role: string };
+      providerId?: string;
+    };
+
+    if (data.role === "CUSTOMER") {
+      result = await this.authRepository.createCustomer(data, passwordHash);
+    } else {
+      result = await this.authRepository.createProvider(data, passwordHash);
+    }
+
+    const payload: Record<string, unknown> = {
+      id: result.user.id,
+      email: result.user.email,
+      role: result.user.role,
+    };
+    if (result.providerId) {
+      payload.providerId = result.providerId;
+    }
+
+    const token = jwt.sign(payload, env.JWT_SECRET, {
+      expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"],
     });
 
-    return user;
+    return {
+      token,
+      user: {
+        id: result.user.id,
+        name: result.user.name,
+        email: result.user.email,
+        role: result.user.role,
+      },
+    };
   }
 
   async signinService(data: CreateSigninSchema) {
@@ -63,11 +88,18 @@ export class AuthService {
       );
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      env.JWT_SECRET,
-      { expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"] },
-    );
+    const payload: Record<string, unknown> = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+    if (user.role === "PROVIDER" && user.providerProfile) {
+      payload.providerId = user.providerProfile.id;
+    }
+
+    const token = jwt.sign(payload, env.JWT_SECRET, {
+      expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"],
+    });
 
     return {
       token,

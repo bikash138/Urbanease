@@ -10,7 +10,7 @@ export class ReviewsHandler {
   }
 
   getReviews = asyncHandler(async (req: Request, res: Response) => {
-    const reviews = await this.reviewsService.getReviews(req.user!.id, {
+    const reviews = await this.reviewsService.getReviews(req.providerId!, {
       status: "VISIBLE",
     });
     res.status(200).json({ success: true, data: reviews });
@@ -18,7 +18,7 @@ export class ReviewsHandler {
 
   flagReview = asyncHandler(async (req: Request, res: Response) => {
     const review = await this.reviewsService.flagReview(
-      req.user!.id,
+      req.providerId!,
       req.params.id as string,
     );
     res.status(200).json({
