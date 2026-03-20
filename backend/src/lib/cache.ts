@@ -2,13 +2,11 @@ import { redis } from "./redis";
 import type { CacheKey } from "./cache-keys";
 
 export const CacheTTL = {
-  CATEGORIES: 900,
-  CATEGORY: 900,
-  SERVICES: 900,
-  PROVIDER: 600,
-  SLOTS: 120,
+  CATEGORIES: 86400 * 7,
+  SERVICES: 86400 * 7,
+  PROVIDER: 86400 * 7,
   STATS: 86400,
-  PROVIDER_PROFILE: 300,
+  PROVIDER_PROFILE: 86400 * 7,
 } as const;
 
 export async function getOrSet<T>(
