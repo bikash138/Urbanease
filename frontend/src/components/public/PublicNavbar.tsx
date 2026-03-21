@@ -4,8 +4,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, Search, ShoppingCart, UserCircle } from "lucide-react";
+import { Building2, Menu, Search, ShoppingCart, UserCircle } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const navItems = [
   { label: "Categories", href: "/categories" },
@@ -51,6 +58,40 @@ export default function PublicNavbar() {
             Urbanease
           </span>
         </Link>
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="md:hidden shrink-0 -ml-1 text-zinc-800"
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[min(100%,20rem)]">
+            <SheetHeader>
+              <SheetTitle className="text-left">Menu</SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-1 px-2 pb-6">
+              {navItems.map(({ label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className={`rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                    pathname === href
+                      ? "bg-zinc-100 font-medium text-zinc-900"
+                      : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900"
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
 
         <nav className="hidden md:flex items-center gap-8 shrink-0">
           {navItems.map(({ label, href }) => (

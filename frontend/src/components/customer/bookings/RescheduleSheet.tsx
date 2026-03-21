@@ -59,9 +59,9 @@ export function RescheduleSheet({
 
   useEffect(() => {
     if (open) {
-      queueMicrotask(() => setDate(""))
-      queueMicrotask(() => setSlotId(""))
-      queueMicrotask(() => setValidationError(""))
+      queueMicrotask(() => setDate(""));
+      queueMicrotask(() => setSlotId(""));
+      queueMicrotask(() => setValidationError(""));
     }
   }, [open]);
 

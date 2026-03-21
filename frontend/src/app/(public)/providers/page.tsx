@@ -1,23 +1,15 @@
-"use client";
-
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  usePublicProviders,
-  usePublicServices,
-} from "@/hooks/public/usePublic";
 import PublicNavbar from "@/components/public/PublicNavbar";
 import CTABanner from "@/components/common/CTABanner";
 import Footer from "@/components/common/Footer";
 import { ProviderBanner } from "@/components/public/providers/ProviderBanner";
 import { ProviderGrid } from "@/components/public/providers/ProviderGrid";
+import { ProviderGridFallback } from "@/components/public/fallbacks/ProviderGridFallback";
 
 export default function ProvidersPage() {
-  const { data: providers, isLoading: isLoadingProviders } =
-    usePublicProviders();
-  const { data: services, isLoading: isLoadingServices } = usePublicServices();
-
   return (
     <div className="min-h-screen bg-zinc-50">
       <PublicNavbar />
@@ -25,16 +17,10 @@ export default function ProvidersPage() {
       <main className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 xl:gap-10 items-start">
-            <ProviderBanner
-              providerCount={providers?.length ?? 0}
-              serviceCount={services?.length ?? 0}
-              isLoadingProviders={isLoadingProviders}
-              isLoadingServices={isLoadingServices}
-            />
-            <ProviderGrid
-              providers={providers ?? []}
-              isLoading={isLoadingProviders}
-            />
+            <ProviderBanner />
+            <Suspense fallback={<ProviderGridFallback />}>
+              <ProviderGrid />
+            </Suspense>
           </div>
         </div>
       </main>

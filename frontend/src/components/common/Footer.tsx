@@ -3,7 +3,6 @@ import { socialLinks } from "@/data/socialLinks";
 import Link from "next/link";
 
 export default function Footer() {
-  // const currentYear = new Date().getFullYear();
   return (
     <footer className="bg-white border-t border-zinc-200 py-10">
       <div className="max-w-7xl mx-auto px-6">

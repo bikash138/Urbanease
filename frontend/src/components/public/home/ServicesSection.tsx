@@ -35,10 +35,6 @@ export function ServicesSectionHeader() {
 export default async function ServicesSection() {
   let services: PublicService[];
   try {
-    await new Promise((res) => {
-      setTimeout(
-        res, 4000);
-    });
     services = await getPublicServices();
   } catch {
     return (
