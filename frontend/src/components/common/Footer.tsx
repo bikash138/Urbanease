@@ -3,7 +3,7 @@ import { socialLinks } from "@/data/socialLinks";
 import Link from "next/link";
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+  // const currentYear = new Date().getFullYear();
   return (
     <footer className="bg-white border-t border-zinc-200 py-10">
       <div className="max-w-7xl mx-auto px-6">
@@ -15,11 +15,18 @@ export default function Footer() {
             <span className="text-zinc-900 font-semibold">Urbanease</span>
           </div>
           <p className="text-zinc-600 text-sm">
-            © {currentYear} Urbanease. All rights reserved
+            © 2026 Urbanease. All rights reserved
           </p>
           <div className="flex items-center gap-4">
             {socialLinks.map(({ label, href, icon: Icon }) => (
-              <Link key={href} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="text-zinc-600 hover:text-zinc-900 transition-colors">
+              <Link
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="text-zinc-600 hover:text-zinc-900 transition-colors"
+              >
                 <Icon className="w-4 h-4" />
               </Link>
             ))}
