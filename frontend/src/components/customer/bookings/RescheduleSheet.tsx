@@ -44,6 +44,10 @@ export function RescheduleSheet({
   const [date, setDate] = useState("");
   const [slotId, setSlotId] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [dateBounds, setDateBounds] = useState<{
+    min: string;
+    max: string;
+  } | null>(null);
 
   const providerServiceId = booking?.providerService.id ?? null;
   const { data: slots = [], isLoading: slotsLoading } = usePublicProviderSlots(
@@ -62,6 +66,7 @@ export function RescheduleSheet({
       queueMicrotask(() => setDate(""));
       queueMicrotask(() => setSlotId(""));
       queueMicrotask(() => setValidationError(""));
+      setDateBounds({ min: getMinDate(), max: getMaxDate() });
     }
   }, [open]);
 
@@ -109,8 +114,8 @@ export function RescheduleSheet({
             <Input
               type="date"
               value={date}
-              min={getMinDate()}
-              max={getMaxDate()}
+              min={dateBounds?.min}
+              max={dateBounds?.max}
               onChange={(e) => setDate(e.target.value)}
               className="w-full"
             />

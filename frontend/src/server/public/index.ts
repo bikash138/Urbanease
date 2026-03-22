@@ -3,14 +3,19 @@ import { cacheLife, cacheTag } from "next/cache";
 import { config } from "@/lib/config";
 import type {
   PublicCategoriesResponse,
+  PublicCategoryDetail,
+  PublicCategoryDetailResponse,
+  PublicProviderDetail,
+  PublicProviderDetailResponse,
   PublicProvidersResponse,
+  PublicServiceDetail,
+  PublicServiceDetailResponse,
   PublicServicesResponse,
   PublicCategory,
   PublicProvider,
   PublicService,
 } from "@/types/public/public.types";
 import { API_VERSION } from "@/lib/api-client";
-
 
 async function fetchPublicJson<T>(path: string): Promise<T> {
   const url = `${config.apiBaseUrl}${API_VERSION}${path.startsWith("/") ? path : `/${path}`}`;
@@ -44,6 +49,120 @@ async function fetchPublicJson<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+async function fetchPublicCategoryDetailJson(
+  slug: string,
+): Promise<PublicCategoryDetail | null> {
+  const path = `/public/categories/${encodeURIComponent(slug)}`;
+  const url = `${config.apiBaseUrl}${API_VERSION}${path}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch {
+    throw new Error("Connection failed. The server may be unavailable.");
+  }
+
+  if (res.status === 404) return null;
+
+  if (!res.ok) {
+    let message = "Something went wrong";
+    try {
+      const errBody = (await res.json()) as {
+        message?: string;
+        errorCode?: string;
+      };
+      if (errBody?.message) {
+        message = errBody.errorCode
+          ? `${errBody.errorCode}: ${errBody.message}`
+          : errBody.message;
+      }
+    } catch {
+      /* use default message */
+    }
+    throw new Error(message);
+  }
+
+  const body = (await res.json()) as PublicCategoryDetailResponse;
+  return body.data ?? null;
+}
+
+async function fetchPublicProviderDetailJson(
+  slug: string,
+): Promise<PublicProviderDetail | null> {
+  const path = `/public/providers/${encodeURIComponent(slug)}`;
+  const url = `${config.apiBaseUrl}${API_VERSION}${path}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch {
+    throw new Error("Connection failed. The server may be unavailable.");
+  }
+
+  if (res.status === 404) return null;
+
+  if (!res.ok) {
+    let message = "Something went wrong";
+    try {
+      const errBody = (await res.json()) as {
+        message?: string;
+        errorCode?: string;
+      };
+      if (errBody?.message) {
+        message = errBody.errorCode
+          ? `${errBody.errorCode}: ${errBody.message}`
+          : errBody.message;
+      }
+    } catch {
+      /* use default message */
+    }
+    throw new Error(message);
+  }
+
+  const body = (await res.json()) as PublicProviderDetailResponse;
+  return body.data ?? null;
+}
+
+async function fetchPublicServiceDetailJson(
+  slug: string,
+): Promise<PublicServiceDetail | null> {
+  const path = `/public/services/${encodeURIComponent(slug)}`;
+  const url = `${config.apiBaseUrl}${API_VERSION}${path}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch {
+    throw new Error("Connection failed. The server may be unavailable.");
+  }
+
+  if (res.status === 404) return null;
+
+  if (!res.ok) {
+    let message = "Something went wrong";
+    try {
+      const errBody = (await res.json()) as {
+        message?: string;
+        errorCode?: string;
+      };
+      if (errBody?.message) {
+        message = errBody.errorCode
+          ? `${errBody.errorCode}: ${errBody.message}`
+          : errBody.message;
+      }
+    } catch {
+      /* use default message */
+    }
+    throw new Error(message);
+  }
+
+  const body = (await res.json()) as PublicServiceDetailResponse;
+  return body.data ?? null;
+}
+
 export const PUBLIC_CATEGORIES_CACHE_TAG = "public-categories";
 export const PUBLIC_SERVICES_CACHE_TAG = "public-services";
 export const PUBLIC_PROVIDERS_CACHE_TAG = "public-providers";
@@ -58,7 +177,8 @@ export async function getPublicCategories(): Promise<PublicCategory[]> {
     expire: 3600,
   });
 
-  const res = await fetchPublicJson<PublicCategoriesResponse>("/public/categories");
+  const res =
+    await fetchPublicJson<PublicCategoriesResponse>("/public/categories");
   return Array.isArray(res.data) ? res.data : [];
 }
 
@@ -91,6 +211,67 @@ export async function getPublicProviders(): Promise<PublicProvider[]> {
     expire: 3600,
   });
 
-  const res = await fetchPublicJson<PublicProvidersResponse>("/public/providers");
+  const res =
+    await fetchPublicJson<PublicProvidersResponse>("/public/providers");
   return Array.isArray(res.data) ? res.data : [];
+}
+
+export function publicCategoryDetailCacheTag(slug: string) {
+  return `public-category-detail:${slug}`;
+}
+
+export async function getPublicCategoryBySlug(
+  slug: string,
+): Promise<PublicCategoryDetail | null> {
+  "use cache";
+
+  cacheTag(PUBLIC_CATEGORIES_CACHE_TAG);
+  cacheTag(publicCategoryDetailCacheTag(slug));
+  cacheLife({
+    stale: 60,
+    revalidate: 60,
+    expire: 3600,
+  });
+
+  return fetchPublicCategoryDetailJson(slug);
+}
+
+export function publicProviderDetailCacheTag(slug: string) {
+  return `public-provider-detail:${slug}`;
+}
+
+export async function getPublicProviderBySlug(
+  slug: string,
+): Promise<PublicProviderDetail | null> {
+  "use cache";
+
+  cacheTag(PUBLIC_PROVIDERS_CACHE_TAG);
+  cacheTag(publicProviderDetailCacheTag(slug));
+  cacheLife({
+    stale: 60,
+    revalidate: 60,
+    expire: 3600,
+  });
+
+  return fetchPublicProviderDetailJson(slug);
+}
+
+export function publicServiceDetailCacheTag(slug: string) {
+  return `public-service-detail:${slug}`;
+}
+
+export async function getPublicServiceBySlug(
+  slug: string,
+): Promise<PublicServiceDetail | null> {
+  "use cache";
+
+  cacheTag(PUBLIC_SERVICES_CACHE_TAG);
+  cacheTag(publicServiceDetailCacheTag(slug));
+  cacheLife({
+    stale: 60,
+    revalidate: 60,
+    expire: 3600,
+  });
+
+  return fetchPublicServiceDetailJson(slug);
 }

@@ -92,7 +92,7 @@ export default function ProviderProfilePage() {
     fetchError instanceof Error ? fetchError.message : fetchError ? String(fetchError) : null;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6 md:p-8">
+    <div className="min-h-screen bg-white p-6 md:p-8">
       <div className="w-full space-y-6">
         <PageHeader
           title="Provider Profile"
