@@ -125,6 +125,8 @@ export function ServicesSheet({
         });
 
         const { uploadUrl, publicUrl } = presignedRes.data;
+        console.log("PUBLIC LINK:", publicUrl);
+        console.log("UPLOAD LINK:", uploadUrl);
 
         await uploadS3Mutation.mutateAsync({
           uploadUrl,

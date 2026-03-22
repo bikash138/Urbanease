@@ -28,7 +28,7 @@ export default function PublicNavbarAuth() {
 
   if (isAuthenticated && role) {
     return (
-      <div className="flex items-center gap-2 shrink-0 min-w-[168px] justify-end">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0 md:min-w-[168px] justify-end">
         {role === "CUSTOMER" && (
           <Link href="/customer/bookings">
             <Button
@@ -58,8 +58,8 @@ export default function PublicNavbarAuth() {
   }
 
   return (
-    <div className="flex items-center gap-2 shrink-0 min-w-[168px] justify-end">
-      <Link href="/auth/signin">
+    <div className="flex items-center gap-2 shrink-0 min-w-0 justify-end">
+      <Link href="/auth/signin" className="hidden md:block">
         <Button
           type="button"
           variant="ghost"
@@ -73,7 +73,7 @@ export default function PublicNavbarAuth() {
         <Button
           type="button"
           size="sm"
-          className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg"
+          className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg px-3 sm:px-4"
         >
           Get Started
         </Button>
