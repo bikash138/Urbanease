@@ -35,23 +35,25 @@ backend/
 ├── prisma/
 │   ├── schema.prisma
 │   └── migrations/
+├── scripts/              # One-off jobs (e.g. backfill provider review stats)
 ├── src/
-│   ├── common/           # Middleware, errors, utils
-│   │   ├── errors/       # App error types
-│   │   ├── middleware/   # Auth, validation, error handling, roles
-│   │   └── utils/        # S3, asyncHandler, slug-generator
-│   ├── config/           # Env validation, DB & Redis connection
-│   ├── lib/              # Redis client, cache, cache-keys
+│   ├── common/
+│   │   ├── errors/       # App errors and error types
+│   │   ├── middleware/   # Auth, roles, validation, errors, request IDs, rate limiting
+│   │   └── utils/        # asyncHandler, slug-generator, S3 service
+│   ├── config/           # env.ts, DB & Redis wiring
+│   ├── lib/              # Redis client, cache, cache-keys, logger
 │   ├── modules/
-│   │   ├── admin/        # Category, service, provider, review, area
+│   │   ├── admin/        # area/, category/, provider/, review/, service/ + admin.routes.ts
 │   │   ├── auth/
-│   │   ├── customers/    # Addresses, bookings, profile, reviews
-│   │   ├── providers/    # Areas, bookings, profile, reviews, services, upload
+│   │   ├── customers/    # addresses/, bookings/, profile/, reviews/ + customer.routes.ts
+│   │   ├── providers/    # areas/, bookings/, profile/, reviews/, services/, stats/, upload/ + provider.routes.ts
 │   │   └── public/
+│   ├── utils/            # Shared helpers (e.g. avatars, review-stat refresh)
 │   ├── app.ts
 │   ├── route.ts
 │   └── index.ts
-├── db.ts                 # Prisma client
+├── db.ts                 # Prisma client singleton
 ├── prisma.config.ts
 ├── docker-compose.yml    # Backend + Valkey
 ├── Dockerfile

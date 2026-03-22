@@ -19,18 +19,22 @@ Create a `.env.local` file with:
 ```
 frontend/src/
 ├── app/
-│   ├── (public)/      # Public routes (categories, services, providers, booking)
-│   ├── admin/
-│   ├── auth/
-│   ├── customer/
-│   ├── provider/
+│   ├── (public)/      # Home, search, categories, services, providers, booking, about, careers, contact, legal
+│   ├── admin/         # areas, categories, providers, reviews, services
+│   ├── auth/          # signin, signup, admin-signin
+│   ├── customer/      # bookings, profile
+│   ├── provider/      # bookings, profile, service
+│   ├── error.tsx
+│   ├── globals.css
 │   ├── layout.tsx
-│   └── page.tsx
-├── api/               # API client functions
-├── components/
-├── hooks/
-├── lib/
-├── schemas/
+│   └── not-found.tsx
+├── api/               # API clients: admin/, customer/, provider/, public/, plus auth.api.ts
+├── components/        # admin/, auth/, common/, customer/, layout/, provider/, public/, ui/, tanstack-providers/
+├── data/              # Static nav, footer, and social links
+├── hooks/             # admin/, customer/, provider/, public/
+├── lib/               # api-client, query client, config, utils, tokens, ImageKit helpers
+├── schemas/           # Zod: admin/, provider/, auth.schema.ts
+├── server/            # Server-only helpers (e.g. public data fetching)
 ├── store/
-└── types/
+└── types/             # admin/, customer/, provider/, public/
 ```
