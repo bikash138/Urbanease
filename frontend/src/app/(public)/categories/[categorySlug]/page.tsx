@@ -1,6 +1,5 @@
 "use client";
 
-import { use } from "react";
 import Link from "next/link";
 import PublicNavbar from "@/components/public/PublicNavbar";
 import CategorySidebar from "@/components/public/categories/CategorySidebar";
@@ -9,13 +8,10 @@ import {
   usePublicCategories,
   usePublicCategoryDetail,
 } from "@/hooks/public/usePublic";
+import { useParams } from "next/navigation";
 
-export default function CategoryDetailPage({
-  params,
-}: {
-  params: Promise<{ categorySlug: string }>;
-}) {
-  const { categorySlug } = use(params);
+export default function CategoryDetailPage() {
+  const { categorySlug } = useParams<{ categorySlug: string }>();
 
   const { data: category, isLoading: isLoadingCategory } =
     usePublicCategoryDetail(categorySlug);

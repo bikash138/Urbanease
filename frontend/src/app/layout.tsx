@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/components/tanstack-providers/query-provider";
@@ -64,7 +65,19 @@ export default function RootLayout({
             urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_BASE_URL!}
           >
             <div className="max-w-7xl mx-auto w-full min-h-screen">
-              {children}
+              <Suspense
+                fallback={
+                  <div className="min-h-screen w-full flex items-center justify-center bg-zinc-50">
+                    <div
+                      className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-900"
+                      aria-hidden
+                    />
+                    <span className="sr-only">Loading…</span>
+                  </div>
+                }
+              >
+                {children}
+              </Suspense>
             </div>
             <Toaster />
             <Analytics />
