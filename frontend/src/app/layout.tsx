@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import QueryProvider from "@/components/tanstack-providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { ImageKitProvider } from "@imagekit/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,23 +64,10 @@ export default function RootLayout({
           <ImageKitProvider
             urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_BASE_URL!}
           >
-            <div className="max-w-7xl mx-auto w-full min-h-screen">
-              <Suspense
-                fallback={
-                  <div className="min-h-screen w-full flex items-center justify-center bg-zinc-50">
-                    <div
-                      className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-900"
-                      aria-hidden
-                    />
-                    <span className="sr-only">Loading…</span>
-                  </div>
-                }
-              >
-                {children}
-              </Suspense>
-            </div>
+            <div className="w-full min-h-screen">{children}</div>
             <Toaster />
             <Analytics />
+            <SpeedInsights/>
           </ImageKitProvider>
         </QueryProvider>
       </body>

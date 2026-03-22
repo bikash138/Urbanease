@@ -51,21 +51,21 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, sidebar }: DashboardLayoutProps) {
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full max-w-7xl mx-auto">
+    <SidebarProvider className="bg-white min-h-svh">
+      <div className="flex min-h-screen w-full max-w-7xl mx-auto bg-white">
         {sidebar}
 
         {/* Main content area */}
-        <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+        <div className="flex flex-1 flex-col overflow-hidden min-w-0 bg-white">
           {/* Top bar */}
-          <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-border/60 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-4">
+          <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-border/60 bg-white px-4">
             <SidebarTrigger className="shrink-0" />
             <Separator orientation="vertical" className="h-5" />
             <BreadcrumbNav />
           </header>
 
           {/* Page content */}
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto bg-white">{children}</main>
         </div>
       </div>
     </SidebarProvider>

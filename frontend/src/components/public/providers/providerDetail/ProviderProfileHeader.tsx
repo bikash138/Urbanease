@@ -36,7 +36,7 @@ export function ProviderProfileHeader({
 }: ProviderProfileHeaderProps) {
   return (
     <div className="pt-16 bg-white border-b border-zinc-100">
-      <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col sm:flex-row gap-6 items-start">
           {/* Avatar */}
           <div className="relative w-20 h-20 rounded-2xl overflow-hidden shrink-0 shadow-lg bg-zinc-100">

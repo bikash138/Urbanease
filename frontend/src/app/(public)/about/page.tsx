@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import PublicNavbar from "@/components/public/PublicNavbar";
 import CTABanner from "@/components/common/CTABanner";
-import Footer from "@/components/common/Footer";
 import { AboutContent } from "@/components/public/about/AboutContent";
 
 export const metadata: Metadata = {
@@ -18,14 +16,11 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-zinc-50">
-      <PublicNavbar />
-
       <main className="pt-16">
         <AboutContent />
       </main>
 
       <CTABanner />
-      <Footer />
     </div>
   );
 }

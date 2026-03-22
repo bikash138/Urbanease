@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import PublicNavbar from "@/components/public/PublicNavbar";
 import HeroSection from "@/components/public/home/HeroSection";
 import CategoriesSection, {
   CategoriesSectionHeader,
@@ -10,12 +9,10 @@ import ServicesSection, {
 import { HomeSectionFallback } from "@/components/public/fallbacks";
 import HowItWorksSection from "@/components/public/home/HowItWorksSection";
 import CTABanner from "@/components/common/CTABanner";
-import Footer from "@/components/common/Footer";
 
 export default function Page() {
   return (
     <div className="min-h-screen bg-white">
-      <PublicNavbar />
       <HeroSection />
       <Suspense
         fallback={
@@ -39,7 +36,6 @@ export default function Page() {
       </Suspense>
       <HowItWorksSection />
       <CTABanner />
-      <Footer />
     </div>
   );
 }

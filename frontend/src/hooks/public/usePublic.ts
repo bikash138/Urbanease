@@ -11,6 +11,13 @@ import {
   getPublicProviderSlotsAPI,
   searchPublicProvidersAPI,
 } from "@/api/public/public.api";
+import type {
+  PublicCategory,
+  PublicCategoryDetail,
+  PublicProviderDetail,
+  PublicService,
+  PublicServiceDetail,
+} from "@/types/public/public.types";
 import {
   publicCategoryKeys,
   publicServiceKeys,
@@ -19,17 +26,26 @@ import {
   publicSearchKeys,
 } from "./query-keys";
 
-export function usePublicCategories() {
+export function usePublicCategories(options?: {
+  initialData?: PublicCategory[];
+}) {
+  const { initialData } = options ?? {};
   return useQuery({
     queryKey: publicCategoryKeys.list(),
     queryFn: async () => {
       const response = await getPublicCategoriesAPI();
       return response.data;
     },
+    initialData,
+    staleTime: initialData !== undefined ? 60_000 : undefined,
   });
 }
 
-export function usePublicCategoryDetail(slug: string | null) {
+export function usePublicCategoryDetail(
+  slug: string | null,
+  options?: { initialData?: PublicCategoryDetail | null },
+) {
+  const { initialData } = options ?? {};
   return useQuery({
     queryKey: publicCategoryKeys.detail(slug!),
     queryFn: async () => {
@@ -37,13 +53,16 @@ export function usePublicCategoryDetail(slug: string | null) {
       return response.data;
     },
     enabled: !!slug,
+    initialData: initialData ?? undefined,
+    staleTime: initialData !== undefined ? 60_000 : undefined,
   });
 }
 
 export function usePublicServices(
   categorySlugOrId?: string,
-  options?: { enabled?: boolean },
+  options?: { enabled?: boolean; initialData?: PublicService[] },
 ) {
+  const { enabled, initialData } = options ?? {};
   return useQuery({
     queryKey: publicServiceKeys.list(categorySlugOrId),
     queryFn: async () => {
@@ -53,13 +72,21 @@ export function usePublicServices(
         : response;
       return Array.isArray(data) ? data : [];
     },
-    enabled: options?.enabled ?? true,
-    staleTime: 0,
-    gcTime: 0,
+    enabled: enabled ?? true,
+    initialData: initialData ?? undefined,
+    staleTime:
+      initialData !== undefined
+        ? 60_000
+        : 0,
+    gcTime: initialData !== undefined ? undefined : 0,
   });
 }
 
-export function usePublicServiceDetail(slug: string | null) {
+export function usePublicServiceDetail(
+  slug: string | null,
+  options?: { initialData?: PublicServiceDetail | null },
+) {
+  const { initialData } = options ?? {};
   return useQuery({
     queryKey: publicServiceKeys.detail(slug!),
     queryFn: async () => {
@@ -67,6 +94,8 @@ export function usePublicServiceDetail(slug: string | null) {
       return response.data;
     },
     enabled: !!slug,
+    initialData: initialData ?? undefined,
+    staleTime: initialData !== undefined ? 60_000 : undefined,
   });
 }
 
@@ -80,7 +109,11 @@ export function usePublicProviders() {
   });
 }
 
-export function usePublicProviderDetail(slug: string | null) {
+export function usePublicProviderDetail(
+  slug: string | null,
+  options?: { initialData?: PublicProviderDetail | null },
+) {
+  const { initialData } = options ?? {};
   return useQuery({
     queryKey: publicProviderKeys.detail(slug!),
     queryFn: async () => {
@@ -88,6 +121,8 @@ export function usePublicProviderDetail(slug: string | null) {
       return response.data;
     },
     enabled: !!slug,
+    initialData: initialData ?? undefined,
+    staleTime: initialData !== undefined ? 60_000 : undefined,
   });
 }
 
