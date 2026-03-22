@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Star,
   Home,
@@ -15,7 +12,6 @@ import {
   CalendarCheck,
   ArrowRight,
 } from "lucide-react";
-import type { PublicCategory } from "@/types/public/public.types";
 
 const stats = [
   { value: "500+", label: "Verified Providers", icon: BadgeCheck },
@@ -24,15 +20,14 @@ const stats = [
   { value: "10K+", label: "Happy Customers", icon: CalendarCheck },
 ];
 
-interface HeroSectionProps {
-  isLoadingCategories: boolean;
-  displayCategories: PublicCategory[];
-}
+const HERO_CATEGORY_PILLS = [
+  { label: "Home Cleaning", slug: "home-cleaning" },
+  { label: "Home Maintenance", slug: "home-maintenance" },
+  { label: "Beauty and Salon", slug: "beauty-and-salon" },
+  { label: "Home Appliances", slug: "home-appliances" },
+] as const;
 
-export default function HeroSection({
-  isLoadingCategories,
-  displayCategories,
-}: HeroSectionProps) {
+export default function HeroSection() {
   return (
     <>
       {/* HERO */}
@@ -92,17 +87,13 @@ export default function HeroSection({
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {isLoadingCategories
-                ? Array.from({ length: 5 }).map((_, i) => (
-                    <Skeleton key={i} className="h-7 w-20 rounded-full" />
-                  ))
-                : displayCategories.slice(0, 5).map((cat) => (
-                    <Link key={cat.id} href={`/categories/${cat.slug}`}>
-                      <button className="text-xs text-zinc-600 bg-zinc-100 border border-zinc-200 rounded-full px-3 py-1 hover:bg-zinc-200 transition-colors cursor-pointer">
-                        {cat.name}
-                      </button>
-                    </Link>
-                  ))}
+              {HERO_CATEGORY_PILLS.map(({ label, slug }) => (
+                <Link key={slug} href={`/categories/${slug}`}>
+                  <span className="inline-block text-xs text-zinc-600 bg-zinc-100 border border-zinc-200 rounded-full px-3 py-1 hover:bg-zinc-200 transition-colors cursor-pointer">
+                    {label}
+                  </span>
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -150,7 +141,10 @@ export default function HeroSection({
               <p className="text-zinc-500 text-xs">From ₹599</p>
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="w-3 h-3 text-amber-500 fill-amber-500" />
+                  <Star
+                    key={i}
+                    className="w-3 h-3 text-amber-500 fill-amber-500"
+                  />
                 ))}
               </div>
             </div>

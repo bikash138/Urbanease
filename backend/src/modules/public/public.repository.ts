@@ -125,6 +125,8 @@ export class PublicRepository {
               bio: true,
               experience: true,
               profileImage: true,
+              averageRating: true,
+              reviewCount: true,
               user: {
                 select: { name: true, phone: true },
               },

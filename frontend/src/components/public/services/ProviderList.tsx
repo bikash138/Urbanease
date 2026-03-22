@@ -1,24 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import ProviderCard from "./ProviderCard";
-import type { PublicServiceDetail, PublicReview } from "@/types/public/public.types";
+import type { PublicServiceDetail } from "@/types/public/public.types";
 
 interface ProviderListProps {
   service: PublicServiceDetail | null | undefined;
-  reviews: PublicReview[];
   isLoading: boolean;
-}
-
-function buildRatingMap(reviews: PublicReview[]) {
-  const map = new Map<string, { total: number; count: number }>();
-  reviews.forEach((review) => {
-    const pid = review.provider.id;
-    const existing = map.get(pid) ?? { total: 0, count: 0 };
-    map.set(pid, {
-      total: existing.total + review.rating,
-      count: existing.count + 1,
-    });
-  });
-  return map;
 }
 
 function ProviderCardSkeleton() {
@@ -39,10 +25,8 @@ function ProviderCardSkeleton() {
 
 export default function ProviderList({
   service,
-  reviews,
   isLoading,
 }: ProviderListProps) {
-  const ratingMap = buildRatingMap(reviews);
   const providers = service?.providers ?? [];
 
   if (isLoading) {
@@ -72,24 +56,22 @@ export default function ProviderList({
     <div className="rounded-2xl border border-zinc-200 bg-white overflow-hidden py-4 sm:py-6 px-4 sm:px-5">
       <div className="divide-y divide-zinc-200">
         {providers.map((entry) => {
-        const ratingData = ratingMap.get(entry.provider.id);
-        const avgRating = ratingData
-          ? ratingData.total / ratingData.count
-          : null;
-        const reviewCount = ratingData?.count ?? 0;
+          const { averageRating, reviewCount } = entry.provider;
+          const avgRating =
+            averageRating != null && reviewCount > 0 ? averageRating : null;
 
-        return (
-          <div key={entry.id} className="py-4 first:pt-0">
-            <ProviderCard
-              entry={entry}
-              basePrice={service!.basePrice}
-              avgRating={avgRating}
-              reviewCount={reviewCount}
-              serviceSlug={service!.slug}
-            />
-          </div>
-        );
-      })}
+          return (
+            <div key={entry.id} className="py-4 first:pt-0">
+              <ProviderCard
+                entry={entry}
+                basePrice={service!.basePrice}
+                avgRating={avgRating}
+                reviewCount={reviewCount}
+                serviceSlug={service!.slug}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

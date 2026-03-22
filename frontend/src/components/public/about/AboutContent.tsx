@@ -108,12 +108,10 @@ export function AboutContent() {
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-900 text-white">
                 <MapPin className="h-5 w-5" aria-hidden />
               </div>
-              <h3 className="mt-4 font-semibold text-zinc-900">
-                Local at heart
-              </h3>
+              <h3 className="mt-4 font-semibold text-zinc-900">Local at heart</h3>
               <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
-                Built for urban homes and busy lives—find help near you, on your
-                schedule.
+                Built for urban homes and busy lives—find help near you, on
+                your schedule.
               </p>
             </li>
           </ul>

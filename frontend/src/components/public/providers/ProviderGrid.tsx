@@ -1,24 +1,27 @@
 import { Users } from "lucide-react";
-import { ProviderCard } from "./ProviderCard";
-import { ProviderCardSkeleton } from "./ProviderCardSkeleton";
 import type { PublicProvider } from "@/types/public/public.types";
+import { getPublicProviders } from "@/server/public";
+import { PublicApiUnavailableMessage } from "@/components/common/PublicApiUnavailableMessage";
+import { ProviderCard } from "./ProviderCard";
 
-interface ProviderGridProps {
-  providers: PublicProvider[];
-  isLoading: boolean;
-}
+export async function ProviderGrid() {
+  let providers: PublicProvider[];
+  try {
+    providers = await getPublicProviders();
+  } catch {
+    return (
+      <div className="flex-1 min-w-0">
+        <PublicApiUnavailableMessage />
+      </div>
+    );
+  }
 
-export function ProviderGrid({ providers, isLoading }: ProviderGridProps) {
   const displayProviders = providers.slice(0, 4);
 
   return (
     <div className="flex-1 min-w-0 flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4">
-        {isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <ProviderCardSkeleton key={i} />
-          ))
-        ) : displayProviders.length > 0 ? (
+        {displayProviders.length > 0 ? (
           displayProviders.map((provider) => (
             <ProviderCard key={provider.id} provider={provider} />
           ))

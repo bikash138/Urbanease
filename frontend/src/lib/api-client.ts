@@ -8,7 +8,7 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-const API_VERSION = "/api/v1";
+export const API_VERSION = "/api/v1";
 
 const apiClient = axios.create({
   baseURL: `${config.apiBaseUrl}${API_VERSION}`,

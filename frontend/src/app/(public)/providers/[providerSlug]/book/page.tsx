@@ -50,7 +50,14 @@ export default function BookingPage({
         : `/providers/${providerSlug}/book`;
       router.push(`/auth/signin?callbackUrl=${encodeURIComponent(bookPath)}`);
     }
-  }, [mounted, isAuthenticated, role, router, providerSlug, serviceSlugFromUrl]);
+  }, [
+    mounted,
+    isAuthenticated,
+    role,
+    router,
+    providerSlug,
+    serviceSlugFromUrl,
+  ]);
 
   const { data: provider, isLoading: isLoadingProvider } =
     usePublicProviderDetail(providerSlug);
@@ -81,7 +88,7 @@ export default function BookingPage({
   const defaultAddress = useMemo(
     () =>
       addresses && addresses.length > 0
-        ? addresses.find((a) => a.isDefault) ?? addresses[0]
+        ? (addresses.find((a) => a.isDefault) ?? addresses[0])
         : null,
     [addresses],
   );
