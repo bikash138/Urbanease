@@ -112,6 +112,19 @@ export function SigninForm() {
               )}
             />
 
+            <div className="flex justify-end -mt-1">
+              <Link
+                href={
+                  callbackUrl
+                    ? `/auth/forgot-password?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                    : "/auth/forgot-password"
+                }
+                className="text-sm text-zinc-600 hover:text-zinc-900 font-medium underline underline-offset-4"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
             <Button
               id="signin-submit-btn"
               type="submit"

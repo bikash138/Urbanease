@@ -4,8 +4,8 @@ const emailSchema = z.email("Enter a valid email").trim().toLowerCase();
 
 const passwordSchema = z
   .string()
-  .min(8, "Password must be at least 8 characters")
-  .max(72, "Password must be at most 72 characters");
+  .min(4, "Password must be at least 4 characters")
+  .max(30, "Password must be at most 30 characters");
 
 const nameSchema = z
   .string()
@@ -28,7 +28,7 @@ export const adminSigninSchema = z.strictObject({
     .string({ error: "Admin key is required" })
     .trim()
     .min(1, "Admin key is required")
-    .max(512, "Admin key is too long"),
+    .max(50, "Admin key is too long"),
 });
 
 export const signupSchema = z.strictObject({
@@ -38,6 +38,22 @@ export const signupSchema = z.strictObject({
   role: z.enum(["CUSTOMER", "PROVIDER"]),
 });
 
+export const forgotPasswordSchema = z.strictObject({
+  email: emailSchema,
+});
+
+export const resetPasswordFormSchema = z
+  .strictObject({
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export type SigninFormValues = z.infer<typeof signinSchema>;
 export type AdminSigninFormValues = z.infer<typeof adminSigninSchema>;
 export type SignupFormValues = z.infer<typeof signupSchema>;
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordFormSchema>;

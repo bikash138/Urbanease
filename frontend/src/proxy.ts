@@ -7,11 +7,12 @@ const roleRoutes: Record<string, string> = {
 };
 
 export default function proxy(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
+  const accessToken = req.cookies.get("access_token")?.value;
+  const refreshToken = req.cookies.get("refreshToken")?.value;
   const role = req.cookies.get("role")?.value;
   const { pathname } = req.nextUrl;
-
-  if (!token) {
+  const hasAuthSession = Boolean(accessToken || refreshToken);
+  if (!hasAuthSession) {
     return NextResponse.redirect(new URL("/auth/signin", req.url));
   }
 

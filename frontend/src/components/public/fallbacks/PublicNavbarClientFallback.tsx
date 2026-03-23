@@ -12,7 +12,7 @@ export function PublicNavbarClientFallback() {
         <Skeleton className="h-9 flex-1 md:max-w-md rounded-lg" />
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <Skeleton className="hidden md:block h-8 w-[72px] rounded-lg" />
+        <Skeleton className="h-8 w-[72px] rounded-lg shrink-0" />
         <Skeleton className="h-8 w-[88px] rounded-lg" />
       </div>
     </>
