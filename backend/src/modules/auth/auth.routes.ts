@@ -34,4 +34,6 @@ authRoute.post(
 
 authRoute.post("/signout", authHandler.createSignout);
 
+authRoute.post("/refresh", authRateLimit, authHandler.createRefreshToken);
+
 export default authRoute;

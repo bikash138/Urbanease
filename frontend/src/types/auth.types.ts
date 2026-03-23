@@ -17,7 +17,7 @@ export interface SignupPayload {
   name: string;
   email: string;
   password: string;
-  role: UserRole;
+  role: "CUSTOMER" | "PROVIDER";
 }
 
 //----Responses----
@@ -29,13 +29,14 @@ export interface AuthorizedUser {
   role: UserRole;
 }
 
-export interface SigninData {
-  token: string;
+export interface AuthSessionData {
+  accessToken: string;
+  accessExpiresInSeconds: number;
   user: AuthorizedUser;
 }
 
-export type SigninResponse = ApiResponse<SigninData>;
+export type SigninResponse = ApiResponse<AuthSessionData>;
 
-export type SignupData = SigninData;
+export type SignupResponse = ApiResponse<AuthSessionData>;
 
-export type SignupResponse = ApiResponse<SignupData>;
+export type AdminSigninResponse = ApiResponse<AuthSessionData>;

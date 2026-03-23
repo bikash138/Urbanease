@@ -67,7 +67,7 @@ export default function RootLayout({
             <div className="w-full min-h-screen">{children}</div>
             <Toaster />
             <Analytics />
-            <SpeedInsights/>
+            <SpeedInsights />
           </ImageKitProvider>
         </QueryProvider>
       </body>

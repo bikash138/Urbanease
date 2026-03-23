@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { AppError } from "../errors/app.error";
 import { ErrorCode } from "../errors/error.types";
 import { env } from "../../config";
@@ -22,16 +22,16 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const token =
-    req.cookies?.token ||
+  const accessToken =
+    req.cookies?.access_token ||
     req.headers.authorization?.replace(/^Bearer\s+/i, "");
 
-  if (!token) {
-    return next(new AppError("Token not found", 401, ErrorCode.UNAUTHORIZED));
+  if (!accessToken) {
+    return next(new AppError("Access Token not found", 401, ErrorCode.UNAUTHORIZED));
   }
 
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as {
+    const decoded = jwt.verify(accessToken, env.JWT_ACCESS_SECRET) as {
       id: string;
       email: string;
       role: "CUSTOMER" | "PROVIDER" | "ADMIN";
@@ -47,6 +47,17 @@ export const authMiddleware = (
     }
     next();
   } catch (error) {
-    return next(new AppError("Invalid token", 401, ErrorCode.TOKEN_EXPIRED));
+    if (error instanceof TokenExpiredError) {
+      return next(
+        new AppError(
+          "Access token expired",
+          401,
+          ErrorCode.ACCESS_TOKEN_EXPIRED,
+        ),
+      );
+    }
+    return next(
+      new AppError("Invalid access token", 401, ErrorCode.UNAUTHORIZED),
+    );
   }
 };

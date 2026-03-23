@@ -16,25 +16,25 @@ export class AuthRepository {
   }
 
   async createCustomer(data: CreateSignupSchema, passwordHash: string) {
-  return prisma.$transaction(async (tx) => {
-    const user = await tx.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        passwordHash,
-        role: "CUSTOMER",
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
+    return prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          passwordHash,
+          role: "CUSTOMER",
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      });
+      await tx.customerProfile.create({ data: { userId: user.id } });
+      return { user };
     });
-    await tx.customerProfile.create({ data: { userId: user.id } });
-    return { user };
-  });
-}
+  }
 
   async createProvider(data: CreateSignupSchema, passwordHash: string) {
     return prisma.$transaction(async (tx) => {
@@ -66,18 +66,66 @@ export class AuthRepository {
         user,
         providerId: profile.id,
       };
-    })
+    });
   }
 
   async findUserByEmail(email: string) {
     return await prisma.user.findFirst({
-      where: { email },
+      where: { email, isActive: true },
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
         passwordHash: true,
+        providerProfile: { select: { id: true } },
+      },
+    });
+  }
+
+  async insertRefreshToken(userId: string, tokenHash: string, expiresAt: Date) {
+    return prisma.refreshToken.create({
+      data: { userId, tokenHash, expiresAt },
+    });
+  }
+
+  async findValidRefreshToken(tokenHash: string) {
+    return prisma.refreshToken.findFirst({
+      where: {
+        tokenHash,
+        revokedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+    });
+  }
+
+  async findNonRevokedRefreshByHash(tokenHash: string) {
+    return prisma.refreshToken.findFirst({
+      where: { tokenHash, revokedAt: null },
+    });
+  }
+
+  async deleteRefreshToken(id: string) {
+    return prisma.refreshToken.delete({
+      where: { id },
+    });
+  }
+
+  async revokeAllRefreshTokensForUser(userId: string) {
+    return prisma.refreshToken.updateMany({
+      where: { userId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+  }
+
+  async findUserByIdForSession(userId: string) {
+    return prisma.user.findFirst({
+      where: { id: userId, isActive: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
         providerProfile: { select: { id: true } },
       },
     });

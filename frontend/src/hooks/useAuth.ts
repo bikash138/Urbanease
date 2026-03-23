@@ -4,7 +4,12 @@ import { extractErrorMessage } from "@/lib/utils";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { adminSigninAPI, signinAPI, signoutAPI, signupAPI } from "@/api/auth.api";
+import {
+  adminSigninAPI,
+  signinAPI,
+  signoutAPI,
+  signupAPI,
+} from "@/api/auth.api";
 import { useAuthStore } from "@/store/auth.store";
 import type {
   AdminSigninFormValues,
@@ -15,9 +20,7 @@ import type { UserRole } from "@/types/auth.types";
 
 function getRedirectUrl(role: UserRole, callbackUrl?: string): string {
   const safeCallback =
-    callbackUrl &&
-    callbackUrl.startsWith("/") &&
-    !callbackUrl.startsWith("//");
+    callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//");
   if (safeCallback) return callbackUrl;
   if (role === "ADMIN") return "/admin";
   if (role === "PROVIDER") return "/provider";
@@ -45,7 +48,11 @@ export function useAuth() {
     try {
       const response = await signinAPI(data);
       toast.success(response.message ?? "Signed in successfully");
-      setAuth(response.data.user, response.data.user.role, response.data.token);
+      setAuth(
+        response.data.user,
+        response.data.user.role,
+        response.data.accessToken,
+      );
       redirectByRole(response.data.user.role, options?.callbackUrl);
     } catch (err) {
       const msg = extractErrorMessage(err);
@@ -65,7 +72,11 @@ export function useAuth() {
     try {
       const response = await signupAPI(data);
       toast.success(response.message ?? "Account created successfully");
-      setAuth(response.data.user, response.data.user.role, response.data.token);
+      setAuth(
+        response.data.user,
+        response.data.user.role,
+        response.data.accessToken,
+      );
       redirectByRole(response.data.user.role, options?.callbackUrl);
     } catch (err) {
       const msg = extractErrorMessage(err);
@@ -82,7 +93,11 @@ export function useAuth() {
     try {
       const response = await adminSigninAPI(data);
       toast.success(response.message ?? "Admin signed in successfully");
-      setAuth(response.data.user, response.data.user.role, response.data.token);
+      setAuth(
+        response.data.user,
+        response.data.user.role,
+        response.data.accessToken,
+      );
       redirectByRole(response.data.user.role);
     } catch (err) {
       const msg = extractErrorMessage(err);

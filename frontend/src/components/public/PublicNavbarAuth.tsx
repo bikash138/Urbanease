@@ -59,7 +59,7 @@ export default function PublicNavbarAuth() {
 
   return (
     <div className="flex items-center gap-2 shrink-0 min-w-0 justify-end">
-      <Link href="/auth/signin" className="hidden md:block">
+      <Link href="/auth/signin" className="shrink-0">
         <Button
           type="button"
           variant="ghost"

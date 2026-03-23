@@ -91,7 +91,7 @@ export class BookingService {
       if (data.totalAmount !== expectedPrice) {
         throw new AppError(
           "Don't try to spoof the system",
-          401,
+          402,
           ErrorCode.CONFLICT,
         );
       }
@@ -300,7 +300,7 @@ export class BookingService {
       if (slotDate.getTime() !== requestedDate.getTime()) {
         throw new AppError(
           "Date slected not allowed",
-          401,
+          402,
           ErrorCode.FORBIDDEN,
         );
       }
