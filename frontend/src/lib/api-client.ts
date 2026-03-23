@@ -45,7 +45,6 @@ function isAuthRefreshPath(url: string | undefined): boolean {
   return url.includes("/auth/refresh");
 }
 
-/** Login/signup/refresh calls — 401 here must not hard-redirect (e.g. wrong password). */
 function isPublicAuthApiPath(url: string | undefined): boolean {
   if (!url) return false;
   return (
@@ -121,9 +120,7 @@ apiClient.interceptors.response.use(
         });
       }
     }
-
-    // Other 401s: missing/invalid access token, etc. — not ACCESS_TOKEN_EXPIRED (handled above).
-    // Skip login/signup/refresh so wrong password does not reload the app.
+    
     if (
       status === 401 &&
       !isPublicAuthApiPath(originalRequest?.url) &&

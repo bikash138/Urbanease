@@ -75,11 +75,10 @@ export function ResetPasswordForm() {
   if (!token) {
     return (
       <Card className="border border-amber-200/80 bg-amber-50/70 shadow-xl shadow-amber-900/5">
-        <CardHeader className="pb-4">
+        <CardHeader>
           <CardTitle className="text-xl text-zinc-900">Invalid link</CardTitle>
-          <CardDescription className="text-zinc-500">
-            This reset link is missing a token. Request a new password reset
-            email.
+          <CardDescription className="text-balance text-zinc-500">
+            Link has missing a token. Request a new link.
           </CardDescription>
         </CardHeader>
         <CardFooter className="pb-6">
@@ -93,7 +92,7 @@ export function ResetPasswordForm() {
 
   return (
     <Card className="border border-amber-200/80 bg-amber-50/70 shadow-xl shadow-amber-900/5">
-      <CardHeader className="pb-4">
+      <CardHeader>
         <CardTitle className="text-xl text-zinc-900">Set new password</CardTitle>
         <CardDescription className="text-zinc-500">
           Choose a new password for your account.

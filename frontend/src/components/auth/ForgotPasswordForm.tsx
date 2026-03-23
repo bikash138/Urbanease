@@ -70,11 +70,10 @@ export function ForgotPasswordForm() {
 
   return (
     <Card className="border border-amber-200/80 bg-amber-50/70 shadow-xl shadow-amber-900/5">
-      <CardHeader className="pb-4">
+      <CardHeader>
         <CardTitle className="text-xl text-zinc-900">Forgot password</CardTitle>
-        <CardDescription className="text-zinc-500">
-          Enter your email and we&apos;ll send you a reset link if an account
-          exists.
+        <CardDescription className="text-balance text-zinc-500">
+          We&apos;ll send you a reset link if an account exists.
         </CardDescription>
       </CardHeader>
 
