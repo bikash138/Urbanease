@@ -10,7 +10,7 @@ export type AccessTokenPayload = {
 };
 
 export const PASSWORD_RESET_TOKEN_TTL_MS = 15 * 60 * 1000;
-export const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+export const REFRESH_TOKEN_TTL_MS = env.REFRESH_TOKEN_EXPIRES_IN * 24 * 60 * 60 * 1000;
 
 const DEFAULT_OPAQUE_TOKEN_BYTES = 32;
 

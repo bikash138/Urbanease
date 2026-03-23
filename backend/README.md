@@ -6,25 +6,73 @@ REST API for the Urbanease home services platform. Built with **Bun**, **Express
 
 ## Environment Variables
 
-Create a `.env` file with:
+Copy `.env.example` to `.env` and fill in values. The app validates configuration at startup (`src/config/env.ts`).
+
+**Server**
+
+| Variable | Description |
+|----------|-------------|
+| `NODE_ENV` | `development` or `production` (default: `development`) |
+| `PORT` | HTTP port (default: `4000`) |
+
+**Database**
 
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
-| `FRONTEND_URL` | CORS origin (e.g. `http://localhost:3000`) |
-| `JWT_SECRET` | Secret for signing JWTs |
-| `JWT_EXPIRES_IN` | JWT expiry (optional, default: `7d`) |
-| `ADMIN_KEY` | Shared secret for admin sign-in |
-| `COOKIE_DOMAIN` | Cookie domain (optional, leave empty for localhost) |
-| `PORT` | Server port (optional, default: 4000) |
-| `NODE_ENV` | `development` or `production` (optional) |
-| `AWS_ACCESS_KEY_ID` | S3 / compatible storage access key |
-| `AWS_SECRET_ACCESS_KEY` | S3 secret key |
-| `AWS_ENDPOINT_URL_S3` | S3 endpoint URL |
-| `AWS_ENDPOINT_URL_IAM` | IAM endpoint URL |
-| `AWS_REGION` | AWS region |
-| `S3_BUCKET_NAME` | Bucket name for uploads |
-| `REDIS_URL` | Valkey/Redis connection URL (e.g. `redis://localhost:6379` or `redis://valkey:6379` for Docker) |
+
+**Redis / Valkey**
+
+| Variable | Description |
+|----------|-------------|
+| `REDIS_URL` | Redis-compatible URL for caching and rate limiting (e.g. `redis://localhost:6379`, or `redis://valkey:6379` with Docker Compose) |
+
+**Frontend**
+
+| Variable | Description |
+|----------|-------------|
+| `FRONTEND_URL` | Allowed CORS origin and base URL for links in emails (e.g. password reset). Example: `http://localhost:3000` |
+
+**Auth (JWT and opaque tokens)**
+
+| Variable | Description |
+|----------|-------------|
+| `JWT_ACCESS_SECRET` | Secret for signing access JWTs (min 4 characters) |
+| `REFRESH_TOKEN_SECRET` | Pepper used when hashing refresh tokens (min 4 characters) |
+| `PASSWORD_RESET_SECRET` | Pepper used when hashing password-reset tokens |
+| `JWT_EXPIRES_IN` | Optional string default for legacy/expiry-related settings (default: `7d`) |
+| `JWT_ACCESS_EXPIRES_IN` | Access JWT lifetime (e.g. `30s`, `15m`, default: `30m`) |
+| `REFRESH_TOKEN_EXPIRES_IN` | Refresh token lifetime in **whole days** for DB `expiresAt` and cookies (default: `7`) |
+
+**Auth (cookies)**
+
+| Variable | Description |
+|----------|-------------|
+| `COOKIE_DOMAIN` | Optional. Set in production when the API and app share a parent domain (e.g. `.yourdomain.com`) |
+
+**Auth (admin)**
+
+| Variable | Description |
+|----------|-------------|
+| `ADMIN_KEY` | Shared secret required for `POST /api/v1/auth/admin-signin` |
+
+**AWS S3 (uploads)**
+
+| Variable | Description |
+|----------|-------------|
+| `AWS_ACCESS_KEY_ID` | Access key |
+| `AWS_SECRET_ACCESS_KEY` | Secret key |
+| `AWS_ENDPOINT_URL_S3` | S3 API endpoint |
+| `AWS_ENDPOINT_URL_IAM` | IAM endpoint |
+| `AWS_REGION` | Region |
+| `S3_BUCKET_NAME` | Bucket for uploads |
+
+**Email (Resend)**
+
+| Variable | Description |
+|----------|-------------|
+| `RESEND_API_KEY` | Resend API key |
+| `EMAIL_FROM` | Verified sender, e.g. `Urbanease <noreply@yourdomain.com>` |
 
 ---
 
