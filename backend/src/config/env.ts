@@ -13,6 +13,7 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default("7d"),
   JWT_ACCESS_EXPIRES_IN: z.string().default("30s"),
   ADMIN_KEY: z.string().min(1, "ADMIN_KEY is required"),
+  PASSWORD_RESET_SECRET: z.string().min(1, "PASSWORD_RESET_SECRET is required"),
 
   AWS_ACCESS_KEY_ID: z.string().min(1, "AWS_ACCESS_KEY_ID is required"),
   AWS_SECRET_ACCESS_KEY: z.string().min(1, "AWS_SECRET_ACCESS_KEY is required"),
@@ -20,6 +21,9 @@ const envSchema = z.object({
   AWS_ENDPOINT_URL_IAM: z.string().min(1, "AWS_ENDPOINT_URL_IAM is required"),
   AWS_REGION: z.string().min(1, "AWS_REGION is required"),
   S3_BUCKET_NAME: z.string().min(1, "S3_BUCKET_NAME is required"),
+
+  RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
+  EMAIL_FROM: z.string().min(1, "EMAIL_FROM is required")
 });
 
 const parsed = envSchema.safeParse(process.env);

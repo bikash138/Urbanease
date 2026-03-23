@@ -1,7 +1,7 @@
 import { asyncHandler } from "../../common/utils/asyncHandler";
 import { AuthService } from "./auth.service";
 import { env } from "../../config";
-import { refreshCookieMaxAgeMs } from "../../utils/tokens";
+import { REFRESH_TOKEN_TTL_MS } from "../../utils/tokens";
 import type { Request, Response } from "express";
 
 function getCookieOptions() {
@@ -33,7 +33,7 @@ export class AuthHandler {
     });
     res.cookie("refreshToken", data.refreshToken, {
       ...cookieOpts,
-      maxAge: refreshCookieMaxAgeMs(),
+      maxAge: REFRESH_TOKEN_TTL_MS,
     });
     res.cookie("role", data.user.role, cookieOpts);
     res.status(201).json({
@@ -56,7 +56,7 @@ export class AuthHandler {
     });
     res.cookie("refreshToken", data.refreshToken, {
       ...cookieOpts,
-      maxAge: refreshCookieMaxAgeMs(),
+      maxAge: REFRESH_TOKEN_TTL_MS,
     });
     res.cookie("role", data.user.role, cookieOpts);
     res.status(200).json({
@@ -65,7 +65,7 @@ export class AuthHandler {
       data: {
         accessToken: data.accessToken,
         accessExpiresInSeconds: data.accessExpiresInSeconds,
-        user: data.user
+        user: data.user,
       },
     });
   });
@@ -79,7 +79,7 @@ export class AuthHandler {
     });
     res.cookie("refreshToken", data.refreshToken, {
       ...cookieOpts,
-      maxAge: refreshCookieMaxAgeMs(),
+      maxAge: REFRESH_TOKEN_TTL_MS,
     });
     res.cookie("role", data.user.role, cookieOpts);
     res.status(200).json({
@@ -92,11 +92,11 @@ export class AuthHandler {
       },
     });
   });
-  
+
   createRefreshToken = asyncHandler(async (req: Request, res: Response) => {
     const raw =
-    req.cookies?.refreshToken ??
-    (typeof req.body?.refreshToken === "string"
+      req.cookies?.refreshToken ??
+      (typeof req.body?.refreshToken === "string"
         ? req.body.refreshToken
         : undefined);
     const data = await this.authService.refreshSessionService(raw ?? "");
@@ -107,7 +107,7 @@ export class AuthHandler {
     });
     res.cookie("refreshToken", data.refreshToken, {
       ...cookieOpts,
-      maxAge: refreshCookieMaxAgeMs(),
+      maxAge: REFRESH_TOKEN_TTL_MS,
     });
     res.cookie("role", data.user.role, cookieOpts);
     res.status(200).json({
@@ -118,6 +118,23 @@ export class AuthHandler {
         accessExpiresInSeconds: data.accessExpiresInSeconds,
         user: data.user,
       },
+    });
+  });
+
+  createForgotPassword = asyncHandler(async (req: Request, res: Response) => {
+    await this.authService.requestForgotPassword(req.body);
+    res.status(200).json({
+      success: true,
+      message:
+        "Verification email sent",
+    });
+  });
+
+  createResetPassword = asyncHandler(async (req: Request, res: Response) => {
+    await this.authService.resetPasswordService(req.body);
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully.",
     });
   });
 

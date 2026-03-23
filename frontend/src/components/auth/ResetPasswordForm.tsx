@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "@/hooks/useAuth";
-import { signinSchema, type SigninFormValues } from "@/schemas/auth.schema";
+import { resetPasswordAPI } from "@/api/auth.api";
+import {
+  resetPasswordFormSchema,
+  type ResetPasswordFormValues,
+} from "@/schemas/auth.schema";
+import { extractErrorMessage } from "@/lib/utils";
+import { toast } from "sonner";
 import {
   Form,
   FormControl,
@@ -25,41 +30,73 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, ShieldCheck } from "lucide-react";
-
+import { Loader2 } from "lucide-react";
 import { authInputClassName } from "./form-input-classes";
 
-export function SigninForm() {
+export function ResetPasswordForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const registeredEmail = searchParams.get("email") ?? "";
-  const registeredPassword = searchParams.get("password") ?? "";
+  const token = searchParams.get("token")?.trim() ?? "";
   const callbackUrl = searchParams.get("callbackUrl") ?? undefined;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { signin, isLoading } = useAuth();
-
-  const form = useForm<SigninFormValues>({
-    resolver: zodResolver(signinSchema),
-    defaultValues: {
-      email: registeredEmail,
-      password: registeredPassword,
-    },
+  const form = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(resetPasswordFormSchema),
+    defaultValues: { password: "", confirmPassword: "" },
   });
 
-  useEffect(() => {
-    if (registeredEmail) form.setValue("email", registeredEmail);
-    if (registeredPassword) form.setValue("password", registeredPassword);
-  }, [registeredEmail, registeredPassword, form]);
+  const signinHref =
+    callbackUrl != null
+      ? `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`
+      : "/auth/signin";
 
-  async function onSubmit(data: SigninFormValues) {
-    await signin(data, { callbackUrl });
+  async function onSubmit(data: ResetPasswordFormValues) {
+    if (!token) {
+      toast.error("Invalid or missing reset link.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const response = await resetPasswordAPI({
+        token,
+        password: data.password,
+      });
+      toast.success(
+        response.message ?? "Password updated. Sign in with your new password.",
+      );
+      router.push(signinHref);
+    } catch (err) {
+      toast.error(extractErrorMessage(err));
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  if (!token) {
+    return (
+      <Card className="border border-amber-200/80 bg-amber-50/70 shadow-xl shadow-amber-900/5">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl text-zinc-900">Invalid link</CardTitle>
+          <CardDescription className="text-zinc-500">
+            This reset link is missing a token. Request a new password reset
+            email.
+          </CardDescription>
+        </CardHeader>
+        <CardFooter className="pb-6">
+          <Button asChild className="w-full h-11 bg-zinc-900 hover:bg-zinc-800">
+            <Link href="/auth/forgot-password">Request new link</Link>
+          </Button>
+        </CardFooter>
+      </Card>
+    );
   }
 
   return (
     <Card className="border border-amber-200/80 bg-amber-50/70 shadow-xl shadow-amber-900/5">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl text-zinc-900">Welcome back</CardTitle>
+        <CardTitle className="text-xl text-zinc-900">Set new password</CardTitle>
         <CardDescription className="text-zinc-500">
-          Sign in to your account to continue
+          Choose a new password for your account.
         </CardDescription>
       </CardHeader>
 
@@ -68,18 +105,18 @@ export function SigninForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
+              name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-zinc-700 text-sm font-medium">
-                    Email
+                    New password
                   </FormLabel>
                   <FormControl>
                     <Input
-                      id="signin-email"
-                      type="email"
-                      placeholder="you@example.com"
-                      autoComplete="email"
+                      id="reset-password"
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
                       className={authInputClassName}
                       {...field}
                     />
@@ -91,18 +128,18 @@ export function SigninForm() {
 
             <FormField
               control={form.control}
-              name="password"
+              name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-zinc-700 text-sm font-medium">
-                    Password
+                    Confirm password
                   </FormLabel>
                   <FormControl>
                     <Input
-                      id="signin-password"
+                      id="reset-confirm-password"
                       type="password"
                       placeholder="••••••••"
-                      autoComplete="current-password"
+                      autoComplete="new-password"
                       className={authInputClassName}
                       {...field}
                     />
@@ -112,32 +149,19 @@ export function SigninForm() {
               )}
             />
 
-            <div className="flex justify-end -mt-1">
-              <Link
-                href={
-                  callbackUrl
-                    ? `/auth/forgot-password?callbackUrl=${encodeURIComponent(callbackUrl)}`
-                    : "/auth/forgot-password"
-                }
-                className="text-sm text-zinc-600 hover:text-zinc-900 font-medium underline underline-offset-4"
-              >
-                Forgot password?
-              </Link>
-            </div>
-
             <Button
-              id="signin-submit-btn"
+              id="reset-submit-btn"
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="w-full h-11 bg-zinc-900 hover:bg-zinc-800 text-white font-medium transition-all duration-200 mt-2 shadow-sm"
             >
-              {isLoading ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
+                  Updating...
                 </>
               ) : (
-                "Sign in"
+                "Update password"
               )}
             </Button>
           </form>
@@ -146,35 +170,13 @@ export function SigninForm() {
 
       <CardFooter className="flex flex-col gap-3 pt-2 pb-6">
         <p className="text-sm text-zinc-500 text-center">
-          Don&apos;t have an account?{" "}
           <Link
-            href={
-              callbackUrl
-                ? `/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`
-                : "/auth/signup"
-            }
+            href={signinHref}
             className="text-zinc-900 hover:text-zinc-700 font-semibold underline underline-offset-4 transition-colors"
           >
-            Sign up
+            Back to sign in
           </Link>
         </p>
-
-        <div className="flex items-center gap-3 w-full">
-          <div className="h-px flex-1 bg-zinc-200" />
-          <span className="text-xs text-zinc-400">or</span>
-          <div className="h-px flex-1 bg-zinc-200" />
-        </div>
-
-        <Link href="/auth/admin-signin" className="w-full">
-          <Button
-            id="goto-admin-signin-btn"
-            variant="outline"
-            className="w-full h-10 border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 hover:border-zinc-400 transition-all duration-200 gap-2"
-          >
-            <ShieldCheck className="w-4 h-4" />
-            Sign in as Admin
-          </Button>
-        </Link>
       </CardFooter>
     </Card>
   );

@@ -38,6 +38,22 @@ export const signupSchema = z.strictObject({
   role: z.enum(["CUSTOMER", "PROVIDER"]),
 });
 
+export const forgotPasswordSchema = z.strictObject({
+  email: emailSchema,
+});
+
+export const resetPasswordFormSchema = z
+  .strictObject({
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export type SigninFormValues = z.infer<typeof signinSchema>;
 export type AdminSigninFormValues = z.infer<typeof adminSigninSchema>;
 export type SignupFormValues = z.infer<typeof signupSchema>;
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordFormSchema>;

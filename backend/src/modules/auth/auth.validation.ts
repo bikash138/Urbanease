@@ -41,6 +41,18 @@ export const createSignupSchema = z.strictObject({
   ),
 });
 
+export const forgotPasswordSchema = z.strictObject({
+  email: emailSchema,
+});
+
+export const resetPasswordSchema = z.strictObject({
+  token: z.string().trim().min(1, "Token is required"),
+  password: passwordSchema,
+});
+
+export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
+
 export type CreateSigninSchema = z.infer<typeof createSigninSchema>;
 export type CreateAdminSigninSchema = z.infer<typeof createAdminSigninSchema>;
 export type CreateSignupSchema = z.infer<typeof createSignupSchema>;

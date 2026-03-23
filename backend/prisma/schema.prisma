@@ -51,15 +51,16 @@ enum SlotLabel {
 }
 
 model User {
-  id           String         @id @default(uuid())
-  name         String
-  email        String         @unique
-  passwordHash String
-  role         Role
-  phone        String?
-  isActive     Boolean        @default(true)
-  reviewGiven  Review[]
-  refreshToken RefreshToken[]
+  id                 String             @id @default(uuid())
+  name               String
+  email              String             @unique
+  passwordHash       String
+  role               Role
+  phone              String?
+  isActive           Boolean            @default(true)
+  reviewGiven        Review[]
+  refreshToken       RefreshToken[]
+  passwordResetToken PasswordResetToken?
 
   customerProfile CustomerProfile?
   providerProfile ProviderProfile?
@@ -78,6 +79,15 @@ model RefreshToken {
   createdAt DateTime  @default(now())
 
   @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
 }
 
 model CustomerProfile {

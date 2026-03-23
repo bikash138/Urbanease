@@ -130,4 +130,61 @@ export class AuthRepository {
       },
     });
   }
+
+  async findUserForPasswordReset(email: string) {
+    return prisma.user.findFirst({
+      where: {
+        email,
+        isActive: true,
+        role: { in: ["CUSTOMER", "PROVIDER"] },
+      },
+      select: { id: true, email: true },
+    });
+  }
+
+  async upsertPasswordResetToken(
+    userId: string,
+    tokenHash: string,
+    expiresAt: Date,
+  ) {
+    return prisma.passwordResetToken.upsert({
+      where: { userId },
+      create: { userId, tokenHash, expiresAt },
+      update: { tokenHash, expiresAt },
+    });
+  }
+
+  async findPasswordResetByTokenHash(tokenHash: string) {
+    return prisma.passwordResetToken.findUnique({
+      where: { tokenHash },
+      select: {
+        id: true,
+        userId: true,
+        expiresAt: true,
+        user: {
+          select: { id: true, isActive: true, role: true },
+        },
+      },
+    });
+  }
+
+  async completePasswordReset(
+    userId: string,
+    resetRowId: string,
+    passwordHash: string,
+  ) {
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: { passwordHash },
+      }),
+      prisma.passwordResetToken.delete({ where: { id: resetRowId } }),
+      prisma.refreshToken.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
+  }
 }
+
+

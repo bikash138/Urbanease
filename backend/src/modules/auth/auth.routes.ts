@@ -5,6 +5,8 @@ import {
   createSigninSchema,
   createSignupSchema,
   createAdminSigninSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 } from "./auth.validation";
 import { authRateLimit } from "../../common/middleware/rate-limiter.middleware";
 
@@ -35,5 +37,19 @@ authRoute.post(
 authRoute.post("/signout", authHandler.createSignout);
 
 authRoute.post("/refresh", authRateLimit, authHandler.createRefreshToken);
+
+authRoute.post(
+  "/forgot-password",
+  authRateLimit,
+  validateRequest(forgotPasswordSchema),
+  authHandler.createForgotPassword,
+);
+
+authRoute.post(
+  "/reset-password",
+  authRateLimit,
+  validateRequest(resetPasswordSchema),
+  authHandler.createResetPassword,
+);
 
 export default authRoute;

@@ -52,6 +52,8 @@ function isPublicAuthApiPath(url: string | undefined): boolean {
     url.includes("/auth/signin") ||
     url.includes("/auth/signup") ||
     url.includes("/auth/admin-signin") ||
+    url.includes("/auth/forgot-password") ||
+    url.includes("/auth/reset-password") ||
     url.includes("/auth/refresh")
   );
 }
